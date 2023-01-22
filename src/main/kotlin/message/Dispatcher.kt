@@ -2,6 +2,7 @@ package org.tfcc.bingo.message
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import io.netty.channel.Channel
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
@@ -22,6 +23,21 @@ fun ChannelHandlerContext.writeMessage(message: Message): ChannelFuture {
         } else message
     )
     Dispatcher.logger.debug("服务器发给${channel().id().asShortText()}：$text")
+    return writeAndFlush(TextWebSocketFrame(text))
+}
+
+fun Channel.writeMessage(message: Message): ChannelFuture {
+    val text = Dispatcher.gson.toJson(
+        if (message.name == null && message.data != null) {
+            Message(
+                Dispatcher.camelToUnderLine(message.data.javaClass.simpleName),
+                message.reply,
+                message.trigger,
+                message.data
+            )
+        } else message
+    )
+    Dispatcher.logger.debug("服务器发给${id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 

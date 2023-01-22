@@ -4,11 +4,11 @@ data class RoomInfoSc(
     val rid: String,
     val type: Int,
     val host: String,
-    val names: Array<String>,
-    val changeCardCount: Array<UInt>,
-    val started: Boolean,
-    val score: Array<UInt>,
-    val winner: Int
+    val names: Array<String>?,
+    val changeCardCount: Array<UInt>?,
+    val started: Boolean?,
+    val score: Array<UInt>?,
+    val winner: Int?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -36,7 +36,7 @@ data class RoomInfoSc(
         result = 31 * result + changeCardCount.contentHashCode()
         result = 31 * result + started.hashCode()
         result = 31 * result + score.contentHashCode()
-        result = 31 * result + winner
+        result = 31 * result + winner.hashCode()
         return result
     }
 }

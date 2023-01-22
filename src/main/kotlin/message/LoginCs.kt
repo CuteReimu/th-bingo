@@ -19,7 +19,7 @@ data class LoginCs(val token: String?) : Handler {
             Store.putPlayer(Player(this.token, null, null))
         }
         Supervisor.add(ctx.channel(), this.token)
-        ctx.writeAndFlush(Message(ErrorSc(0, "ok")))
+        ctx.writeMessage(Store.buildPlayerInfo(this.token))
     }
 
     private fun String.isLetterOrDigit(): Boolean {
