@@ -17,6 +17,7 @@ dependencies {
     implementation("io.netty:netty-all:4.1.87.Final")
     implementation("log4j:log4j:1.2.17")
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
 }
 
 tasks.withType<KotlinCompile> {
