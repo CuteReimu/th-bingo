@@ -5,6 +5,14 @@
 [![](https://img.shields.io/github/contributors/CuteReimu/th-bingo)](https://github.com/CuteReimu/th-bingo/graphs/contributors "贡献者")
 [![](https://img.shields.io/github/license/CuteReimu/th-bingo)](https://github.com/CuteReimu/th-bingo/blob/master/LICENSE "许可协议")
 
+## 使用
+
+需要提前安装Java环境（建议Java 17）
+
+```shell
+./gradlew run
+```
+
 ## 协议
 
 ***因为协议会频繁更改，所以下行协议请暂时不要参照此表格***

@@ -71,6 +71,10 @@ object Store {
         return pool.submit(Callable { roomCache[roomId] }).get()
     }
 
+    fun removeRoom(roomId: String) {
+        pool.submit(Callable { roomCache.remove(roomId) })
+    }
+
     fun buildPlayerInfo(token: String): Message {
         val player = getPlayer(token) ?: return Message("room_info_sc", null, null, null)
         player.roomId ?: return Message("room_info_sc", null, player.name, null)

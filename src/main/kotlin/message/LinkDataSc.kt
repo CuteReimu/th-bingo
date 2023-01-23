@@ -11,8 +11,8 @@ data class LinkDataSc(
     val endMsB: Long
 ) {
     constructor(data: LinkData) : this(
-        data.linkIdxA,
-        data.linkIdxB,
+        data.linkIdxA.toArray(arrayOf<UInt>()) ?: arrayOf<UInt>(),
+        data.linkIdxB.toArray(arrayOf<UInt>()) ?: arrayOf<UInt>(),
         data.startMsA,
         data.endMsA,
         data.startMsB,

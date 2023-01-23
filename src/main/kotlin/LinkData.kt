@@ -1,12 +1,12 @@
 package org.tfcc.bingo
 
 data class LinkData(
-    val linkIdxA: Array<UInt>,
-    val linkIdxB: Array<UInt>,
-    val startMsA: Long,
-    val endMsA: Long,
-    val startMsB: Long,
-    val endMsB: Long
+    var linkIdxA: ArrayList<Int>,
+    var linkIdxB: ArrayList<Int>,
+    var startMsA: Long,
+    var endMsA: Long,
+    var startMsB: Long,
+    var endMsB: Long
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -14,8 +14,8 @@ data class LinkData(
 
         other as LinkData
 
-        if (!linkIdxA.contentEquals(other.linkIdxA)) return false
-        if (!linkIdxB.contentEquals(other.linkIdxB)) return false
+        if (linkIdxA != other.linkIdxA) return false
+        if (linkIdxB != other.linkIdxB) return false
         if (startMsA != other.startMsA) return false
         if (endMsA != other.endMsA) return false
         if (startMsB != other.startMsB) return false
@@ -25,8 +25,8 @@ data class LinkData(
     }
 
     override fun hashCode(): Int {
-        var result = linkIdxA.contentHashCode()
-        result = 31 * result + linkIdxB.contentHashCode()
+        var result = linkIdxA.hashCode()
+        result = 31 * result + linkIdxB.hashCode()
         result = 31 * result + startMsA.hashCode()
         result = 31 * result + endMsA.hashCode()
         result = 31 * result + startMsB.hashCode()
