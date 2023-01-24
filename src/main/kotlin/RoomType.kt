@@ -8,6 +8,7 @@ sealed interface RoomType {
 
     @Throws(HandlerException::class)
     fun handleNextRound(room: Room) {
+        throw HandlerException("不支持下一回合的游戏类型")
     }
 
     fun canPause(): Boolean

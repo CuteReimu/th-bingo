@@ -1,10 +1,39 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
+import org.tfcc.bingo.Store
 
 data class StopGameCs(val winner: Int) : Handler {
-    override fun handle(ctx: ChannelHandlerContext, token: String?, protoName: String) {
-        TODO("Not yet implemented")
+    @Throws(HandlerException::class)
+    override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
+        if (winner != -1 && winner != 0 && winner != 1)
+            throw HandlerException("winner不正确")
+        val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
+        if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
+        val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
+        if (room.host != token)
+            throw HandlerException("你不是房主")
+        else if (!room.started)
+            throw HandlerException("游戏还没开始")
+        if (winner >= 0) {
+            room.score!![winner]++
+            if (room.score!![winner] >= room.needWin)
+                room.locked = false
+            room.lastWinner = winner + 1
+        }
+        room.started = false
+        room.spells = null
+        room.startMs = 0
+        room.gameTime = 0U
+        room.countDown = 0U
+        room.spellStatus = null
+        room.totalPauseMs = 0
+        room.pauseBeginMs = 0
+        room.bpData = null
+        Store.putRoom(room)
+        if (winner == -1)
+            Store.notifyPlayerInfo(token, protoName)
+        else
+            Store.notifyPlayerInfo(token, protoName, winner)
     }
-
 }

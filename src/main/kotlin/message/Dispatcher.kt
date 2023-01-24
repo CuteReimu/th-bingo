@@ -83,7 +83,7 @@ object Dispatcher {
                 }
                 val handler = gson.fromJson(gson.toJson(m.data), cls)
                 try {
-                    handler.handle(ctx, token, m.name)
+                    handler.handle(ctx, token ?: "", m.name)
                 } catch (e: HandlerException) {
                     logger.error("handle failed: ${m.name}, error: ", e)
                     ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))

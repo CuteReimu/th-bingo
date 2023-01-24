@@ -10,7 +10,7 @@ object RoomTypeBP : RoomType {
 
     override fun onStart(room: Room) {
         room.bpData = BpData(
-            whoseTurn = room.lastWinner?.minus(1) ?: ThreadLocalRandom.current().nextInt(2),
+            whoseTurn = if (room.lastWinner > 0) room.lastWinner - 1 else ThreadLocalRandom.current().nextInt(2),
             banPick = 1,
             round = 0U,
             lessThan4 = false

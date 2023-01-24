@@ -45,7 +45,7 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
         val request = frame.text()
         logger.debug("服务端收到${ctx.channel().id().asShortText()}：$request")
         Dispatcher.handle(ctx, request)
-        val tws = TextWebSocketFrame("${Date()}${ctx.channel().id()}：$request")
+//        val tws = TextWebSocketFrame("${Date()}${ctx.channel().id()}：$request")
         // 返回
 //        ctx.channel().writeAndFlush(tws)
     }

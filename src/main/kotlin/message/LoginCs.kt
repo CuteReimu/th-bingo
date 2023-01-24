@@ -7,7 +7,7 @@ import org.tfcc.bingo.Supervisor
 
 data class LoginCs(val token: String?) : Handler {
     @Throws(HandlerException::class)
-    override fun handle(ctx: ChannelHandlerContext, token: String?, protoName: String) {
+    override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (this.token.isNullOrEmpty() || this.token.length > 128 || !this.token.isLetterOrDigit()) {
             ctx.writeMessage(Message(protoName, ErrorSc(400, "invalid token")))
             return
@@ -16,7 +16,7 @@ data class LoginCs(val token: String?) : Handler {
             throw HandlerException("already online")
         }
         if (Store.getPlayer(this.token) == null) {
-            Store.putPlayer(Player(this.token, null, null))
+            Store.putPlayer(Player(this.token))
         }
         Supervisor.add(ctx.channel(), this.token)
         ctx.writeMessage(Store.buildPlayerInfo(this.token))

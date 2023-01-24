@@ -7,7 +7,7 @@ data class CreateRoomCs(
     val rid: String,
     val type: Int
 ) : Handler {
-    override fun handle(ctx: ChannelHandlerContext, token: String?, protoName: String) {
+    override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         TODO("Not yet implemented")
     }
 

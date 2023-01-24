@@ -14,9 +14,9 @@ data class SpellListSc(
     val banPick: Int,
     val totalPauseTime: Long?,
     val pauseBeginMs: Long?,
-    val status: Array<Int>,
+    val status: Array<Int>?,
     val phase: Int,
-    val link: LinkData
+    val linkData: LinkData?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -36,7 +36,7 @@ data class SpellListSc(
         if (pauseBeginMs != other.pauseBeginMs) return false
         if (!status.contentEquals(other.status)) return false
         if (phase != other.phase) return false
-        if (link != other.link) return false
+        if (linkData != other.linkData) return false
 
         return true
     }
@@ -54,7 +54,7 @@ data class SpellListSc(
         result = 31 * result + (pauseBeginMs?.hashCode() ?: 0)
         result = 31 * result + status.contentHashCode()
         result = 31 * result + phase
-        result = 31 * result + link.hashCode()
+        result = 31 * result + linkData.hashCode()
         return result
     }
 }

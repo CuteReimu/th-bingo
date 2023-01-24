@@ -22,9 +22,9 @@ object RoomTypeNormal : RoomType {
         val now = Date().time
         if (room.pauseBeginMs != 0L && token != room.host)
             throw HandlerException("暂停中，不能操作")
-        if (room.startMs!! <= now - room.gameTime!!.toLong() * 60000L - room.countDown!!.toLong() * 1000L - room.totalPauseMs!!)
+        if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.countDown.toLong() * 1000L - room.totalPauseMs)
             throw HandlerException("游戏时间到")
-        if (room.startMs!! > now - room.countDown!!.toLong() * 1000L && !status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
+        if (room.startMs > now - room.countDown.toLong() * 1000L && !status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
             throw HandlerException("倒计时还没结束")
         return when (token) {
             room.host ->

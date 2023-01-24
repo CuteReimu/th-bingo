@@ -5,13 +5,10 @@ import org.tfcc.bingo.message.Message
 import org.tfcc.bingo.message.RoomInfoSc
 import org.tfcc.bingo.message.writeMessage
 import java.io.*
-import java.util.concurrent.Callable
-import java.util.concurrent.Executors
 
 object Store {
     private val logger = Logger.getLogger(this.javaClass)
     private const val FILE_NAME = "store.dat"
-    private val pool = Executors.newSingleThreadExecutor()
     private val playerCache = HashMap<String, Player>()
     private val roomCache = HashMap<String, Room>()
 
@@ -29,50 +26,54 @@ object Store {
         }
     }
 
-    fun putPlayer(p: Player) {
-        val player = p.copy()
-        pool.submit {
-            playerCache[player.token] = player
-            var file: ObjectOutputStream? = null
-            try {
-                file = ObjectOutputStream(FileOutputStream(FILE_NAME))
-                file.writeObject(playerCache)
-                file.writeObject(roomCache)
-            } catch (e: IOException) {
-                logger.error(e)
-            } finally {
-                file?.close()
-            }
+    fun putPlayer(player: Player) { // Player 的成员变量全是 val ，因此不需要 copy()
+        playerCache[player.token] = player
+        var file: ObjectOutputStream? = null
+        try {
+            file = ObjectOutputStream(BufferedOutputStream(FileOutputStream(FILE_NAME)))
+            file.writeObject(playerCache)
+            file.writeObject(roomCache)
+        } catch (e: IOException) {
+            logger.error(e)
+        } finally {
+            file?.close()
         }
     }
 
     fun getPlayer(token: String): Player? {
-        return pool.submit(Callable { playerCache[token] }).get()
+        return playerCache[token]
     }
 
-    fun putRoom(r: Room) {
-        val room = r.copy()
-        pool.submit {
-            roomCache[room.roomId] = room
-            var file: ObjectOutputStream? = null
-            try {
-                file = ObjectOutputStream(FileOutputStream(FILE_NAME))
-                file.writeObject(playerCache)
-                file.writeObject(roomCache)
-            } catch (e: IOException) {
-                logger.error(e)
-            } finally {
-                file?.close()
-            }
+    fun putRoom(room: Room) {
+        roomCache[room.roomId] = room.copy()
+        var file: ObjectOutputStream? = null
+        try {
+            file = ObjectOutputStream(BufferedOutputStream(FileOutputStream(FILE_NAME)))
+            file.writeObject(playerCache)
+            file.writeObject(roomCache)
+        } catch (e: IOException) {
+            logger.error(e)
+        } finally {
+            file?.close()
         }
     }
 
     fun getRoom(roomId: String): Room? {
-        return pool.submit(Callable { roomCache[roomId] }).get()
+        return roomCache[roomId]
     }
 
     fun removeRoom(roomId: String) {
-        pool.submit(Callable { roomCache.remove(roomId) })
+        roomCache.remove(roomId)
+        var file: ObjectOutputStream? = null
+        try {
+            file = ObjectOutputStream(BufferedOutputStream(FileOutputStream(FILE_NAME)))
+            file.writeObject(playerCache)
+            file.writeObject(roomCache)
+        } catch (e: IOException) {
+            logger.error(e)
+        } finally {
+            file?.close()
+        }
     }
 
     fun buildPlayerInfo(token: String): Message {
@@ -95,7 +96,12 @@ object Store {
         val player = getPlayer(token) ?: return null
         if (player.roomId.isNullOrEmpty()) return null
         val room = getRoom(player.roomId) ?: return null
-        return room.players
+        val l = ArrayList<String>()
+        if (room.host.isNotEmpty()) l.add(room.host)
+        for (token1 in room.players ?: return arrayOf(room.host)) {
+            if (token1.isNotEmpty() && !l.contains(token1)) l.add(token1)
+        }
+        return l.toArray(arrayOf<String>())
     }
 
     fun notifyPlayerInfo(token: String, reply: String?) {
@@ -146,8 +152,8 @@ object Store {
 
     fun packRoomInfo(room: Room): RoomInfoSc? {
         getPlayer(room.host) ?: return null
-        val players = Array(room.players?.size ?: 0) { i ->
-            getPlayer(room.players?.get(i) ?: return@Array "")?.name ?: ""
+        val players = Array(room.players!!.size) { i ->
+            getPlayer(room.players!![i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,
@@ -163,8 +169,8 @@ object Store {
 
     fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
         getPlayer(room.host) ?: return null
-        val players = Array(room.players?.size ?: 0) { i ->
-            getPlayer(room.players?.get(i) ?: return@Array "")?.name ?: ""
+        val players = Array(room.players!!.size) { i ->
+            getPlayer(room.players!![i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,

@@ -3,6 +3,8 @@ package org.tfcc.bingo
 import java.io.Serializable
 
 data class Player(val token: String, val name: String?, val roomId: String?) : Serializable {
+    constructor(token: String) : this(token, null, null)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
