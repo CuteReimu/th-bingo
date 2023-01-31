@@ -4,7 +4,9 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.codec.http.websocketx.*
 import org.apache.log4j.Logger
+import org.tfcc.bingo.Supervisor
 import org.tfcc.bingo.message.Dispatcher
+import org.tfcc.bingo.message.LeaveRoomCs
 import java.util.*
 
 
@@ -21,14 +23,14 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
     override fun channelActive(ctx: ChannelHandlerContext) {
         //添加连接
         logger.debug("客户端加入连接：" + ctx.channel())
-        ChannelSupervise.addChannel(ctx.channel())
     }
 
     @Throws(Exception::class)
     override fun channelInactive(ctx: ChannelHandlerContext) {
         //断开连接
         logger.debug("客户端断开连接：" + ctx.channel())
-        ChannelSupervise.removeChannel(ctx.channel())
+        val token = Supervisor.removeByPlayerToken(ctx.channel().id()) ?: return
+        LeaveRoomCs().handle(ctx, token, "")
     }
 
     @Throws(Exception::class)
@@ -43,10 +45,7 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
         }
         // 返回应答消息
         val request = frame.text()
-        logger.debug("服务端收到${ctx.channel().id().asShortText()}：$request")
+        logger.debug("收到${ctx.channel().id().asShortText()}：$request")
         Dispatcher.handle(ctx, request)
-//        val tws = TextWebSocketFrame("${Date()}${ctx.channel().id()}：$request")
-        // 返回
-//        ctx.channel().writeAndFlush(tws)
     }
 }

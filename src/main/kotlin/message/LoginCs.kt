@@ -8,7 +8,7 @@ import org.tfcc.bingo.Supervisor
 data class LoginCs(val token: String?) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
-        if (this.token.isNullOrEmpty() || this.token.length > 128 || !this.token.isLetterOrDigit()) {
+        if (this.token.isNullOrEmpty() || this.token.toByteArray().size > 128 || !this.token.isLetterOrDigit()) {
             ctx.writeMessage(Message(protoName, ErrorSc(400, "invalid token")))
             return
         }

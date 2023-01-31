@@ -22,7 +22,7 @@ fun ChannelHandlerContext.writeMessage(message: Message): ChannelFuture {
             )
         } else message
     )
-    Dispatcher.logger.debug("服务器发给${channel().id().asShortText()}：$text")
+    Dispatcher.logger.debug("发给${channel().id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 
@@ -37,7 +37,7 @@ fun Channel.writeMessage(message: Message): ChannelFuture {
             )
         } else message
     )
-    Dispatcher.logger.debug("服务器发给${id().asShortText()}：$text")
+    Dispatcher.logger.debug("发给${id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 
