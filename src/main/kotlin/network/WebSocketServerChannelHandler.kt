@@ -6,6 +6,7 @@ import io.netty.handler.codec.http.websocketx.*
 import org.apache.log4j.Logger
 import org.tfcc.bingo.Supervisor
 import org.tfcc.bingo.message.Dispatcher
+import org.tfcc.bingo.message.HandlerException
 import org.tfcc.bingo.message.LeaveRoomCs
 import java.util.*
 
@@ -29,7 +30,11 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
         //断开连接
         logger.debug("客户端断开连接：" + ctx.channel())
         val token = Supervisor.removeByPlayerToken(ctx.channel().id()) ?: return
-        LeaveRoomCs().handle(ctx, token, "")
+        try {
+            LeaveRoomCs().handle(ctx, token, "")
+        } catch (_: HandlerException) {
+            // Ignore
+        }
     }
 
     @Throws(Exception::class)
