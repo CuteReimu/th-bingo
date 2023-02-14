@@ -81,7 +81,11 @@ object Dispatcher {
                         return@submit
                     }
                 }
-                val handler = gson.fromJson(gson.toJson(m.data), cls)
+                val handler =
+                    if (m.data != null)
+                        gson.fromJson(gson.toJson(m.data), cls)
+                    else
+                        cls.getDeclaredConstructor().newInstance()
                 try {
                     handler.handle(ctx, token ?: "", m.name)
                 } catch (e: HandlerException) {

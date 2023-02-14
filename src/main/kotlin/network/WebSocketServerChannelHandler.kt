@@ -15,7 +15,6 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
 
     @Throws(Exception::class)
     override fun channelRead0(ctx: ChannelHandlerContext, msg: WebSocketFrame) {
-        logger.debug("收到消息：$msg")
         handlerWebSocketFrame(ctx, msg)
     }
 
