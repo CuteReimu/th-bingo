@@ -27,9 +27,9 @@ data class StartGameCs(
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
         if (room.host != token)
             throw HandlerException("你不是房主")
-        else if (!room.started)
+        else if (room.started)
             throw HandlerException("游戏已经开始")
-        else if (!room.players!!.contains(""))
+        else if (room.players!!.contains(""))
             throw HandlerException("玩家没满")
         room.started = true
         room.spells = room.type.randSpells(games, ranks)
