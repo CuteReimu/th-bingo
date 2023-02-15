@@ -22,12 +22,12 @@ class GetSpellsCs : Handler {
                     gameTime = room.gameTime,
                     countdown = room.countDown,
                     needWin = room.needWin,
-                    whoseTurn = room.bpData!!.whoseTurn,
-                    banPick = room.bpData!!.banPick,
+                    whoseTurn = room.bpData?.whoseTurn ?: 0,
+                    banPick = room.bpData?.banPick ?: 0,
                     totalPauseTime = room.totalPauseMs,
                     pauseBeginMs = room.pauseBeginMs,
                     status = IntArray(room.spellStatus!!.size) { i -> room.spellStatus!![i].value },
-                    linkData = room.linkData!!,
+                    linkData = room.linkData,
                     phase = room.phase
                 )
             )

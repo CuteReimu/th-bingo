@@ -15,7 +15,7 @@ class NextRoundCs : Handler {
         Store.notifyPlayersInRoom(
             token,
             protoName,
-            Message(NextRoundSc(room.bpData!!.whoseTurn, room.bpData!!.banPick))
+            Message(NextRoundSc(room.bpData?.whoseTurn ?: 0, room.bpData?.banPick ?: 0))
         )
     }
 }
