@@ -3,21 +3,24 @@ package org.tfcc.bingo.message
 import org.tfcc.bingo.LinkData
 
 data class LinkDataSc(
-    val linkIdxA: Array<UInt>,
-    val linkIdxB: Array<UInt>,
+    val linkIdxA: IntArray,
+    val linkIdxB: IntArray,
     val startMsA: Long,
     val endMsA: Long,
     val startMsB: Long,
     val endMsB: Long
 ) {
     constructor(data: LinkData) : this(
-        data.linkIdxA.toArray(arrayOf<UInt>()) ?: arrayOf<UInt>(),
-        data.linkIdxB.toArray(arrayOf<UInt>()) ?: arrayOf<UInt>(),
+        IntArray(data.linkIdxA.size),
+        IntArray(data.linkIdxB.size),
         data.startMsA,
         data.endMsA,
         data.startMsB,
         data.endMsB
-    )
+    ) {
+        for ((i, v) in data.linkIdxA.withIndex()) linkIdxA[i] = v
+        for ((i, v) in data.linkIdxB.withIndex()) linkIdxB[i] = v
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -44,4 +47,5 @@ data class LinkDataSc(
         result = 31 * result + endMsB.hashCode()
         return result
     }
+
 }

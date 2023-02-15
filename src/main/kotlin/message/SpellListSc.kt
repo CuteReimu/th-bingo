@@ -7,14 +7,14 @@ data class SpellListSc(
     val spells: Array<Spell>,
     val time: Long,
     val startTime: Long,
-    val gameTime: UInt, // 游戏总时间（不含倒计时），单位：分
-    val countdown: UInt, // 倒计时，单位：秒
-    val needWin: UInt,
+    val gameTime: Int, // 游戏总时间（不含倒计时），单位：分
+    val countdown: Int, // 倒计时，单位：秒
+    val needWin: Int,
     val whoseTurn: Int,
     val banPick: Int,
     val totalPauseTime: Long?,
     val pauseBeginMs: Long?,
-    val status: Array<Int>?,
+    val status: IntArray?,
     val phase: Int,
     val linkData: LinkData?
 ) {

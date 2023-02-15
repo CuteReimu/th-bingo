@@ -85,7 +85,7 @@ object Store {
         return Message(data)
     }
 
-    fun buildPlayerInfo(token: String, winnerIdx: Int): Message {
+    private fun buildPlayerInfo(token: String, winnerIdx: Int): Message {
         val player = getPlayer(token) ?: return Message("room_info_sc", null, null, null)
         player.roomId ?: return Message("room_info_sc", null, player.name, null)
         val room = getRoom(player.roomId) ?: return Message("room_info_sc", null, player.name, null)
@@ -151,15 +151,15 @@ object Store {
         }
     }
 
-    fun packRoomInfo(room: Room): RoomInfoSc? {
-        getPlayer(room.host) ?: return null
+    private fun packRoomInfo(room: Room): RoomInfoSc? {
+        val host = getPlayer(room.host)?.name ?: return null
         val players = Array(room.players!!.size) { i ->
             getPlayer(room.players!![i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,
             type = room.roomType,
-            host = room.host,
+            host = host,
             names = players,
             changeCardCount = room.changeCardCount,
             started = room.started,
@@ -168,7 +168,7 @@ object Store {
         )
     }
 
-    fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
+    private fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
         getPlayer(room.host) ?: return null
         val players = Array(room.players!!.size) { i ->
             getPlayer(room.players!![i])?.name ?: ""

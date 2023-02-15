@@ -11,13 +11,13 @@ data class Room(
     var started: Boolean,
     var spells: Array<Spell>?,
     var startMs: Long,
-    var gameTime: UInt, // 比赛时长，分
-    var countDown: UInt, // 倒计时，秒
+    var gameTime: Int, // 比赛时长，分
+    var countDown: Int, // 倒计时，秒
     var spellStatus: Array<SpellStatus>?, // 每个格子的状态
-    var score: Array<UInt>?, // 比分
+    var score: IntArray?, // 比分
     var locked: Boolean, // 连续多局就需要锁上
-    var needWin: UInt, // 需要赢几局才算赢
-    var changeCardCount: Array<UInt>?,
+    var needWin: Int, // 需要赢几局才算赢
+    var changeCardCount: IntArray?,
     var totalPauseMs: Long, // 累计暂停时长，毫秒
     var pauseBeginMs: Long, // 开始暂停时刻，毫秒，0表示没暂停
     var lastWinner: Int, // 上一场是谁赢，1或2
@@ -78,12 +78,12 @@ data class Room(
         result = 31 * result + started.hashCode()
         result = 31 * result + (spells?.contentHashCode() ?: 0)
         result = 31 * result + startMs.hashCode()
-        result = 31 * result + gameTime.hashCode()
-        result = 31 * result + countDown.hashCode()
+        result = 31 * result + gameTime
+        result = 31 * result + countDown
         result = 31 * result + (spellStatus?.contentHashCode() ?: 0)
         result = 31 * result + (score?.contentHashCode() ?: 0)
         result = 31 * result + locked.hashCode()
-        result = 31 * result + needWin.hashCode()
+        result = 31 * result + needWin
         result = 31 * result + (changeCardCount?.contentHashCode() ?: 0)
         result = 31 * result + totalPauseMs.hashCode()
         result = 31 * result + pauseBeginMs.hashCode()

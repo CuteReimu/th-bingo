@@ -3,10 +3,10 @@ package org.tfcc.bingo.message
 import io.netty.channel.ChannelHandlerContext
 import org.tfcc.bingo.Store
 
-data class ChangeCardCountCs(val counts: Array<UInt>) : Handler {
+data class ChangeCardCountCs(val counts: IntArray) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
-        if (counts.size != 2 || counts[0] > 9999U || counts[1] > 9999U)
+        if (counts.size != 2 || counts[0] <= 0 || counts[0] > 9999 || counts[1] <= 0 || counts[1] > 9999)
             throw HandlerException("cnt参数错误")
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")

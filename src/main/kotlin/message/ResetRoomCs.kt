@@ -12,10 +12,10 @@ class ResetRoomCs : Handler {
         if (room.host != token) throw HandlerException("你不是房主")
         if (room.started) throw HandlerException("游戏已开始，不能重置房间")
         for (i in room.score!!.indices)
-            room.score!![i] = 0U
+            room.score!![i] = 0
         room.locked = false
         for (i in room.changeCardCount!!.indices)
-            room.changeCardCount!![i] = 0U
+            room.changeCardCount!![i] = 0
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)
     }

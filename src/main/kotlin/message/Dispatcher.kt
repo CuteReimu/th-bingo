@@ -1,6 +1,8 @@
 package org.tfcc.bingo.message
 
+import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import io.netty.channel.Channel
 import io.netty.channel.ChannelFuture
@@ -45,7 +47,7 @@ object Dispatcher {
     val logger: Logger = Logger.getLogger(Dispatcher.javaClass)
     private val pool = Executors.newSingleThreadExecutor()
     private val cache = ConcurrentHashMap<String, Class<Handler>>()
-    val gson = Gson()
+    val gson: Gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
 
     fun handle(ctx: ChannelHandlerContext, text: String) {
         try {

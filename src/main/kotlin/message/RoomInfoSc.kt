@@ -5,9 +5,9 @@ data class RoomInfoSc(
     val type: Int,
     val host: String,
     val names: Array<String>?,
-    val changeCardCount: Array<UInt>?,
+    val changeCardCount: IntArray?,
     val started: Boolean?,
-    val score: Array<UInt>?,
+    val score: IntArray?,
     val winner: Int?
 ) {
     override fun equals(other: Any?): Boolean {
@@ -19,10 +19,19 @@ data class RoomInfoSc(
         if (rid != other.rid) return false
         if (type != other.type) return false
         if (host != other.host) return false
-        if (!names.contentEquals(other.names)) return false
-        if (!changeCardCount.contentEquals(other.changeCardCount)) return false
+        if (names != null) {
+            if (other.names == null) return false
+            if (!names.contentEquals(other.names)) return false
+        } else if (other.names != null) return false
+        if (changeCardCount != null) {
+            if (other.changeCardCount == null) return false
+            if (!changeCardCount.contentEquals(other.changeCardCount)) return false
+        } else if (other.changeCardCount != null) return false
         if (started != other.started) return false
-        if (!score.contentEquals(other.score)) return false
+        if (score != null) {
+            if (other.score == null) return false
+            if (!score.contentEquals(other.score)) return false
+        } else if (other.score != null) return false
         if (winner != other.winner) return false
 
         return true
@@ -32,11 +41,11 @@ data class RoomInfoSc(
         var result = rid.hashCode()
         result = 31 * result + type
         result = 31 * result + host.hashCode()
-        result = 31 * result + names.contentHashCode()
-        result = 31 * result + changeCardCount.contentHashCode()
-        result = 31 * result + started.hashCode()
-        result = 31 * result + score.contentHashCode()
-        result = 31 * result + winner.hashCode()
+        result = 31 * result + (names?.contentHashCode() ?: 0)
+        result = 31 * result + (changeCardCount?.contentHashCode() ?: 0)
+        result = 31 * result + (started?.hashCode() ?: 0)
+        result = 31 * result + (score?.contentHashCode() ?: 0)
+        result = 31 * result + (winner ?: 0)
         return result
     }
 }

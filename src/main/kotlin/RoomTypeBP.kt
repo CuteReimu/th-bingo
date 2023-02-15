@@ -12,7 +12,7 @@ object RoomTypeBP : RoomType {
         room.bpData = BpData(
             whoseTurn = if (room.lastWinner > 0) room.lastWinner - 1 else ThreadLocalRandom.current().nextInt(2),
             banPick = 1,
-            round = 0U,
+            round = 0,
             lessThan4 = false
         )
     }
@@ -56,40 +56,40 @@ object RoomTypeBP : RoomType {
     private fun nextRound(room: Room) {
         val bp = room.bpData!!
         when (++bp.round) {
-            1U -> bp.whoseTurn = 1 - bp.whoseTurn
-            2U -> {
+            1 -> bp.whoseTurn = 1 - bp.whoseTurn
+            2 -> {
                 bp.whoseTurn = 1 - bp.whoseTurn
                 bp.banPick = 0
             }
 
-            3U -> bp.whoseTurn = 1 - bp.whoseTurn
-            4U -> {}
-            5U -> {
+            3 -> bp.whoseTurn = 1 - bp.whoseTurn
+            4 -> {}
+            5 -> {
                 bp.whoseTurn = 1 - bp.whoseTurn
                 bp.banPick = 2
             }
 
-            6U -> bp.banPick = 1
-            7U -> bp.whoseTurn = 1 - bp.whoseTurn
-            8U -> {}
-            9U -> {
+            6 -> bp.banPick = 1
+            7 -> bp.whoseTurn = 1 - bp.whoseTurn
+            8 -> {}
+            9 -> {
                 bp.whoseTurn = 1 - bp.whoseTurn
                 bp.banPick = 0
             }
 
-            10U -> {}
-            11U -> bp.whoseTurn = 1 - bp.whoseTurn
-            12U -> {
+            10 -> {}
+            11 -> bp.whoseTurn = 1 - bp.whoseTurn
+            12 -> {
                 bp.whoseTurn = 1 - bp.whoseTurn
                 bp.banPick = 2
             }
 
-            13U -> bp.banPick = 1
-            14U -> {}
-            15U -> bp.whoseTurn = 1 - bp.whoseTurn
-            16U -> bp.banPick = 0
+            13 -> bp.banPick = 1
+            14 -> {}
+            15 -> bp.whoseTurn = 1 - bp.whoseTurn
+            16 -> bp.banPick = 0
             else -> {
-                if (!bp.lessThan4 && bp.round % 5U == 1U) {
+                if (!bp.lessThan4 && bp.round % 5 == 1) {
                     var count = 0
                     for (status in room.spellStatus!!) {
                         if (status == SpellStatus.NONE)
@@ -106,18 +106,18 @@ object RoomTypeBP : RoomType {
                         bp.banPick = 2
                     }
                 } else {
-                    when (bp.round % 5U) {
-                        0U -> {
+                    when (bp.round % 5) {
+                        0 -> {
                             bp.whoseTurn = 1 - bp.whoseTurn
                             bp.banPick = 2
                         }
 
-                        1U -> {
+                        1 -> {
                             bp.whoseTurn = 1 - bp.whoseTurn
                             bp.banPick = 0
                         }
 
-                        3U -> bp.whoseTurn = 1 - bp.whoseTurn
+                        3 -> bp.whoseTurn = 1 - bp.whoseTurn
                     }
                 }
             }

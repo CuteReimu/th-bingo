@@ -26,7 +26,7 @@ class GetSpellsCs : Handler {
                     banPick = room.bpData!!.banPick,
                     totalPauseTime = room.totalPauseMs,
                     pauseBeginMs = room.pauseBeginMs,
-                    status = Array(room.spellStatus!!.size) { i -> room.spellStatus!![i].value },
+                    status = IntArray(room.spellStatus!!.size) { i -> room.spellStatus!![i].value },
                     linkData = room.linkData!!,
                     phase = room.phase
                 )

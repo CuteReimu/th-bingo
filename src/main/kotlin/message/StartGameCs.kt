@@ -6,21 +6,22 @@ import org.tfcc.bingo.Store
 import java.util.*
 
 data class StartGameCs(
-    val gameTime: UInt, // 游戏总时间（不含倒计时），单位：分
-    val countdown: UInt, // 倒计时，单位：秒
+    val gameTime: Int, // 游戏总时间（不含倒计时），单位：分
+    val countdown: Int, // 倒计时，单位：秒
     val games: Array<String>,
     val ranks: Array<String>,
-    var needWin: UInt
+    var needWin: Int
 ) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
-        if (gameTime == 0U) throw HandlerException("游戏时间不能为0")
-        if (gameTime > 1440U) throw HandlerException("游戏时间太长")
-        if (countdown > 86400U) throw HandlerException("倒计时太长")
+        if (gameTime <= 0) throw HandlerException("游戏时间必须大于0")
+        if (gameTime > 1440) throw HandlerException("游戏时间太长")
+        if (countdown < 0) throw HandlerException("倒计时不能小于0")
+        if (countdown > 86400) throw HandlerException("倒计时太长")
         if (games.size > 99) throw HandlerException("选择的作品数太多")
         if (ranks.size > 6) throw HandlerException("选择的难度数太多")
-        if (needWin > 99U) throw HandlerException("需要胜场的数值不正确")
-        if (needWin == 0U) needWin = 1U
+        if (needWin > 99) throw HandlerException("需要胜场的数值不正确")
+        if (needWin <= 0) needWin = 1
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
@@ -35,7 +36,7 @@ data class StartGameCs(
         room.startMs = Date().time
         room.countDown = countdown
         room.gameTime = gameTime
-        room.spellStatus = Array(room.spells!!.size) { _ -> SpellStatus.NONE }
+        room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
         room.needWin = needWin
         room.locked = true
         room.type.onStart(room)
@@ -81,11 +82,11 @@ data class StartGameCs(
     }
 
     override fun hashCode(): Int {
-        var result = gameTime.hashCode()
-        result = 31 * result + countdown.hashCode()
+        var result = gameTime
+        result = 31 * result + countdown
         result = 31 * result + games.contentHashCode()
         result = 31 * result + ranks.contentHashCode()
-        result = 31 * result + needWin.hashCode()
+        result = 31 * result + needWin
         return result
     }
 }

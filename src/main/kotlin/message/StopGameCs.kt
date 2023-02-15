@@ -24,8 +24,8 @@ data class StopGameCs(val winner: Int) : Handler {
         room.started = false
         room.spells = null
         room.startMs = 0
-        room.gameTime = 0U
-        room.countDown = 0U
+        room.gameTime = 0
+        room.countDown = 0
         room.spellStatus = null
         room.totalPauseMs = 0
         room.pauseBeginMs = 0
