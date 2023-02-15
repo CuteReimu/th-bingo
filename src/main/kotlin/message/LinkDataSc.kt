@@ -11,16 +11,13 @@ data class LinkDataSc(
     val endMsB: Long
 ) {
     constructor(data: LinkData) : this(
-        IntArray(data.linkIdxA.size),
-        IntArray(data.linkIdxB.size),
+        data.linkIdxA.toIntArray(),
+        data.linkIdxB.toIntArray(),
         data.startMsA,
         data.endMsA,
         data.startMsB,
         data.endMsB
-    ) {
-        for ((i, v) in data.linkIdxA.withIndex()) linkIdxA[i] = v
-        for ((i, v) in data.linkIdxB.withIndex()) linkIdxB[i] = v
-    }
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
