@@ -31,8 +31,8 @@ data class StartGameCs(
             throw HandlerException("游戏已经开始")
         else if (room.players!!.contains(""))
             throw HandlerException("玩家没满")
-        room.started = true
         room.spells = room.type.randSpells(games, ranks)
+        room.started = true
         room.startMs = Date().time
         room.countDown = countdown
         room.gameTime = gameTime
