@@ -4,7 +4,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.tfcc.bingo.message.HandlerException
 import java.io.File
 import java.io.FileInputStream
-import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.asKotlinRandom
 
@@ -25,28 +24,28 @@ object SpellFactory {
             for (i in 1..sheet.lastRowNum) {
                 val row = sheet.getRow(i)
                 if (row.lastCellNum >= 6) {
-                    val star = row.getCell(6).rawValue.toInt()
-                    val inGame = games.contains(row.getCell(1).rawValue.trim()) &&
-                            (ranks == null || ranks.contains(row.getCell(5).rawValue.trim()))
+                    val star = row.getCell(6).numericCellValue.toInt()
+                    val inGame = games.contains(row.getCell(1).numericCellValue.toInt().toString()) &&
+                            (ranks == null || ranks.contains(row.getCell(5).stringCellValue.trim()))
                     if (star in 1..3 && inGame) {
                         spells[star - 1].add(
                             Spell(
-                                game = row.getCell(1).rawValue,
-                                name = row.getCell(3).rawValue,
-                                rank = row.getCell(5).rawValue,
+                                game = row.getCell(1).numericCellValue.toInt().toString(),
+                                name = row.getCell(3).stringCellValue,
+                                rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).rawValue
+                                desc = row.getCell(4).stringCellValue
                             )
                         )
                     }
                     if (star == 3 && !inGame) {
                         spells[3].add(
                             Spell(
-                                game = row.getCell(1).rawValue,
-                                name = row.getCell(3).rawValue,
-                                rank = row.getCell(5).rawValue,
+                                game = row.getCell(1).numericCellValue.toInt().toString(),
+                                name = row.getCell(3).stringCellValue,
+                                rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).rawValue
+                                desc = row.getCell(4).stringCellValue
                             )
                         )
                     }
@@ -100,28 +99,28 @@ object SpellFactory {
             for (i in 1..sheet.lastRowNum) {
                 val row = sheet.getRow(i)
                 if (row.lastCellNum >= 6) {
-                    val star = row.getCell(6).rawValue.toInt()
-                    val inGame = games.contains(row.getCell(1).rawValue.trim()) &&
-                            (ranks == null || ranks.contains(row.getCell(5).rawValue.trim()))
+                    val star = row.getCell(6).numericCellValue.toInt()
+                    val inGame = games.contains(row.getCell(1).numericCellValue.toInt().toString()) &&
+                            (ranks == null || ranks.contains(row.getCell(5).stringCellValue.trim()))
                     if (star in 1..3 && inGame) {
                         spells[star - 1].add(
                             Spell(
-                                game = row.getCell(1).rawValue,
-                                name = row.getCell(3).rawValue,
-                                rank = row.getCell(5).rawValue,
+                                game = row.getCell(1).numericCellValue.toInt().toString(),
+                                name = row.getCell(3).stringCellValue,
+                                rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).rawValue
+                                desc = row.getCell(4).stringCellValue
                             )
                         )
                     }
                     if (star == 3 && !inGame) {
                         spells[3].add(
                             Spell(
-                                game = row.getCell(1).rawValue,
-                                name = row.getCell(3).rawValue,
-                                rank = row.getCell(5).rawValue,
+                                game = row.getCell(1).numericCellValue.toInt().toString(),
+                                name = row.getCell(3).stringCellValue,
+                                rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).rawValue
+                                desc = row.getCell(4).stringCellValue
                             )
                         )
                     }
