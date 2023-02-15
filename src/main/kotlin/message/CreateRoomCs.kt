@@ -17,11 +17,7 @@ data class CreateRoomCs(
         if (rid.toByteArray().size > 16) throw HandlerException("房间ID太长")
         if (type < 1 || type > 3) throw HandlerException("不支持的游戏类型")
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
-        if (player.roomId != null) {
-            if (Store.getRoom(player.roomId) != null) {
-                throw HandlerException("已经在房间里了")
-            }
-        }
+        if (player.roomId != null && Store.getRoom(player.roomId) != null) throw HandlerException("已经在房间里了")
         if (Store.getRoom(rid) != null) throw HandlerException("房间已存在")
         Store.putPlayer(Player(token = token, roomId = rid, name = name))
         Store.putRoom(

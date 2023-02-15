@@ -65,6 +65,7 @@ object Dispatcher {
                         cache.putIfAbsent(m.name, cls)
                     }
                 } catch (_: ClassNotFoundException) {
+                    // Ignored
                 }
             }
             if (cls == null) {

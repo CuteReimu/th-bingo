@@ -21,6 +21,7 @@ object Store {
             @Suppress("UNCHECKED_CAST")
             roomCache.putAll(file.readObject() as HashMap<String, Room>)
         } catch (_: FileNotFoundException) {
+            // Ignored
         } finally {
             file?.close()
         }

@@ -4,6 +4,7 @@ import org.tfcc.bingo.message.HandlerException
 
 sealed interface RoomType {
     fun onStart(room: Room) {
+        // Do nothing
     }
 
     @Throws(HandlerException::class)
