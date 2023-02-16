@@ -169,14 +169,14 @@ object Store {
     }
 
     private fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
-        getPlayer(room.host) ?: return null
+        val host = getPlayer(room.host)?.name ?: return null
         val players = Array(room.players!!.size) { i ->
             getPlayer(room.players!![i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,
             type = room.roomType,
-            host = room.host,
+            host = host,
             names = players,
             changeCardCount = room.changeCardCount,
             started = room.started,
