@@ -14,32 +14,32 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
 fun ChannelHandlerContext.writeMessage(message: Message): ChannelFuture {
-    val text = Dispatcher.gson.toJson(
-        if (message.name == null && message.data != null) {
-            Message(
-                Dispatcher.camelToUnderLine(message.data.javaClass.simpleName),
-                message.reply,
-                message.trigger,
-                message.data
-            )
-        } else message
-    )
-    Dispatcher.logger.debug("发给${channel().id().asShortText()}：$text")
+    val finalMessage = if (message.name == null && message.data != null) {
+        Message(
+            Dispatcher.camelToUnderLine(message.data.javaClass.simpleName),
+            message.reply,
+            message.trigger,
+            message.data
+        )
+    } else message
+    val text = Dispatcher.gson.toJson(finalMessage)
+    if (finalMessage.name != "heart_sc")
+        Dispatcher.logger.debug("发给${channel().id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 
 fun Channel.writeMessage(message: Message): ChannelFuture {
-    val text = Dispatcher.gson.toJson(
-        if (message.name == null && message.data != null) {
-            Message(
-                Dispatcher.camelToUnderLine(message.data.javaClass.simpleName),
-                message.reply,
-                message.trigger,
-                message.data
-            )
-        } else message
-    )
-    Dispatcher.logger.debug("发给${id().asShortText()}：$text")
+    val finalMessage = if (message.name == null && message.data != null) {
+        Message(
+            Dispatcher.camelToUnderLine(message.data.javaClass.simpleName),
+            message.reply,
+            message.trigger,
+            message.data
+        )
+    } else message
+    val text = Dispatcher.gson.toJson(finalMessage)
+    if (finalMessage.name != "heart_sc")
+        Dispatcher.logger.debug("发给${id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 
@@ -57,6 +57,8 @@ object Dispatcher {
                 ctx.writeMessage(Message(ErrorSc(400, "illegal request")))
                 return
             }
+            if (m.name != "heart_cs")
+                logger.debug("收到${ctx.channel().id().asShortText()}：$text")
             var cls = cache[m.name]
             if (cls == null) {
                 try {

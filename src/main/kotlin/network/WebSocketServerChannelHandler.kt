@@ -49,7 +49,6 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
         }
         // 返回应答消息
         val request = frame.text()
-        logger.debug("收到${ctx.channel().id().asShortText()}：$request")
         Dispatcher.handle(ctx, request)
     }
 }
