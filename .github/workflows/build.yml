@@ -33,8 +33,3 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
-
-      - name: Test
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
