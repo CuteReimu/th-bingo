@@ -86,16 +86,19 @@ object Dispatcher {
                         return@submit
                     }
                 }
-                val handler =
-                    if (m.data != null)
-                        gson.fromJson(gson.toJson(m.data), cls)
-                    else
-                        cls.getDeclaredConstructor().newInstance()
                 try {
+                    val handler =
+                        if (m.data != null)
+                            gson.fromJson(gson.toJson(m.data), cls)
+                        else
+                            cls.getDeclaredConstructor().newInstance()
                     handler.handle(ctx, token ?: "", m.name)
                 } catch (e: HandlerException) {
                     logger.error("handle failed: ${m.name}, error: ", e)
                     ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
+                } catch (e: JsonSyntaxException) {
+                    logger.error("json unmarshal failed: ${m.name}, error: ", e)
+                    ctx.writeMessage(Message(m.name, ErrorSc(400, e.message)))
                 }
             }
         } catch (e: JsonSyntaxException) {
