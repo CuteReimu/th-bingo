@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom
 
 object RoomTypeBP : RoomType {
     override fun canPause(): Boolean {
-        return false
+        return true
     }
 
     override fun onStart(room: Room) {
