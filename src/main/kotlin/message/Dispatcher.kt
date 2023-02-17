@@ -99,6 +99,9 @@ object Dispatcher {
                 } catch (e: JsonSyntaxException) {
                     logger.error("json unmarshal failed: ${m.name}, error: ", e)
                     ctx.writeMessage(Message(m.name, ErrorSc(400, e.message)))
+                } catch (e: Exception) {
+                    logger.error("handler unknown exception: ${m.name}, error: ", e)
+                    ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
                 }
             }
         } catch (e: JsonSyntaxException) {
