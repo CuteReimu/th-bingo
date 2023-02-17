@@ -9,6 +9,7 @@ import org.tfcc.bingo.Supervisor
 import org.tfcc.bingo.message.Dispatcher
 import org.tfcc.bingo.message.HandlerException
 import org.tfcc.bingo.message.LeaveRoomCs
+import java.net.SocketException
 
 
 class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame>() {
@@ -40,6 +41,14 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
     @Throws(Exception::class)
     override fun channelReadComplete(ctx: ChannelHandlerContext) {
         ctx.flush()
+    }
+
+    @Deprecated("Deprecated in Java")
+    @Throws(Exception::class)
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
+        if (cause is SocketException && "Connection reset" == cause.message) return
+        @Suppress("DEPRECATION")
+        super.exceptionCaught(ctx, cause)
     }
 
     private fun handlerWebSocketFrame(ctx: ChannelHandlerContext, frame: WebSocketFrame) {
