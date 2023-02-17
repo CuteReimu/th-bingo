@@ -15,7 +15,7 @@ sealed interface RoomType {
     fun canPause(): Boolean
 
     @Throws(HandlerException::class)
-    fun randSpells(games: Array<String>, ranks: Array<String>): Array<Spell>
+    fun randSpells(games: Array<String>, ranks: Array<String>?): Array<Spell>
 
     @Throws(HandlerException::class)
     fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus): SpellStatus

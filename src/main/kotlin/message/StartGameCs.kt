@@ -9,7 +9,7 @@ data class StartGameCs(
     val gameTime: Int, // 游戏总时间（不含倒计时），单位：分
     val countdown: Int, // 倒计时，单位：秒
     val games: Array<String>,
-    val ranks: Array<String>,
+    val ranks: Array<String>?,
     var needWin: Int
 ) : Handler {
     @Throws(HandlerException::class)
@@ -19,7 +19,7 @@ data class StartGameCs(
         if (countdown < 0) throw HandlerException("倒计时不能小于0")
         if (countdown > 86400) throw HandlerException("倒计时太长")
         if (games.size > 99) throw HandlerException("选择的作品数太多")
-        if (ranks.size > 6) throw HandlerException("选择的难度数太多")
+        if (ranks != null && ranks.size > 6) throw HandlerException("选择的难度数太多")
         if (needWin > 99) throw HandlerException("需要胜场的数值不正确")
         if (needWin <= 0) needWin = 1
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
