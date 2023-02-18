@@ -1,6 +1,7 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
+import org.tfcc.bingo.Difficulty
 import org.tfcc.bingo.SpellStatus
 import org.tfcc.bingo.Store
 import java.util.*
@@ -10,7 +11,9 @@ data class StartGameCs(
     val countdown: Int, // 倒计时，单位：秒
     val games: Array<String>,
     val ranks: Array<String>?,
-    var needWin: Int
+    var needWin: Int,
+    var difficulty: Int
+
 ) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
@@ -31,7 +34,15 @@ data class StartGameCs(
             throw HandlerException("游戏已经开始")
         else if (room.players!!.contains(""))
             throw HandlerException("玩家没满")
-        room.spells = room.type.randSpells(games, ranks)
+        room.spells = room.type.randSpells(
+            games, ranks,
+            when (difficulty) {
+                1 -> Difficulty.E
+                2 -> Difficulty.N
+                3 -> Difficulty.L
+                else -> Difficulty.N
+            }
+        )
         room.started = true
         room.startMs = Date().time
         room.countDown = countdown

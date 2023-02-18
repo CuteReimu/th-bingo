@@ -10,8 +10,8 @@ object RoomTypeNormal : RoomType {
     }
 
     @Throws(HandlerException::class)
-    override fun randSpells(games: Array<String>, ranks: Array<String>?): Array<Spell> {
-        return SpellFactory.randSpells(games, ranks, 10)
+    override fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
+        return SpellFactory.randSpells(games, ranks, difficulty)
     }
 
     @Throws(HandlerException::class)
