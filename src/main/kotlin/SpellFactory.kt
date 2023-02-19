@@ -13,7 +13,7 @@ object SpellFactory {
      * 随符卡，用于BP赛
      */
     @Throws(HandlerException::class)
-    fun randSpells(games: Array<String>, ranks: Array<String>?, lv1Count: Int): Array<Spell> {
+    fun randSpellsBP(games: Array<String>, ranks: Array<String>?, lv1Count: Int): Array<Spell> {
         val lv2Count = 20 - lv1Count
         val lv3Count = 5
         val files = File(".").listFiles() ?: throw HandlerException("找不到符卡文件")
@@ -24,8 +24,8 @@ object SpellFactory {
             val sheet = wb.getSheetAt(0)
             for (i in 1..sheet.lastRowNum) {
                 val row = sheet.getRow(i)
-                if (row.lastCellNum >= 6) {
-                    val star = row.getCell(6).numericCellValue.toInt()
+                if (row.lastCellNum >= 7) {
+                    val star = row.getCell(7).numericCellValue.toInt()
                     val inGame = games.contains(row.getCell(1).numericCellValue.toInt().toString()) &&
                             (ranks == null || ranks.contains(row.getCell(5).stringCellValue.trim()))
                     if (star in 1..3 && inGame) {
@@ -35,7 +35,7 @@ object SpellFactory {
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).stringCellValue
+                                desc = row.getCell(4)?.stringCellValue?:""
                             )
                         )
                     }
@@ -46,14 +46,14 @@ object SpellFactory {
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).stringCellValue
+                                desc = row.getCell(4)?.stringCellValue?:""
                             )
                         )
                     }
                 }
             }
         }
-        if (spells[0].size < lv1Count || spells[1].size < lv2Count || spells[2].size < lv3Count)
+        if (spells[0].size < lv1Count || spells[1].size < lv2Count)
             throw HandlerException("符卡数量不足")
         val rand = ThreadLocalRandom.current()
         spells[0].shuffle(rand)
@@ -91,9 +91,10 @@ object SpellFactory {
         val lv1Count = difficulty.value[0]
         val lv2Count = difficulty.value[1]
         val lv3Count = difficulty.value[2]
+        val lv4Count = 4
         val lv5Count = 1
         val files = File(".").listFiles() ?: throw HandlerException("找不到符卡文件")
-        val spells = Array(4) { _ -> ArrayList<Spell>() }
+        val spells = Array(6) { _ -> ArrayList<Spell>() }
         for (file in files) {
             if (file.extension != "xlsx") continue
             val wb = XSSFWorkbook(FileInputStream(file))
@@ -104,14 +105,14 @@ object SpellFactory {
                     val star = row.getCell(6).numericCellValue.toInt()
                     val inGame = games.contains(row.getCell(1).numericCellValue.toInt().toString()) &&
                             (ranks == null || ranks.contains(row.getCell(5).stringCellValue.trim()))
-                    if (star in 1..3 && inGame) {
+                    if (star in 1..5 && inGame) {
                         spells[star - 1].add(
                             Spell(
                                 game = row.getCell(1).numericCellValue.toInt().toString(),
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).stringCellValue
+                                desc = row.getCell(4)?.stringCellValue?:""
                             )
                         )
                     }
@@ -119,18 +120,18 @@ object SpellFactory {
                     if (star == 5 && !inGame) {
                         spells[5].add(
                             Spell(
-                                game = row.getCell(1).rawValue,
-                                name = row.getCell(3).rawValue,
-                                rank = row.getCell(5).rawValue,
+                                game = row.getCell(1).numericCellValue.toInt().toString(),
+                                name = row.getCell(3).stringCellValue,
+                                rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).rawValue
+                                desc = row.getCell(4)?.stringCellValue?:""
                             )
                         )
                     }
                 }
             }
         }
-        if (spells[0].size < lv1Count || spells[1].size < lv2Count || spells[2].size < lv3Count)
+        if (spells[0].size < lv1Count || spells[1].size < lv2Count || spells[2].size < lv3Count || spells[3].size < lv4Count)
             throw HandlerException("符卡数量不足")
         val rand = ThreadLocalRandom.current()
         spells[0].shuffle(rand)
@@ -180,7 +181,7 @@ object SpellFactory {
         val topSpell = 5
         val lv5Count = 1
         val files = File(".").listFiles() ?: throw HandlerException("找不到符卡文件")
-        val spells = Array(4) { _ -> ArrayList<Spell>() }
+        val spells = Array(6) { _ -> ArrayList<Spell>() }
         for (file in files) {
             if (file.extension != "xlsx") continue
             val wb = XSSFWorkbook(FileInputStream(file))
@@ -198,7 +199,7 @@ object SpellFactory {
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).stringCellValue
+                                desc = row.getCell(4)?.stringCellValue?:""
                             )
                         )
                     }
@@ -209,23 +210,25 @@ object SpellFactory {
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4).stringCellValue
+                                desc = row.getCell(4)?.stringCellValue?:""
                             )
                         )
                     }
                 }
             }
         }
-        if (spells[0].size < lv1Count || spells[1].size < lv2Count || spells[2].size < lv3Count)
+        if (spells[0].size < lv1Count || spells[1].size < lv2Count || spells[2].size < lv3Count || spells[3].size < topSpell - 1)
             throw HandlerException("符卡数量不足")
         val rand = ThreadLocalRandom.current()
         spells[0].shuffle(rand)
         spells[1].shuffle(rand)
+        spells[2].shuffle(rand)
         val s00 = spells[0][0] // 左上lv1
         val s04 = spells[0][4] // 右上lv1
         val spells01 = ArrayList<Spell>()
         spells01.addAll(spells[0].subList(2, lv1Count))
         spells01.addAll(spells[1].subList(0, lv2Count))
+        spells01.addAll(spells[2].subList(0, lv3Count))
         spells01.shuffle(rand)
         // 第二、四排的第二、四列不出现4和5级
         val s11 = spells01[0]
@@ -239,16 +242,18 @@ object SpellFactory {
             spells[5].shuffle(rand)
             spells[4].addAll(spells[5].subList(0, lv5Count - spells[4].size))
         }
-        topSpellList.addAll(spells[3])
-        topSpellList.addAll(spells[4])
+        spells[3].shuffle(rand)
+        spells[4].shuffle(rand)
+        topSpellList.addAll(spells[3].subList(0, topSpell - 1))
+        topSpellList.addAll(spells[4].subList(0, 1))
         topSpellList.shuffle(rand)
 
         val s22 = topSpellList[0] // 中间4，5级
         val s40 = topSpellList[1] // 左下4，5级
         val s44 = topSpellList[2] // 右下4，5级
-        spells012.addAll(topSpellList.subList(topSpell - 2, topSpellList.size))
+        spells012.addAll(topSpellList.subList(3, topSpellList.size))
         spells012.shuffle(rand) // 打乱lv1和lv2和lv3
-        var j = 4
+        var j = 0
         return Array(25) { i ->
             when (i) {
                 0 -> s00
