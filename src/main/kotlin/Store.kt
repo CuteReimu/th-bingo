@@ -20,11 +20,13 @@ object Store {
 
     @Throws(HandlerException::class)
     fun putPlayer(player: Player) {
+        if (System.getProperty("os.name").lowercase().contains("windows"))
+            cache.remove("player-${player.token}")
         val editor = cache.edit("player-${player.token}") ?: throw HandlerException("缓存错误")
         try {
-            val oos = ObjectOutputStream(editor.newOutputStream(0))
-            oos.writeObject(player)
-            oos.flush()
+            ObjectOutputStream(editor.newOutputStream(0)).use { oos ->
+                oos.writeObject(player)
+            }
             editor.commit()
         } finally {
             editor.abortUnlessCommitted()
@@ -33,15 +35,19 @@ object Store {
 
     fun getPlayer(token: String): Player? {
         val entry = cache.get("player-$token") ?: return null
-        return ObjectInputStream(entry.getInputStream(0)).readObject() as Player
+        ObjectInputStream(entry.getInputStream(0)).use { ois ->
+            return ois.readObject() as Player
+        }
     }
 
     fun putRoom(room: Room) {
+        if (System.getProperty("os.name").lowercase().contains("windows"))
+            cache.remove("room-${room.roomId}")
         val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")
         try {
-            val oos = ObjectOutputStream(editor.newOutputStream(0))
-            oos.writeObject(room)
-            oos.flush()
+            ObjectOutputStream(editor.newOutputStream(0)).use { oos ->
+                oos.writeObject(room)
+            }
             editor.commit()
         } finally {
             editor.abortUnlessCommitted()
@@ -50,7 +56,9 @@ object Store {
 
     fun getRoom(roomId: String): Room? {
         val entry = cache.get("room-$roomId") ?: return null
-        return ObjectInputStream(entry.getInputStream(0)).readObject() as Room
+        ObjectInputStream(entry.getInputStream(0)).use { ois ->
+            return ois.readObject() as Room
+        }
     }
 
     fun removeRoom(roomId: String) {
