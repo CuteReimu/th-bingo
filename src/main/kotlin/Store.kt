@@ -52,10 +52,12 @@ object Store {
         }
     }
 
+    private val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+
     @Throws(HandlerException::class)
     fun putPlayer(player: Player) {
         player.lastOperateMs = Date().time
-        if (System.getProperty("os.name").lowercase().contains("windows"))
+        if (isWindows)
             cache.remove("player-${player.token}")
         val editor = cache.edit("player-${player.token}") ?: throw HandlerException("缓存错误")
         try {
@@ -82,7 +84,7 @@ object Store {
     @Throws(HandlerException::class)
     fun putRoom(room: Room) {
         room.lastOperateMs = Date().time
-        if (System.getProperty("os.name").lowercase().contains("windows"))
+        if (isWindows)
             cache.remove("room-${room.roomId}")
         val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")
         try {
