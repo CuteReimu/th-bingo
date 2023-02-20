@@ -95,8 +95,8 @@ object Store {
 
     fun getAllPlayersInRoom(token: String): Array<String>? {
         val player = getPlayer(token) ?: return null
-        if (player.roomId.isNullOrEmpty()) return null
-        val room = getRoom(player.roomId) ?: return null
+        if (player.roomId.isNullOrEmpty()) return arrayOf(token)
+        val room = getRoom(player.roomId) ?: return arrayOf(token)
         val l = ArrayList<String>()
         if (room.host.isNotEmpty()) l.add(room.host)
         for (token1 in room.players ?: return arrayOf(room.host)) {
