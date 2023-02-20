@@ -23,7 +23,8 @@ data class Room(
     var lastWinner: Int, // 上一场是谁赢，1或2
     var bpData: BpData?,
     var linkData: LinkData?,
-    var phase: Int // 纯客户端用，服务器只记录
+    var phase: Int, // 纯客户端用，服务器只记录
+    var lastOperateMs: Long = 0 // 最后一次操作的时间戳，毫秒
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
