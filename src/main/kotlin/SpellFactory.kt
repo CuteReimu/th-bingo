@@ -116,22 +116,15 @@ object SpellFactory {
                             )
                         )
                     }
-                    // 5级卡可以跨作且固定一个
-                    if (star == 5 && !inGame) {
-                        spells[5].add(
-                            Spell(
-                                game = row.getCell(1).numericCellValue.toInt().toString(),
-                                name = row.getCell(3).stringCellValue,
-                                rank = row.getCell(5).stringCellValue,
-                                star = star,
-                                desc = row.getCell(4)?.stringCellValue?:""
-                            )
-                        )
-                    }
                 }
             }
         }
-        if (spells[0].size < lv1Count || spells[1].size < lv2Count || spells[2].size < lv3Count || spells[3].size < lv4Count)
+        if (spells[0].size < lv1Count
+            || spells[1].size < lv2Count
+            || spells[2].size < lv3Count
+            || spells[3].size < lv4Count
+            || spells[4].size < lv5Count
+        )
             throw HandlerException("符卡数量不足")
         val rand = ThreadLocalRandom.current()
         spells[0].shuffle(rand)
@@ -145,11 +138,6 @@ object SpellFactory {
 
         val topSpell = ArrayList<Spell>()
         spells[3].shuffle(rand)
-        // 当5级卡不足时，跨作品填充5级卡
-        if (spells[4].size < lv5Count){
-            spells[5].shuffle(rand)
-            spells[4].addAll(spells[5].subList(0, lv5Count - spells[4].size))
-        }
         spells[4].shuffle(rand)
         topSpell.addAll(spells[3].subList(0, 4))
         topSpell.add(spells[4][0])
@@ -203,21 +191,15 @@ object SpellFactory {
                             )
                         )
                     }
-                    if (star == 5 && !inGame) {
-                        spells[5].add(
-                            Spell(
-                                game = row.getCell(1).numericCellValue.toInt().toString(),
-                                name = row.getCell(3).stringCellValue,
-                                rank = row.getCell(5).stringCellValue,
-                                star = star,
-                                desc = row.getCell(4)?.stringCellValue?:""
-                            )
-                        )
-                    }
                 }
             }
         }
-        if (spells[0].size < lv1Count || spells[1].size < lv2Count || spells[2].size < lv3Count || spells[3].size < topSpell - 1)
+        if (spells[0].size < lv1Count
+            || spells[1].size < lv2Count
+            || spells[2].size < lv3Count
+            || spells[3].size < topSpell - lv5Count
+            || spells[4].size < lv5Count
+        )
             throw HandlerException("符卡数量不足")
         val rand = ThreadLocalRandom.current()
         spells[0].shuffle(rand)
@@ -238,21 +220,17 @@ object SpellFactory {
         val spells012 = ArrayList(spells01.subList(4, spells01.size))
 
         val topSpellList = ArrayList<Spell>()
-        if (spells[4].size < lv5Count) {
-            spells[5].shuffle(rand)
-            spells[4].addAll(spells[5].subList(0, lv5Count - spells[4].size))
-        }
         spells[3].shuffle(rand)
         spells[4].shuffle(rand)
-        topSpellList.addAll(spells[3].subList(0, topSpell - 1))
-        topSpellList.addAll(spells[4].subList(0, 1))
+        topSpellList.addAll(spells[3].subList(0, topSpell - lv5Count))
+        topSpellList.addAll(spells[4].subList(0, lv5Count))
         topSpellList.shuffle(rand)
 
         val s22 = topSpellList[0] // 中间4，5级
         val s40 = topSpellList[1] // 左下4，5级
         val s44 = topSpellList[2] // 右下4，5级
         spells012.addAll(topSpellList.subList(3, topSpellList.size))
-        spells012.shuffle(rand) // 打乱lv1和lv2和lv3
+        spells012.shuffle(rand) // 打乱lv1-lv5
         var j = 0
         return Array(25) { i ->
             when (i) {
