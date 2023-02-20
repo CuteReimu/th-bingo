@@ -1,80 +1,60 @@
 package org.tfcc.bingo
 
-import org.apache.log4j.Logger
+import com.jakewharton.disklrucache.DiskLruCache
+import org.tfcc.bingo.message.HandlerException
 import org.tfcc.bingo.message.Message
 import org.tfcc.bingo.message.RoomInfoSc
 import org.tfcc.bingo.message.writeMessage
 import java.io.*
+import java.util.*
 
 object Store {
-    private val logger = Logger.getLogger(this.javaClass)
-    private const val FILE_NAME = "store.dat"
-    private val playerCache = HashMap<String, Player>()
-    private val roomCache = HashMap<String, Room>()
+    private val cache: DiskLruCache
 
     init {
-        var file: ObjectInputStream? = null
-        try {
-            file = ObjectInputStream(FileInputStream(FILE_NAME))
-            @Suppress("UNCHECKED_CAST")
-            playerCache.putAll(file.readObject() as HashMap<String, Player>)
-            @Suppress("UNCHECKED_CAST")
-            roomCache.putAll(file.readObject() as HashMap<String, Room>)
-        } catch (_: FileNotFoundException) {
-            // Ignored
-        } finally {
-            file?.close()
-        }
+        val cacheDir = File("cache")
+        if (cacheDir.exists() && !cacheDir.isDirectory) throw RuntimeException("初始化缓存失败")
+        cacheDir.mkdirs()
+        cache = DiskLruCache.open(cacheDir, 1, 1, 128 * 1024 * 1024)
     }
 
-    fun putPlayer(player: Player) { // Player 的成员变量全是 val ，因此不需要 copy()
-        playerCache[player.token] = player
-        var file: ObjectOutputStream? = null
+    @Throws(HandlerException::class)
+    fun putPlayer(player: Player) {
+        val editor = cache.edit("player-${player.token}") ?: throw HandlerException("缓存错误")
         try {
-            file = ObjectOutputStream(BufferedOutputStream(FileOutputStream(FILE_NAME)))
-            file.writeObject(playerCache)
-            file.writeObject(roomCache)
-        } catch (e: IOException) {
-            logger.error(e)
+            val oos = ObjectOutputStream(editor.newOutputStream(0))
+            oos.writeObject(player)
+            oos.flush()
+            editor.commit()
         } finally {
-            file?.close()
+            editor.abortUnlessCommitted()
         }
     }
 
     fun getPlayer(token: String): Player? {
-        return playerCache[token]
+        val entry = cache.get("player-$token") ?: return null
+        return ObjectInputStream(entry.getInputStream(0)).readObject() as Player
     }
 
     fun putRoom(room: Room) {
-        roomCache[room.roomId] = room.copy()
-        var file: ObjectOutputStream? = null
+        val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")
         try {
-            file = ObjectOutputStream(BufferedOutputStream(FileOutputStream(FILE_NAME)))
-            file.writeObject(playerCache)
-            file.writeObject(roomCache)
-        } catch (e: IOException) {
-            logger.error(e)
+            val oos = ObjectOutputStream(editor.newOutputStream(0))
+            oos.writeObject(room)
+            oos.flush()
+            editor.commit()
         } finally {
-            file?.close()
+            editor.abortUnlessCommitted()
         }
     }
 
     fun getRoom(roomId: String): Room? {
-        return roomCache[roomId]
+        val entry = cache.get("room-$roomId") ?: return null
+        return ObjectInputStream(entry.getInputStream(0)).readObject() as Room
     }
 
     fun removeRoom(roomId: String) {
-        roomCache.remove(roomId)
-        var file: ObjectOutputStream? = null
-        try {
-            file = ObjectOutputStream(BufferedOutputStream(FileOutputStream(FILE_NAME)))
-            file.writeObject(playerCache)
-            file.writeObject(roomCache)
-        } catch (e: IOException) {
-            logger.error(e)
-        } finally {
-            file?.close()
-        }
+        if (!cache.remove(roomId)) throw HandlerException("缓存错误")
     }
 
     fun buildPlayerInfo(token: String): Message {
