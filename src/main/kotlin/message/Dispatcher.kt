@@ -94,7 +94,7 @@ object Dispatcher {
                             cls.getDeclaredConstructor().newInstance()
                     handler.handle(ctx, token ?: "", m.name)
                 } catch (e: HandlerException) {
-                    logger.error("handle failed: ${m.name}, error: ", e)
+                    logger.warn("handle failed: ${m.name}, error: ", e)
                     ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
                 } catch (e: JsonSyntaxException) {
                     logger.error("json unmarshal failed: ${m.name}, error: ", e)
