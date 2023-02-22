@@ -13,35 +13,39 @@ class LeaveRoomCs : Handler {
         if (room.started) throw HandlerException("比赛已经开始了，不能退出")
         if (room.host != token && room.locked) throw HandlerException("连续比赛没结束，不能退出")
         val tokens = ArrayList<String>()
-        var roomDestroyed = false
+        val roomDestroyed: Boolean
         if (room.host.isEmpty()) {
-            roomDestroyed = true
-            for (i in room.players.indices) {
-                if (room.players[i] == token) {
-                    room.players[i] = ""
-                } else {
-                    roomDestroyed = false
-                    tokens.add(room.players[i])
-                }
-            }
+            val index = room.players.indexOf(token)
+            if (index >= 0) room.players[index] = ""
+            room.watchers.remove(token)
+            val players = room.players.filter { s -> s.isNotEmpty() }
+            tokens.addAll(players)
+            tokens.addAll(room.watchers)
+            roomDestroyed = players.isEmpty()
         } else if (room.host == token) {
             for (p in room.players) {
-                if (p != room.host) {
+                if (p.isNotEmpty()) {
                     tokens.add(p)
                     Store.putPlayer(Player(p))
                 }
             }
-            Store.removeRoom(room.roomId)
+            for (p in room.watchers) {
+                tokens.add(p)
+                Store.putPlayer(Player(p))
+            }
             roomDestroyed = true
         } else {
-            for (i in room.players.indices) {
-                if (room.players[i] == token)
-                    room.players[i] = ""
-                else
-                    tokens.add(room.players[i])
-            }
-            Store.putRoom(room)
+            val index = room.players.indexOf(token)
+            if (index >= 0) room.players[index] = ""
+            val players = room.players.filter { s -> s.isNotEmpty() }
+            tokens.addAll(players)
+            tokens.addAll(room.watchers)
+            roomDestroyed = false
         }
+        if (roomDestroyed)
+            Store.removeRoom(room.roomId)
+        else
+            Store.putRoom(room)
         Store.putPlayer(player)
         Store.notifyPlayerInfo(token, protoName) // 已经退出了，所以这里只能通知到自己
         // 需要再通知房间里的其他人

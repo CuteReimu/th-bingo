@@ -11,7 +11,11 @@ data class ChangeCardCountCs(val cnt: IntArray) : Handler {
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
-        if (room.host.isNotEmpty() && room.host != token) throw HandlerException("你不是房主")
+        if (room.host.isNotEmpty()) {
+            if (room.host != token) throw HandlerException("没有权限")
+        } else {
+            if (!room.players.contains(token)) throw HandlerException("没有权限")
+        }
         room.changeCardCount[0] = cnt[0]
         room.changeCardCount[1] = cnt[1]
         Store.putRoom(room)

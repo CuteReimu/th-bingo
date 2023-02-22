@@ -12,7 +12,11 @@ data class PauseCs(val pause: Boolean) : Handler {
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
         if (!room.type.canPause()) throw HandlerException("不支持暂停的游戏类型")
-        if (room.host.isNotEmpty() && room.host != token) throw HandlerException("没有权限")
+        if (room.host.isNotEmpty()) {
+            if (room.host != token) throw HandlerException("没有权限")
+        } else {
+            if (!room.players.contains(token)) throw HandlerException("没有权限")
+        }
         if (!room.started) throw HandlerException("游戏还没开始，不能暂停")
         if (pause && room.startMs <= now - room.gameTime.toLong() * 60000L - room.countDown.toLong() * 1000L - room.totalPauseMs)
             throw HandlerException("游戏时间到，不能暂停")

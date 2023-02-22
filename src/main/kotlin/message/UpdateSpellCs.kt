@@ -16,6 +16,7 @@ data class UpdateSpellCs(val idx: Int, val status: Int) : Handler {
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
         if (!room.started) throw HandlerException("游戏还没开始")
+        if (room.host != token && !room.players.contains(token)) throw HandlerException("没有权限")
         val newStatus = room.type.handleUpdateSpell(room, token, idx, spellStatus)
         room.spellStatus!![idx] = newStatus
         Store.putRoom(room)

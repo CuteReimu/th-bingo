@@ -32,7 +32,10 @@ data class JoinRoomCs(
                 room.players[i] = token
             }
         }
-        if (!ok) throw HandlerException("房间满了")
+        if (!ok) {
+            if (!room.watchers.contains(token)) throw HandlerException("名字重复")
+            room.watchers.add(token)
+        }
         Store.putPlayer(Player(token = token, roomId = rid, name = name))
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)

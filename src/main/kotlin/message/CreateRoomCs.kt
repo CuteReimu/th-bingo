@@ -42,7 +42,8 @@ data class CreateRoomCs(
                 lastWinner = 0,
                 bpData = null,
                 linkData = null,
-                phase = 0
+                phase = 0,
+                watchers = arrayListOf()
             )
         )
         Store.notifyPlayerInfo(token, protoName)

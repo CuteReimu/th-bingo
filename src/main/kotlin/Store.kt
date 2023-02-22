@@ -133,6 +133,9 @@ object Store {
         for (token1 in room.players) {
             if (token1.isNotEmpty() && !l.contains(token1)) l.add(token1)
         }
+        for (token1 in room.watchers) {
+            if (token1.isNotEmpty() && !l.contains(token1)) l.add(token1)
+        }
         return l.toArray(arrayOf<String>())
     }
 
@@ -187,22 +190,8 @@ object Store {
         val players = Array(room.players.size) { i ->
             getPlayer(room.players[i])?.name ?: ""
         }
-        return RoomInfoSc(
-            rid = room.roomId,
-            type = room.roomType,
-            host = host,
-            names = players,
-            changeCardCount = room.changeCardCount,
-            started = room.started,
-            score = room.score,
-            winner = null
-        )
-    }
-
-    private fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
-        val host = getPlayer(room.host)?.name ?: return null
-        val players = Array(room.players.size) { i ->
-            getPlayer(room.players[i])?.name ?: ""
+        val watchers = Array(room.watchers.size) { i ->
+            getPlayer(room.watchers[i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,
@@ -212,7 +201,29 @@ object Store {
             changeCardCount = room.changeCardCount,
             started = room.started,
             score = room.score,
-            winner = winnerIdx
+            winner = null,
+            watchers = watchers
+        )
+    }
+
+    private fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
+        val host = getPlayer(room.host)?.name ?: return null
+        val players = Array(room.players.size) { i ->
+            getPlayer(room.players[i])?.name ?: ""
+        }
+        val watchers = Array(room.watchers.size) { i ->
+            getPlayer(room.watchers[i])?.name ?: ""
+        }
+        return RoomInfoSc(
+            rid = room.roomId,
+            type = room.roomType,
+            host = host,
+            names = players,
+            changeCardCount = room.changeCardCount,
+            started = room.started,
+            score = room.score,
+            winner = winnerIdx,
+            watchers = watchers
         )
     }
 }

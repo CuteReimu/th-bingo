@@ -8,7 +8,8 @@ data class RoomInfoSc(
     val changeCardCount: IntArray?,
     val started: Boolean?,
     val score: IntArray?,
-    val winner: Int?
+    val winner: Int?,
+    val watchers: Array<String>?
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
