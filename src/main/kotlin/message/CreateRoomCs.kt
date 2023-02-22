@@ -26,7 +26,7 @@ data class CreateRoomCs(
                 roomId = rid,
                 roomType = type,
                 host = if (solo == true) "" else token,
-                players = arrayOf("", ""),
+                players = if (solo == true) arrayOf(token, "") else arrayOf("", ""),
                 started = false,
                 spells = null,
                 startMs = 0,
