@@ -130,7 +130,7 @@ object Store {
         val room = getRoom(player.roomId) ?: return arrayOf(token)
         val l = ArrayList<String>()
         if (room.host.isNotEmpty()) l.add(room.host)
-        for (token1 in room.players ?: return arrayOf(room.host)) {
+        for (token1 in room.players) {
             if (token1.isNotEmpty() && !l.contains(token1)) l.add(token1)
         }
         return l.toArray(arrayOf<String>())
@@ -184,8 +184,8 @@ object Store {
 
     private fun packRoomInfo(room: Room): RoomInfoSc? {
         val host = getPlayer(room.host)?.name ?: return null
-        val players = Array(room.players!!.size) { i ->
-            getPlayer(room.players!![i])?.name ?: ""
+        val players = Array(room.players.size) { i ->
+            getPlayer(room.players[i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,
@@ -201,8 +201,8 @@ object Store {
 
     private fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
         val host = getPlayer(room.host)?.name ?: return null
-        val players = Array(room.players!!.size) { i ->
-            getPlayer(room.players!![i])?.name ?: ""
+        val players = Array(room.players.size) { i ->
+            getPlayer(room.players[i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,
