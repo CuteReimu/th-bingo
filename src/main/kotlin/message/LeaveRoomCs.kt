@@ -26,7 +26,7 @@ class LeaveRoomCs : Handler {
         } else {
             for (i in room.players.indices) {
                 if (room.players[i] == token)
-                    room.players[i] = token
+                    room.players[i] = ""
                 else
                     tokens.add(room.players[i])
             }
