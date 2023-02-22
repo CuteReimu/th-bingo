@@ -30,7 +30,7 @@ object RoomTypeNormal : RoomType {
             room.host ->
                 status
 
-            room.players!![0] -> {
+            room.players[0] -> {
                 if (status.isRightStatus() || st == LEFT_GET && status != LEFT_GET)
                     throw HandlerException("权限不足")
                 if (st == RIGHT_GET)
@@ -50,7 +50,7 @@ object RoomTypeNormal : RoomType {
                 }
             }
 
-            room.players!![1] -> {
+            room.players[1] -> {
                 if (status.isLeftStatus() || st == RIGHT_GET && status != RIGHT_GET)
                     throw HandlerException("权限不足")
                 if (st == LEFT_GET)

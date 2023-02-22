@@ -25,7 +25,7 @@ object RoomTypeBP : RoomType {
     @Throws(HandlerException::class)
     override fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus): SpellStatus {
         val st = room.spellStatus!![idx]
-        if (token == room.players!![0]) {
+        if (token == room.players[0]) {
             if (room.bpData!!.whoseTurn != 0)
                 throw HandlerException("不是你的回合")
             if (st != SpellStatus.NONE ||
@@ -33,7 +33,7 @@ object RoomTypeBP : RoomType {
                 room.bpData!!.banPick == 1 && status != SpellStatus.BANNED
             ) throw HandlerException("权限不足")
             nextRound(room)
-        } else if (token == room.players!![1]) {
+        } else if (token == room.players[1]) {
             if (room.bpData!!.whoseTurn != 1)
                 throw HandlerException("不是你的回合")
             if (st != SpellStatus.NONE ||

@@ -19,15 +19,15 @@ data class JoinRoomCs(
         val host = Store.getPlayer(room.host) ?: throw HandlerException("找不到房主")
         if (host.name == name) throw HandlerException("名字重复")
         var ok = false
-        for (i in room.players!!.indices) {
+        for (i in room.players.indices) {
             if (ok) {
-                if (room.players!![i].isNotEmpty()) {
-                    val player2 = Store.getPlayer(room.players!![i]) ?: throw HandlerException("找不到玩家")
+                if (room.players[i].isNotEmpty()) {
+                    val player2 = Store.getPlayer(room.players[i]) ?: throw HandlerException("找不到玩家")
                     if (player2.name == name) throw HandlerException("名字重复")
                 }
-            } else if (room.players!![i].isEmpty()) {
+            } else if (room.players[i].isEmpty()) {
                 ok = true
-                room.players!![i] = token
+                room.players[i] = token
             }
         }
         if (!ok) throw HandlerException("房间满了")

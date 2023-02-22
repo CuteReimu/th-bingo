@@ -6,7 +6,7 @@ import java.io.Serializable
 data class Room(
     val roomId: String,
     var roomType: Int,
-    var host: String,
+    val host: String,
     val players: Array<String>,
     var started: Boolean,
     var spells: Array<Spell>?,

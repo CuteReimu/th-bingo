@@ -15,7 +15,7 @@ class LeaveRoomCs : Handler {
         val tokens = ArrayList<String>()
         var roomDestroyed = false
         if (room.host == token) {
-            for (p in room.players!!) {
+            for (p in room.players) {
                 if (p != room.host) {
                     tokens.add(p)
                     Store.putPlayer(Player(p))
@@ -24,11 +24,11 @@ class LeaveRoomCs : Handler {
             Store.removeRoom(room.roomId)
             roomDestroyed = true
         } else {
-            for (i in room.players!!.indices) {
-                if (room.players!![i] == token)
-                    room.players!![i] = token
+            for (i in room.players.indices) {
+                if (room.players[i] == token)
+                    room.players[i] = token
                 else
-                    tokens.add(room.players!![i])
+                    tokens.add(room.players[i])
             }
             Store.putRoom(room)
         }

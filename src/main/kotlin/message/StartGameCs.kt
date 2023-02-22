@@ -32,7 +32,7 @@ data class StartGameCs(
             throw HandlerException("你不是房主")
         else if (room.started)
             throw HandlerException("游戏已经开始")
-        else if (room.players!!.contains(""))
+        else if (room.players.contains(""))
             throw HandlerException("玩家没满")
         room.spells = room.type.randSpells(
             games, ranks,

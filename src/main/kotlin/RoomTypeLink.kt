@@ -29,7 +29,7 @@ object RoomTypeLink : RoomType {
             throw HandlerException("不支持的操作")
         return when (token) {
             room.host -> status
-            room.players!![0] -> {
+            room.players[0] -> {
                 if ((room.linkData!!.startMsA > 0 || room.linkData!!.startMsB > 0) &&
                     room.linkData!!.linkIdxA.last() == 24
                 ) throw HandlerException("选卡已结束")
@@ -58,7 +58,7 @@ object RoomTypeLink : RoomType {
                 }
             }
 
-            room.players!![1] -> {
+            room.players[1] -> {
                 if ((room.linkData!!.startMsA > 0 || room.linkData!!.startMsB > 0) &&
                     room.linkData!!.linkIdxB.last() == 20
                 ) throw HandlerException("选卡已结束")

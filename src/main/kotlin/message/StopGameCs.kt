@@ -16,8 +16,8 @@ data class StopGameCs(val winner: Int) : Handler {
         else if (!room.started)
             throw HandlerException("游戏还没开始")
         if (winner >= 0) {
-            room.score!![winner]++
-            if (room.score!![winner] >= room.needWin)
+            room.score[winner]++
+            if (room.score[winner] >= room.needWin)
                 room.locked = false
             room.lastWinner = winner + 1
         }
