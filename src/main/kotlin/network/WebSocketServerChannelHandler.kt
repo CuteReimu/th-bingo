@@ -4,6 +4,8 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
 import io.netty.handler.codec.http.websocketx.WebSocketFrame
+import io.netty.handler.timeout.IdleState
+import io.netty.handler.timeout.IdleStateEvent
 import org.apache.log4j.Logger
 import org.tfcc.bingo.Supervisor
 import org.tfcc.bingo.message.Dispatcher
@@ -23,14 +25,14 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
     @Throws(Exception::class)
     override fun channelActive(ctx: ChannelHandlerContext) {
         //添加连接
-        logger.debug("客户端加入连接：" + ctx.channel())
+        logger.debug("客户端加入连接：${ctx.channel()}")
     }
 
     @Throws(Exception::class)
     override fun channelInactive(ctx: ChannelHandlerContext) {
         //断开连接
-        logger.debug("客户端断开连接：" + ctx.channel())
-        val token = Supervisor.removeByPlayerToken(ctx.channel().id()) ?: return
+        logger.debug("客户端断开连接：${ctx.channel()}")
+        val token = Supervisor.removeByChannelId(ctx.channel().id()) ?: return
         try {
             LeaveRoomCs().handle(ctx, token, "")
         } catch (_: HandlerException) {
@@ -49,6 +51,15 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
         if (cause is SocketException && "Connection reset" == cause.message) return
         @Suppress("DEPRECATION")
         super.exceptionCaught(ctx, cause)
+    }
+
+    override fun userEventTriggered(ctx: ChannelHandlerContext?, evt: Any?) {
+        if (evt is IdleStateEvent && evt.state() == IdleState.READER_IDLE) {
+            logger.debug("客户端心跳超时：${ctx?.channel()}")
+            ctx?.channel()?.close()
+        } else {
+            super.userEventTriggered(ctx, evt)
+        }
     }
 
     private fun handlerWebSocketFrame(ctx: ChannelHandlerContext, frame: WebSocketFrame) {

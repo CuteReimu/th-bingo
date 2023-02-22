@@ -13,7 +13,7 @@ object Supervisor {
         playerTokenToChannel[playerToken] = channel
     }
 
-    fun removeByPlayerToken(channelId: ChannelId): String? {
+    fun removeByChannelId(channelId: ChannelId): String? {
         val token = channelIdToPlayer.remove(channelId)
         playerTokenToChannel.remove(token)
         return token
