@@ -31,10 +31,12 @@ object RoomTypeNormal : RoomType {
                 status
 
             room.players[0] -> {
-                if (status.isRightStatus() || st == LEFT_GET && status != LEFT_GET)
-                    throw HandlerException("权限不足")
-                if (st == RIGHT_GET)
-                    throw HandlerException("对方已打完")
+                if (room.host.isNotEmpty()) {
+                    if (status.isRightStatus() || st == LEFT_GET && status != LEFT_GET)
+                        throw HandlerException("权限不足")
+                    if (st == RIGHT_GET)
+                        throw HandlerException("对方已打完")
+                }
                 when (status) {
                     LEFT_GET ->
                         status
@@ -51,10 +53,12 @@ object RoomTypeNormal : RoomType {
             }
 
             room.players[1] -> {
-                if (status.isLeftStatus() || st == RIGHT_GET && status != RIGHT_GET)
-                    throw HandlerException("权限不足")
-                if (st == LEFT_GET)
-                    throw HandlerException("对方已打完")
+                if (room.host.isNotEmpty()) {
+                    if (status.isLeftStatus() || st == RIGHT_GET && status != RIGHT_GET)
+                        throw HandlerException("权限不足")
+                    if (st == LEFT_GET)
+                        throw HandlerException("对方已打完")
+                }
                 when (status) {
                     RIGHT_GET ->
                         status

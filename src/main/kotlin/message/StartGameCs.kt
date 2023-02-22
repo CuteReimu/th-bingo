@@ -28,7 +28,7 @@ data class StartGameCs(
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
-        if (room.host != token)
+        if (room.host.isNotEmpty() && room.host != token)
             throw HandlerException("你不是房主")
         else if (room.started)
             throw HandlerException("游戏已经开始")

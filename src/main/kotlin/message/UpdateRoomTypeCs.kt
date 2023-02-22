@@ -9,7 +9,7 @@ data class UpdateRoomTypeCs(val type: Int) : Handler {
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
-        if (room.host != token) throw HandlerException("不是房主")
+        if (room.host.isNotEmpty() && room.host != token) throw HandlerException("不是房主")
         room.roomType = type
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)

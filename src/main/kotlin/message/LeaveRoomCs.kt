@@ -14,7 +14,17 @@ class LeaveRoomCs : Handler {
         if (room.host != token && room.locked) throw HandlerException("连续比赛没结束，不能退出")
         val tokens = ArrayList<String>()
         var roomDestroyed = false
-        if (room.host == token) {
+        if (room.host.isEmpty()) {
+            roomDestroyed = true
+            for (i in room.players.indices) {
+                if (room.players[i] == token) {
+                    room.players[i] = ""
+                } else {
+                    roomDestroyed = false
+                    tokens.add(room.players[i])
+                }
+            }
+        } else if (room.host == token) {
             for (p in room.players) {
                 if (p != room.host) {
                     tokens.add(p)
