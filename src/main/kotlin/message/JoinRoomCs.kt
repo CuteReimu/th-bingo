@@ -14,7 +14,7 @@ data class JoinRoomCs(
         if (rid.isEmpty()) throw HandlerException("房间ID为空")
         if (rid.toByteArray().size > 16) throw HandlerException("房间ID太长")
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
-        if (player.roomId != null) throw HandlerException("已经在房间里了")
+        if (player.roomId != null && Store.getRoom(player.roomId) != null) throw HandlerException("已经在房间里了")
         val room = Store.getRoom(rid) ?: throw HandlerException("房间不存在")
         val host = Store.getPlayer(room.host) ?: throw HandlerException("找不到房主")
         if (host.name == name) throw HandlerException("名字重复")

@@ -28,17 +28,6 @@ object Store {
     private fun clean() {
         logger.debug("开始清除过期缓存")
         val now = Date().time
-        val players = File("cache").listFiles { _, name -> name.startsWith("player-") && name.endsWith(".0") }
-        if (players != null) {
-            for (f in players) {
-                val name = f.name
-                val player = getPlayer(name.substring("player-".length, name.length - ".0".length)) ?: continue
-                if (now >= player.lastOperateMs + 6 * 60 * 60 * 1000) {
-                    logger.info("玩家 ${player.token} 过期, 自动清除")
-                    removePlayer(player.token)
-                }
-            }
-        }
         val rooms = File("cache").listFiles { _, name -> name.startsWith("room-") && name.endsWith(".0") }
         if (rooms != null) {
             for (f in rooms) {
@@ -47,6 +36,17 @@ object Store {
                 if (now >= room.lastOperateMs + 2 * 60 * 60 * 1000) {
                     logger.info("房间 ${room.roomId} 过期, 自动清除")
                     removeRoom(room.roomId)
+                }
+            }
+        }
+        val players = File("cache").listFiles { _, name -> name.startsWith("player-") && name.endsWith(".0") }
+        if (players != null) {
+            for (f in players) {
+                val name = f.name
+                val player = getPlayer(name.substring("player-".length, name.length - ".0".length)) ?: continue
+                if (now >= player.lastOperateMs + 6 * 60 * 60 * 1000 && (player.roomId == null || getRoom(player.roomId) == null)) {
+                    logger.info("玩家 ${player.token} 过期, 自动清除")
+                    removePlayer(player.token)
                 }
             }
         }
