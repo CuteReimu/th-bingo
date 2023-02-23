@@ -14,6 +14,7 @@ class LeaveRoomCs : Handler {
         if (room.players.contains(token) && room.locked) throw HandlerException("连续比赛没结束，不能退出")
         val tokens = ArrayList<String>()
         val roomDestroyed: Boolean
+        var isWatcher = false
         if (room.host == token) {
             for (p in room.players) {
                 if (p.isNotEmpty()) {
@@ -28,8 +29,12 @@ class LeaveRoomCs : Handler {
             roomDestroyed = true
         } else {
             val index = room.players.indexOf(token)
-            if (index >= 0) room.players[index] = ""
-            room.watchers.remove(token)
+            if (index >= 0) {
+                room.players[index] = ""
+            } else {
+                isWatcher = true
+                room.watchers.remove(token)
+            }
             val players = room.players.filter { s -> s.isNotEmpty() }
             if (room.host.isNotEmpty()) tokens.add(room.host)
             tokens.addAll(players)
@@ -39,7 +44,7 @@ class LeaveRoomCs : Handler {
         if (roomDestroyed)
             Store.removeRoom(room.roomId)
         else
-            Store.putRoom(room)
+            Store.putRoom(room, !isWatcher)
         Store.putPlayer(Player(token = token, roomId = "", name = player.name))
         Store.notifyPlayerInfo(token, protoName) // 已经退出了，所以这里只能通知到自己
         // 需要再通知房间里的其他人

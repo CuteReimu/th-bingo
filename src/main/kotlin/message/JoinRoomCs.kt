@@ -28,7 +28,7 @@ data class JoinRoomCs(
         else
             room.watchers.add(token)
         Store.putPlayer(Player(token = token, roomId = rid, name = name))
-        Store.putRoom(room)
+        Store.putRoom(room, index >= 0)
         Store.notifyPlayerInfo(token, protoName)
     }
 }

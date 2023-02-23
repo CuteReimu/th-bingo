@@ -6,7 +6,9 @@ import org.tfcc.bingo.message.HandlerException
 import org.tfcc.bingo.message.Message
 import org.tfcc.bingo.message.RoomInfoSc
 import org.tfcc.bingo.message.writeMessage
-import java.io.*
+import java.io.File
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 import java.util.*
 
 object Store {
@@ -82,8 +84,8 @@ object Store {
     }
 
     @Throws(HandlerException::class)
-    fun putRoom(room: Room) {
-        room.lastOperateMs = Date().time
+    fun putRoom(room: Room, needUpdateOperateMs: Boolean = true) {
+        if (needUpdateOperateMs) room.lastOperateMs = Date().time
         if (isWindows)
             cache.remove("room-${room.roomId}")
         val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")
@@ -112,7 +114,7 @@ object Store {
         val player = getPlayer(token) ?: return Message("room_info_sc", null, null, null)
         player.roomId ?: return Message("room_info_sc", null, player.name, null)
         val room = getRoom(player.roomId) ?: return Message("room_info_sc", null, player.name, null)
-        val data = packRoomInfo(room) ?: return Message("room_info_sc", null, player.name, null)
+        val data = packRoomInfo(room)
         return Message(data)
     }
 
@@ -120,7 +122,7 @@ object Store {
         val player = getPlayer(token) ?: return Message("room_info_sc", null, null, null)
         player.roomId ?: return Message("room_info_sc", null, player.name, null)
         val room = getRoom(player.roomId) ?: return Message("room_info_sc", null, player.name, null)
-        val data = packRoomInfo(room, winnerIdx) ?: return Message("room_info_sc", null, player.name, null)
+        val data = packRoomInfo(room, winnerIdx)
         return Message(data)
     }
 
@@ -185,7 +187,7 @@ object Store {
         }
     }
 
-    private fun packRoomInfo(room: Room): RoomInfoSc? {
+    private fun packRoomInfo(room: Room): RoomInfoSc {
         val host = getPlayer(room.host)?.name ?: ""
         val players = Array(room.players.size) { i ->
             getPlayer(room.players[i])?.name ?: ""
@@ -206,8 +208,8 @@ object Store {
         )
     }
 
-    private fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
-        val host = getPlayer(room.host)?.name ?:""
+    private fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc {
+        val host = getPlayer(room.host)?.name ?: ""
         val players = Array(room.players.size) { i ->
             getPlayer(room.players[i])?.name ?: ""
         }
