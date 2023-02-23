@@ -31,6 +31,7 @@ class LeaveRoomCs : Handler {
             if (index >= 0) room.players[index] = ""
             room.watchers.remove(token)
             val players = room.players.filter { s -> s.isNotEmpty() }
+            if (room.host.isEmpty()) tokens.add(room.host)
             tokens.addAll(players)
             tokens.addAll(room.watchers)
             roomDestroyed = room.host.isEmpty() && players.isEmpty()
