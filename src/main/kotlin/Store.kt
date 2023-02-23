@@ -186,7 +186,7 @@ object Store {
     }
 
     private fun packRoomInfo(room: Room): RoomInfoSc? {
-        val host = getPlayer(room.host)?.name ?: return null
+        val host = getPlayer(room.host)?.name ?: ""
         val players = Array(room.players.size) { i ->
             getPlayer(room.players[i])?.name ?: ""
         }
