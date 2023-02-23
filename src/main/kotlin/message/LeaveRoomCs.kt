@@ -10,19 +10,11 @@ class LeaveRoomCs : Handler {
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
-        if (room.started) throw HandlerException("比赛已经开始了，不能退出")
-        if (room.host != token && room.locked) throw HandlerException("连续比赛没结束，不能退出")
+        if ((room.host == token || room.players.contains(token)) && room.started) throw HandlerException("比赛已经开始了，不能退出")
+        if (room.players.contains(token) && room.locked) throw HandlerException("连续比赛没结束，不能退出")
         val tokens = ArrayList<String>()
         val roomDestroyed: Boolean
-        if (room.host.isEmpty()) {
-            val index = room.players.indexOf(token)
-            if (index >= 0) room.players[index] = ""
-            room.watchers.remove(token)
-            val players = room.players.filter { s -> s.isNotEmpty() }
-            tokens.addAll(players)
-            tokens.addAll(room.watchers)
-            roomDestroyed = players.isEmpty()
-        } else if (room.host == token) {
+        if (room.host == token) {
             for (p in room.players) {
                 if (p.isNotEmpty()) {
                     tokens.add(p)
@@ -37,10 +29,11 @@ class LeaveRoomCs : Handler {
         } else {
             val index = room.players.indexOf(token)
             if (index >= 0) room.players[index] = ""
+            room.watchers.remove(token)
             val players = room.players.filter { s -> s.isNotEmpty() }
             tokens.addAll(players)
             tokens.addAll(room.watchers)
-            roomDestroyed = false
+            roomDestroyed = room.host.isEmpty() && players.isEmpty()
         }
         if (roomDestroyed)
             Store.removeRoom(room.roomId)
