@@ -20,22 +20,13 @@ data class JoinRoomCs(
             val host = Store.getPlayer(room.host) ?: throw HandlerException("找不到房主")
             if (host.name == name) throw HandlerException("名字重复")
         }
-        var ok = false
-        for (i in room.players.indices) {
-            if (ok) {
-                if (room.players[i].isNotEmpty()) {
-                    val player2 = Store.getPlayer(room.players[i]) ?: throw HandlerException("找不到玩家")
-                    if (player2.name == name) throw HandlerException("名字重复")
-                }
-            } else if (room.players[i].isEmpty()) {
-                ok = true
-                room.players[i] = token
-            }
-        }
-        if (!ok) {
-            if (!room.watchers.contains(token)) throw HandlerException("名字重复")
+        if (room.players.any { token1 -> Store.getPlayer(token1)?.name == name }) throw HandlerException("名字重复")
+        if (room.watchers.any { token1 -> Store.getPlayer(token1)?.name == name }) throw HandlerException("名字重复")
+        val index = room.players.indexOf("")
+        if (index >= 0)
+            room.players[index] = token
+        else
             room.watchers.add(token)
-        }
         Store.putPlayer(Player(token = token, roomId = rid, name = name))
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)
