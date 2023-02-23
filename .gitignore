@@ -1,8 +1,6 @@
 /cache/
-*.dat
 *.xlsx
 /.gradle/
-/derbyDB/
 
 # Compiled class file
 /build/
