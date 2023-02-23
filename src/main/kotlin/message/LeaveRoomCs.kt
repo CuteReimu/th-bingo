@@ -40,7 +40,7 @@ class LeaveRoomCs : Handler {
             Store.removeRoom(room.roomId)
         else
             Store.putRoom(room)
-        Store.putPlayer(Player(token = token,roomId = "",name = player.name))
+        Store.putPlayer(Player(token = token, roomId = "", name = player.name))
         Store.notifyPlayerInfo(token, protoName) // 已经退出了，所以这里只能通知到自己
         // 需要再通知房间里的其他人
         var message: Message? = null
