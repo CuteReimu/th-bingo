@@ -133,6 +133,9 @@ object Store {
         for (token1 in room.players) {
             if (token1.isNotEmpty() && !l.contains(token1)) l.add(token1)
         }
+        for (token1 in room.watchers) {
+            if (token1.isNotEmpty() && !l.contains(token1)) l.add(token1)
+        }
         return l.toArray(arrayOf<String>())
     }
 
@@ -183,9 +186,12 @@ object Store {
     }
 
     private fun packRoomInfo(room: Room): RoomInfoSc? {
-        val host = getPlayer(room.host)?.name ?: return null
+        val host = getPlayer(room.host)?.name ?: ""
         val players = Array(room.players.size) { i ->
             getPlayer(room.players[i])?.name ?: ""
+        }
+        val watchers = Array(room.watchers.size) { i ->
+            getPlayer(room.watchers[i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,
@@ -195,14 +201,18 @@ object Store {
             changeCardCount = room.changeCardCount,
             started = room.started,
             score = room.score,
-            winner = null
+            winner = null,
+            watchers = watchers
         )
     }
 
     private fun packRoomInfo(room: Room, winnerIdx: Int): RoomInfoSc? {
-        val host = getPlayer(room.host)?.name ?: return null
+        val host = getPlayer(room.host)?.name ?:""
         val players = Array(room.players.size) { i ->
             getPlayer(room.players[i])?.name ?: ""
+        }
+        val watchers = Array(room.watchers.size) { i ->
+            getPlayer(room.watchers[i])?.name ?: ""
         }
         return RoomInfoSc(
             rid = room.roomId,
@@ -212,7 +222,8 @@ object Store {
             changeCardCount = room.changeCardCount,
             started = room.started,
             score = room.score,
-            winner = winnerIdx
+            winner = winnerIdx,
+            watchers = watchers
         )
     }
 }

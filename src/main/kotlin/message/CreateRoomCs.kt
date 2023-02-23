@@ -8,7 +8,8 @@ import org.tfcc.bingo.Store
 data class CreateRoomCs(
     val name: String?,
     val rid: String?,
-    val type: Int
+    val type: Int,
+    val solo: Boolean?
 ) : Handler {
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (name.isNullOrEmpty()) throw HandlerException("名字为空")
@@ -24,8 +25,8 @@ data class CreateRoomCs(
             Room(
                 roomId = rid,
                 roomType = type,
-                host = token,
-                players = arrayOf("", ""),
+                host = if (solo == true) "" else token,
+                players = if (solo == true) arrayOf(token, "") else arrayOf("", ""),
                 started = false,
                 spells = null,
                 startMs = 0,
@@ -41,7 +42,8 @@ data class CreateRoomCs(
                 lastWinner = 0,
                 bpData = null,
                 linkData = null,
-                phase = 0
+                phase = 0,
+                watchers = arrayListOf()
             )
         )
         Store.notifyPlayerInfo(token, protoName)

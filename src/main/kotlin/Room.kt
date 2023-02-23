@@ -24,7 +24,8 @@ data class Room(
     var bpData: BpData?,
     var linkData: LinkData?,
     var phase: Int, // 纯客户端用，服务器只记录
-    var lastOperateMs: Long = 0 // 最后一次操作的时间戳，毫秒
+    var lastOperateMs: Long = 0, // 最后一次操作的时间戳，毫秒
+    val watchers: ArrayList<String> // 观众
 ) : Serializable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -59,6 +60,7 @@ data class Room(
         if (linkData != other.linkData) return false
         if (phase != other.phase) return false
         if (lastOperateMs != other.lastOperateMs) return false
+        if (watchers != other.watchers) return false
 
         return true
     }
@@ -85,6 +87,7 @@ data class Room(
         result = 31 * result + (linkData?.hashCode() ?: 0)
         result = 31 * result + phase
         result = 31 * result + lastOperateMs.hashCode()
+        result = 31 * result + watchers.hashCode()
         return result
     }
 
