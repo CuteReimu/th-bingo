@@ -1,7 +1,6 @@
 package org.tfcc.bingo
 
 import org.tfcc.bingo.message.HandlerException
-import java.io.Serializable
 
 data class Room(
     val roomId: String,
@@ -26,7 +25,7 @@ data class Room(
     var phase: Int, // 纯客户端用，服务器只记录
     var lastOperateMs: Long = 0, // 最后一次操作的时间戳，毫秒
     val watchers: ArrayList<String> // 观众
-) : Serializable {
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

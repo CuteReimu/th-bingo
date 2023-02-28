@@ -1,5 +1,6 @@
 package org.tfcc.bingo
 
+import com.google.gson.Gson
 import com.jakewharton.disklrucache.DiskLruCache
 import org.apache.log4j.Logger
 import org.tfcc.bingo.message.HandlerException
@@ -7,13 +8,14 @@ import org.tfcc.bingo.message.Message
 import org.tfcc.bingo.message.RoomInfoSc
 import org.tfcc.bingo.message.writeMessage
 import java.io.File
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.util.*
 
 object Store {
     private val logger = Logger.getLogger(Store.javaClass)
     private val cache: DiskLruCache
+    private val gson = Gson()
 
     init {
         val cacheDir = File("cache")
@@ -63,8 +65,8 @@ object Store {
             cache.remove("player-${player.token}")
         val editor = cache.edit("player-${player.token}") ?: throw HandlerException("缓存错误")
         try {
-            ObjectOutputStream(editor.newOutputStream(0)).use { oos ->
-                oos.writeObject(player)
+            editor.newOutputStream(0).use { os ->
+                gson.toJson(player, OutputStreamWriter(os))
             }
             editor.commit()
         } finally {
@@ -74,8 +76,8 @@ object Store {
 
     fun getPlayer(token: String): Player? {
         val entry = cache.get("player-$token") ?: return null
-        ObjectInputStream(entry.getInputStream(0)).use { ois ->
-            return ois.readObject() as Player
+        entry.getInputStream(0).use { `is` ->
+            return gson.fromJson(InputStreamReader(`is`), Player::class.java)
         }
     }
 
@@ -90,8 +92,8 @@ object Store {
             cache.remove("room-${room.roomId}")
         val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")
         try {
-            ObjectOutputStream(editor.newOutputStream(0)).use { oos ->
-                oos.writeObject(room)
+            editor.newOutputStream(0).use { os ->
+                gson.toJson(room, OutputStreamWriter(os))
             }
             editor.commit()
         } finally {
@@ -101,8 +103,8 @@ object Store {
 
     fun getRoom(roomId: String): Room? {
         val entry = cache.get("room-$roomId") ?: return null
-        ObjectInputStream(entry.getInputStream(0)).use { ois ->
-            return ois.readObject() as Room
+        entry.getInputStream(0).use { `is` ->
+            return gson.fromJson(InputStreamReader(`is`), Room::class.java)
         }
     }
 

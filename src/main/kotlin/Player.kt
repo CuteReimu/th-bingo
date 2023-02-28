@@ -1,13 +1,11 @@
 package org.tfcc.bingo
 
-import java.io.Serializable
-
 data class Player(
     val token: String,
     val name: String?,
     val roomId: String?,
     var lastOperateMs: Long = 0 // 最后一次操作的时间戳，毫秒
-) : Serializable {
+) {
     constructor(token: String) : this(token, null, null)
 
     override fun equals(other: Any?): Boolean {
