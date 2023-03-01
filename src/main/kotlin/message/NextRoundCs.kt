@@ -1,23 +1,25 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
+import org.tfcc.bingo.Player
+import org.tfcc.bingo.Room
 import org.tfcc.bingo.Store
 
 class NextRoundCs : Handler {
     @Throws(HandlerException::class)
-    override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
-        val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
+    override fun handle(ctx: ChannelHandlerContext, player: Player?, room: Room?, protoName: String) {
+        if (player == null) throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
-        val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
+        if (room == null) throw HandlerException("找不到房间")
         if (room.host.isNotEmpty()) {
-            if (room.host != token) throw HandlerException("没有权限")
+            if (room.host != player.token) throw HandlerException("没有权限")
         } else {
-            if (!room.players.contains(token)) throw HandlerException("没有权限")
+            if (!room.players.contains(player.token)) throw HandlerException("没有权限")
         }
         room.type.handleNextRound(room)
         Store.putRoom(room)
         Store.notifyPlayersInRoom(
-            token,
+            player.token,
             protoName,
             Message(NextRoundSc(room.bpData?.whoseTurn ?: 0, room.bpData?.banPick ?: 0))
         )

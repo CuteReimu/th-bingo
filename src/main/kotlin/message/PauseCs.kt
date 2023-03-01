@@ -1,21 +1,23 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
+import org.tfcc.bingo.Player
+import org.tfcc.bingo.Room
 import org.tfcc.bingo.Store
 import java.util.*
 
 data class PauseCs(val pause: Boolean) : Handler {
     @Throws(HandlerException::class)
-    override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
+    override fun handle(ctx: ChannelHandlerContext, player: Player?, room: Room?, protoName: String) {
         val now = Date().time
-        val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
+        if (player == null) throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
-        val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
+        if (room == null) throw HandlerException("找不到房间")
         if (!room.type.canPause()) throw HandlerException("不支持暂停的游戏类型")
         if (room.host.isNotEmpty()) {
-            if (room.host != token) throw HandlerException("没有权限")
+            if (room.host != player.token) throw HandlerException("没有权限")
         } else {
-            if (!room.players.contains(token)) throw HandlerException("没有权限")
+            if (!room.players.contains(player.token)) throw HandlerException("没有权限")
         }
         if (!room.started) throw HandlerException("游戏还没开始，不能暂停")
         if (pause && room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs)
@@ -33,7 +35,7 @@ data class PauseCs(val pause: Boolean) : Handler {
         }
         Store.putRoom(room)
         Store.notifyPlayersInRoom(
-            token,
+            player.token,
             protoName,
             Message(PauseSc(now, room.totalPauseMs, room.pauseBeginMs))
         )

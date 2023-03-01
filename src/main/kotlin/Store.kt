@@ -40,6 +40,7 @@ object Store {
                 if (now >= room.lastOperateMs + 2 * 60 * 60 * 1000) {
                     logger.info("房间 ${room.roomId} 过期, 自动清除")
                     removeRoom(room.roomId)
+                    RoomActor.stop(room.roomId)
                 }
             }
         }

@@ -9,9 +9,11 @@ import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
 import org.apache.log4j.Logger
+import org.tfcc.bingo.Player
+import org.tfcc.bingo.RoomActor
+import org.tfcc.bingo.Store
 import org.tfcc.bingo.Supervisor
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Executors
 
 fun ChannelHandlerContext.writeMessage(message: Message): ChannelFuture {
     val finalMessage = if (message.name == null && message.data != null) {
@@ -45,7 +47,6 @@ fun Channel.writeMessage(message: Message): ChannelFuture {
 
 object Dispatcher {
     val logger: Logger = Logger.getLogger(Dispatcher.javaClass)
-    private val pool = Executors.newSingleThreadExecutor()
     private val cache = ConcurrentHashMap<String, Class<Handler>>()
     val gson: Gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
 
@@ -77,32 +78,39 @@ object Dispatcher {
                 ctx.writeMessage(Message(ErrorSc(404, "404 not found")))
                 return
             }
-            pool.submit {
-                var token: String? = null
+            val player: Player? =
                 if (m.name != "login_cs") {
-                    token = Supervisor.getPlayerToken(ctx.channel().id())
+                    val token = Supervisor.getPlayerToken(ctx.channel().id())
                     if (token == null) {
                         ctx.writeMessage(Message("error_sc", m.name, null, ErrorSc(-1, "You haven't login")))
-                        return@submit
+                        return
                     }
+                    Store.getPlayer(token)
+                } else null
+            val roomId = player?.roomId
+            val room = if (roomId.isNullOrEmpty()) null else Store.getRoom(roomId)
+            try {
+                val handler =
+                    if (m.data != null)
+                        gson.fromJson(gson.toJson(m.data), cls)
+                    else
+                        cls.getDeclaredConstructor().newInstance()
+                if (room != null) {
+                    RoomActor[room.roomId].post {
+                        handler.handle(ctx, player, room, m.name)
+                    }
+                } else {
+                    handler.handle(ctx, player, null, m.name)
                 }
-                try {
-                    val handler =
-                        if (m.data != null)
-                            gson.fromJson(gson.toJson(m.data), cls)
-                        else
-                            cls.getDeclaredConstructor().newInstance()
-                    handler.handle(ctx, token ?: "", m.name)
-                } catch (e: HandlerException) {
-                    logger.warn("handle failed: ${m.name}, error: ", e)
-                    ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
-                } catch (e: JsonSyntaxException) {
-                    logger.error("json unmarshal failed: ${m.name}, error: ", e)
-                    ctx.writeMessage(Message(m.name, ErrorSc(400, e.message)))
-                } catch (e: Exception) {
-                    logger.error("handler unknown exception: ${m.name}, error: ", e)
-                    ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
-                }
+            } catch (e: HandlerException) {
+                logger.warn("handle failed: ${m.name}, error: ", e)
+                ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
+            } catch (e: JsonSyntaxException) {
+                logger.error("json unmarshal failed: ${m.name}, error: ", e)
+                ctx.writeMessage(Message(m.name, ErrorSc(400, e.message)))
+            } catch (e: Exception) {
+                logger.error("handler unknown exception: ${m.name}, error: ", e)
+                ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
             }
         } catch (e: JsonSyntaxException) {
             ctx.writeMessage(Message("error_sc", null, null, ErrorSc(400, "illegal json")))
