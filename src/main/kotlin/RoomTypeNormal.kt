@@ -26,6 +26,7 @@ object RoomTypeNormal : RoomType {
             throw HandlerException("游戏时间到")
         if (room.startMs > now - room.countDown.toLong() * 1000L && !status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
             throw HandlerException("倒计时还没结束")
+        SpellLog.logSpellOperate(st, room.spells!![idx], token)
         return when (token) {
             room.host ->
                 status

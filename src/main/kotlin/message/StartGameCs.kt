@@ -2,6 +2,7 @@ package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
 import org.tfcc.bingo.Difficulty
+import org.tfcc.bingo.SpellLog
 import org.tfcc.bingo.SpellStatus
 import org.tfcc.bingo.Store
 import java.util.*
@@ -44,6 +45,7 @@ data class StartGameCs(
                 else -> Difficulty.N
             }
         )
+        SpellLog.logRandSpells(room.spells!!)
         room.started = true
         room.startMs = Date().time
         room.countDown = countdown

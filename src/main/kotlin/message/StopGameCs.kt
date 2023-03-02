@@ -1,6 +1,7 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
+import org.tfcc.bingo.SpellLog
 import org.tfcc.bingo.Store
 
 data class StopGameCs(val winner: Int) : Handler {
@@ -37,5 +38,6 @@ data class StopGameCs(val winner: Int) : Handler {
             Store.notifyPlayerInfo(token, protoName)
         else
             Store.notifyPlayerInfo(token, protoName, winner)
+        SpellLog.saveFile()
     }
 }

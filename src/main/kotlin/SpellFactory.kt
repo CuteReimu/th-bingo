@@ -19,7 +19,7 @@ object SpellFactory {
         val files = File(".").listFiles() ?: throw HandlerException("找不到符卡文件")
         val spells = Array(4) { _ -> ArrayList<Spell>() }
         for (file in files) {
-            if (file.extension != "xlsx") continue
+            if (file.extension != "xlsx" || file.name.startsWith("log")) continue
             val wb = XSSFWorkbook(FileInputStream(file))
             val sheet = wb.getSheetAt(0)
             for (i in 1..sheet.lastRowNum) {
@@ -96,7 +96,7 @@ object SpellFactory {
         val files = File(".").listFiles() ?: throw HandlerException("找不到符卡文件")
         val spells = Array(6) { _ -> ArrayList<Spell>() }
         for (file in files) {
-            if (file.extension != "xlsx") continue
+            if (file.extension != "xlsx" || file.name.startsWith("log")) continue
             val wb = XSSFWorkbook(FileInputStream(file))
             val sheet = wb.getSheetAt(0)
             for (i in 1..sheet.lastRowNum) {
@@ -171,7 +171,7 @@ object SpellFactory {
         val files = File(".").listFiles() ?: throw HandlerException("找不到符卡文件")
         val spells = Array(6) { _ -> ArrayList<Spell>() }
         for (file in files) {
-            if (file.extension != "xlsx") continue
+            if (file.extension != "xlsx" || file.name.startsWith("log")) continue
             val wb = XSSFWorkbook(FileInputStream(file))
             val sheet = wb.getSheetAt(0)
             for (i in 1..sheet.lastRowNum) {

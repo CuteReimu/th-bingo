@@ -26,6 +26,10 @@ enum class SpellStatus(val value: Int) {
         return this == LEFT_SELECT || this == RIGHT_SELECT || this == BOTH_SELECT
     }
 
+    fun isGetStatus(): Boolean {
+        return this == LEFT_GET || this == RIGHT_GET || this == BOTH_GET
+    }
+
     fun isLeftStatus(): Boolean {
         return this == LEFT_SELECT || this == LEFT_GET || this == BOTH_SELECT || this == BOTH_GET
     }
