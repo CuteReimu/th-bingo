@@ -5,7 +5,6 @@ import org.tfcc.bingo.message.HandlerException
 import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.collections.ArrayList
 import kotlin.random.asKotlinRandom
 
 object SpellFactory {
@@ -35,7 +34,9 @@ object SpellFactory {
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4)?.stringCellValue?:""
+                                desc = row.getCell(4)?.stringCellValue ?: "",
+                                id = if (row.lastCellNum < 8) 0
+                                else row.getCell(8)?.numericCellValue?.toInt() ?: 0
                             )
                         )
                     }
@@ -46,7 +47,9 @@ object SpellFactory {
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4)?.stringCellValue?:""
+                                desc = row.getCell(4)?.stringCellValue ?: "",
+                                id = if (row.lastCellNum < 8) 0
+                                else row.getCell(8)?.numericCellValue?.toInt() ?: 0
                             )
                         )
                     }
@@ -112,7 +115,9 @@ object SpellFactory {
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4)?.stringCellValue?:""
+                                desc = row.getCell(4)?.stringCellValue ?: "",
+                                id = if (row.lastCellNum < 8) 0
+                                else row.getCell(8)?.numericCellValue?.toInt() ?: 0
                             )
                         )
                     }
@@ -187,7 +192,9 @@ object SpellFactory {
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
                                 star = star,
-                                desc = row.getCell(4)?.stringCellValue?:""
+                                desc = row.getCell(4)?.stringCellValue ?: "",
+                                id = if (row.lastCellNum < 8) 0
+                                else row.getCell(8)?.numericCellValue?.toInt() ?: 0
                             )
                         )
                     }

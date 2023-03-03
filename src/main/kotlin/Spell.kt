@@ -7,5 +7,6 @@ data class Spell(
     val name: String,
     var rank: String,
     var star: Int,
-    var desc: String
+    var desc: String,
+    val id: Int
 ) : Serializable
