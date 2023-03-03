@@ -66,7 +66,7 @@ object Store {
         val editor = cache.edit("player-${player.token}") ?: throw HandlerException("缓存错误")
         try {
             editor.newOutputStream(0).use { os ->
-                gson.toJson(player, OutputStreamWriter(os))
+                os.write(gson.toJson(player).toByteArray())
             }
             editor.commit()
         } finally {
@@ -93,7 +93,7 @@ object Store {
         val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")
         try {
             editor.newOutputStream(0).use { os ->
-                gson.toJson(room, OutputStreamWriter(os))
+                os.write(gson.toJson(room).toByteArray())
             }
             editor.commit()
         } finally {
