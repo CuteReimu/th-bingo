@@ -66,7 +66,7 @@ object Store {
         val editor = cache.edit("player-${player.token}") ?: throw HandlerException("缓存错误")
         try {
             editor.newOutputStream(0).use { os ->
-                os.write(gson.toJson(player).toByteArray())
+                OutputStreamWriter(os, Charsets.UTF_8).use { gson.toJson(player, it) }
             }
             editor.commit()
         } finally {
@@ -77,7 +77,7 @@ object Store {
     fun getPlayer(token: String): Player? {
         val entry = cache.get("player-$token") ?: return null
         entry.getInputStream(0).use { `is` ->
-            return gson.fromJson(InputStreamReader(`is`), Player::class.java)
+            InputStreamReader(`is`).use { return gson.fromJson(it, Player::class.java) }
         }
     }
 
@@ -93,7 +93,7 @@ object Store {
         val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")
         try {
             editor.newOutputStream(0).use { os ->
-                os.write(gson.toJson(room).toByteArray())
+                OutputStreamWriter(os, Charsets.UTF_8).use { gson.toJson(room, it) }
             }
             editor.commit()
         } finally {
@@ -104,7 +104,7 @@ object Store {
     fun getRoom(roomId: String): Room? {
         val entry = cache.get("room-$roomId") ?: return null
         entry.getInputStream(0).use { `is` ->
-            return gson.fromJson(InputStreamReader(`is`), Room::class.java)
+            InputStreamReader(`is`).use { return gson.fromJson(it, Room::class.java) }
         }
     }
 
