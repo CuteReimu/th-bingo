@@ -77,7 +77,7 @@ object Store {
     fun getPlayer(token: String): Player? {
         val entry = cache.get("player-$token") ?: return null
         entry.getInputStream(0).use { `is` ->
-            InputStreamReader(`is`).use { return gson.fromJson(it, Player::class.java) }
+            InputStreamReader(`is`, Charsets.UTF_8).use { return gson.fromJson(it, Player::class.java) }
         }
     }
 
@@ -104,7 +104,7 @@ object Store {
     fun getRoom(roomId: String): Room? {
         val entry = cache.get("room-$roomId") ?: return null
         entry.getInputStream(0).use { `is` ->
-            InputStreamReader(`is`).use { return gson.fromJson(it, Room::class.java) }
+            InputStreamReader(`is`, Charsets.UTF_8).use { return gson.fromJson(it, Room::class.java) }
         }
     }
 
