@@ -9,4 +9,8 @@ data class Spell(
     var star: Int,
     var desc: String,
     val id: Int
-) : Serializable
+) : Serializable {
+    fun same(spell: Spell): Boolean {
+        return spell.game == game && spell.id == id
+    }
+}

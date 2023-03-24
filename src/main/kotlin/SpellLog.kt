@@ -41,7 +41,6 @@ object SpellLog {
     // 一场比赛结束时存储，此时没收掉的卡就无视
     fun saveFile() {
         timeLogs.clear()
-
         val file = File("log.xlsx")
         if (!file.exists()) file.createNewFile()
         val wb = XSSFWorkbook(FileInputStream(file))
@@ -74,7 +73,7 @@ object SpellLog {
 
             LogType.SELECT -> {
                 logList[card.name] = logList[card.name]!!.addSelect()
-                timeLogs[token] = SpellTimeStamp(card.name, System.currentTimeMillis())
+                timeLogs[token] = SpellTimeStamp(System.currentTimeMillis())
             }
 
             LogType.GET -> {
@@ -128,7 +127,7 @@ object SpellLog {
         APPEAR, SELECT, GET
     }
 
-    data class SpellTimeStamp(val name: String, val start: Long)
+    data class SpellTimeStamp(val start: Long)
 
     class LogModel(var id: Int, var appear: Int, var select: Int, var get: Int, var time: Long) {
         var changed: Boolean = false

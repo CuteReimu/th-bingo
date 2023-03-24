@@ -144,9 +144,16 @@ object SpellFactory {
         val topSpell = ArrayList<Spell>()
         spells[3].shuffle(rand)
         spells[4].shuffle(rand)
-        topSpell.addAll(spells[3].subList(0, 4))
-        topSpell.add(spells[4][0])
+        // 去除重复符卡
+        insertNoDuplicateCard(topSpell = topSpell, spellBase = spells[3],spellSum = 4)
+        insertNoDuplicateCard(topSpell = topSpell, spellBase = spells[4],spellSum = 5)
         topSpell.shuffle(rand)
+
+        // topSpell中，或者topSpell和基础卡有重复，则删掉该卡，替换为新卡
+        if (!resolveDuplicate(spells01, topSpell, spells, difficulty)){
+            throw HandlerException("符卡数量不足")
+        }
+
         val idx = intArrayOf(0, 1, 3, 4)
         idx.shuffle(rand.asKotlinRandom())
         var j = 0
@@ -253,5 +260,55 @@ object SpellFactory {
                 else -> spells012[j++]
             }
         }
+    }
+
+    // 解决重复卡问题
+    private fun insertNoDuplicateCard(
+        topSpell: ArrayList<Spell>,
+        spellBase: ArrayList<Spell>,
+        spellSum:Int
+    ){
+        var topi = 0
+        var isSame: Boolean
+        while (topSpell.size < spellSum) {
+            if (topi >= spellBase.size) {
+                throw HandlerException("符卡数量不足")
+            }
+            isSame = false
+            for (s in topSpell) {
+                if (s.same(spellBase[topi])) {
+                    topi++
+                    isSame = true
+                    break
+                }
+            }
+            if (!isSame) topSpell.add(spellBase[topi++])
+        }
+    }
+
+    private fun resolveDuplicate(
+        spells: ArrayList<Spell>,
+        topSpell: ArrayList<Spell>,
+        spellBase: Array<ArrayList<Spell>>,
+        difficulty: Difficulty
+    ):Boolean{
+        // 前三级和4，5级冲突时直接替换前三级为对应等级符卡
+        val spellIndex = arrayOf(difficulty.value[0],difficulty.value[1],difficulty.value[2])
+        var i = 0
+        while (i < spells.size) {
+            var isDuplicate = false
+            for (t in topSpell) {
+                if (spells[i].same(t)) {
+                    // 数量不足
+                    if (spellIndex[spells[i].star - 1] >= spellBase[spells[i].star - 1].size) {
+                        return false
+                    }
+                    spells[i] = spellBase[spells[i].star - 1][spellIndex[spells[i].star - 1]++]
+                    isDuplicate = true
+                }
+            }
+            if (!isDuplicate) i++
+        }
+        return true
     }
 }
