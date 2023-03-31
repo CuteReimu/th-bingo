@@ -27,7 +27,7 @@ object RoomTypeLink : RoomType {
         val st = room.spellStatus!![idx]
         if (status == SpellStatus.BANNED)
             throw HandlerException("不支持的操作")
-        SpellLog.logSpellOperate(st, room.spells!![idx], token)
+//        SpellLog.logSpellOperate(status, room.spells!![idx], token)
         return when (token) {
             room.host -> status
             room.players[0] -> {

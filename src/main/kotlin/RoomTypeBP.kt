@@ -25,7 +25,7 @@ object RoomTypeBP : RoomType {
     @Throws(HandlerException::class)
     override fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus): SpellStatus {
         val st = room.spellStatus!![idx]
-        SpellLog.logSpellOperate(st, room.spells!![idx], token)
+//        SpellLog.logSpellOperate(status, room.spells!![idx], token)
         if (token == room.players[0]) {
             if (room.bpData!!.whoseTurn != 0)
                 throw HandlerException("不是你的回合")

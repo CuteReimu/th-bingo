@@ -29,9 +29,9 @@ object SpellLog {
         }
     }
 
-    fun logSpellOperate(status: SpellStatus, spell: Spell, token: String) {
+    fun logSpellOperate(status: SpellStatus, spell: Spell, token: String, time: Long = System.currentTimeMillis()) {
         if (status.isSelectStatus()) {
-            logSpell(LogType.SELECT, spell, token)
+            logSpell(LogType.SELECT, spell, token, time)
         }
         if (status.isGetStatus()) {
             logSpell(LogType.GET, spell, token)
@@ -63,7 +63,7 @@ object SpellLog {
         wb.close()
     }
 
-    private fun logSpell(type: LogType, card: Spell, token: String = "") {
+    private fun logSpell(type: LogType, card: Spell, token: String = "", time: Long = System.currentTimeMillis()) {
         when (type) {
             LogType.APPEAR -> {
                 logList[card.name]?.let {
@@ -73,12 +73,12 @@ object SpellLog {
 
             LogType.SELECT -> {
                 logList[card.name] = logList[card.name]!!.addSelect()
-                timeLogs[token] = SpellTimeStamp(System.currentTimeMillis())
+                timeLogs[token] = SpellTimeStamp(time)
             }
 
             LogType.GET -> {
                 timeLogs[token]?.let {
-                    logList[card.name] = logList[card.name]!!.getCard(System.currentTimeMillis() - it.start)
+                    logList[card.name] = logList[card.name]!!.getCard(time - it.start)
                 }
                 timeLogs.remove(token)
             }

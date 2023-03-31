@@ -24,9 +24,15 @@ object RoomTypeNormal : RoomType {
             throw HandlerException("暂停中，不能操作")
         if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs)
             throw HandlerException("游戏时间到")
-        if (room.startMs > now - room.countDown.toLong() * 1000L && !status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
-            throw HandlerException("倒计时还没结束")
-        SpellLog.logSpellOperate(st, room.spells!![idx], token)
+        if (room.startMs > now - room.countDown.toLong() * 1000L) {
+            if (!status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
+                throw HandlerException("倒计时还没结束")
+            // 倒计时没结束，需要按照倒计时已经结束的时间点计算开始收卡的时间
+            SpellLog.logSpellOperate(status, room.spells!![idx], token, room.startMs + room.countDown.toLong() * 1000L)
+        } else {
+            SpellLog.logSpellOperate(status, room.spells!![idx], token)
+        }
+
         return when (token) {
             room.host ->
                 status
