@@ -15,8 +15,6 @@ import java.net.SocketException
 
 
 class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame>() {
-    private val logger = Logger.getLogger(this.javaClass)
-
     @Throws(Exception::class)
     override fun channelRead0(ctx: ChannelHandlerContext, msg: WebSocketFrame) {
         handlerWebSocketFrame(ctx, msg)
@@ -72,5 +70,9 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
         // 返回应答消息
         val request = frame.text()
         Dispatcher.handle(ctx, request)
+    }
+
+    companion object {
+        private val logger = Logger.getLogger(WebSocketServerChannelHandler::class.java)
     }
 }

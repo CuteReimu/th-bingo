@@ -7,8 +7,6 @@ import org.tfcc.bingo.Store
 import org.tfcc.bingo.Supervisor
 
 data class LoginCs(val token: String?) : Handler {
-    private val logger: Logger = Logger.getLogger(LoginCs::class.java)
-
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (this.token.isNullOrEmpty() || !this.token.matches(Regex("[a-z0-9]{1,100}"))) {
@@ -26,5 +24,9 @@ data class LoginCs(val token: String?) : Handler {
         Supervisor.put(ctx.channel(), this.token)
         val msg = Store.buildPlayerInfo(this.token)
         ctx.writeMessage(Message(name = msg.name, reply = protoName, trigger = msg.trigger, data = msg.data))
+    }
+
+    companion object {
+        private val logger: Logger = Logger.getLogger(LoginCs::class.java)
     }
 }
