@@ -11,6 +11,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
 import org.apache.log4j.Logger
 import org.tfcc.bingo.Supervisor
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 fun ChannelHandlerContext.writeMessage(message: Message): ChannelFuture {
@@ -45,7 +46,7 @@ fun Channel.writeMessage(message: Message): ChannelFuture {
 
 object Dispatcher {
     val logger: Logger = Logger.getLogger(Dispatcher.javaClass)
-    private val pool = Executors.newSingleThreadExecutor()
+    val pool: ExecutorService = Executors.newSingleThreadExecutor()
     private val cache = ConcurrentHashMap<String, Class<Handler>>()
     val gson: Gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
 

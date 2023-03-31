@@ -32,11 +32,13 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
     override fun channelInactive(ctx: ChannelHandlerContext) {
         //断开连接
         logger.debug("客户端断开连接：${ctx.channel()}")
-        val token = Supervisor.removeByChannelId(ctx.channel().id()) ?: return
-        try {
-            LeaveRoomCs().handle(ctx, token, "")
-        } catch (_: HandlerException) {
-            // Ignore
+        val token = Supervisor.removeChannel(ctx.channel()) ?: return
+        Dispatcher.pool.submit {
+            try {
+                LeaveRoomCs().handle(ctx, token, "")
+            } catch (_: HandlerException) {
+                // Ignore
+            }
         }
     }
 
