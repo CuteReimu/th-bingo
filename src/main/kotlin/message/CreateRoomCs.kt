@@ -20,34 +20,10 @@ class CreateRoomCs(
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId != null && Store.getRoom(player.roomId) != null) throw HandlerException("已经在房间里了")
         if (Store.getRoom(rid) != null) throw HandlerException("房间已存在")
+        val room = Room(roomId = rid, roomType = type, host = if (solo == true) "" else token)
+        if (solo == true) room.players[0] = token
         Store.putPlayer(Player(token = token, roomId = rid, name = name))
-        Store.putRoom(
-            Room(
-                roomId = rid,
-                roomType = type,
-                host = if (solo == true) "" else token,
-                players = if (solo == true) arrayOf(token, "") else arrayOf("", ""),
-                started = false,
-                spells = null,
-                startMs = 0,
-                gameTime = 0,
-                countDown = 0,
-                spellStatus = null,
-                score = intArrayOf(0, 0),
-                locked = false,
-                needWin = 0,
-                changeCardCount = intArrayOf(0, 0),
-                totalPauseMs = 0,
-                pauseBeginMs = 0,
-                lastWinner = 0,
-                bpData = null,
-                linkData = null,
-                phase = 0,
-                watchers = arrayListOf(),
-                difficulty = 0,
-                enableTools = false
-            )
-        )
+        Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)
     }
 }

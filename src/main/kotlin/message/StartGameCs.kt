@@ -54,7 +54,7 @@ class StartGameCs(
         room.needWin = needWin
         room.locked = true
         room.difficulty = difficulty
-        room.enableTools = enableTools ?: false
+        room.enableTools = enableTools == true
         room.type.onStart(room)
         Store.putRoom(room)
         Store.notifyPlayersInRoom(
