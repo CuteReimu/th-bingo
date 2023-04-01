@@ -16,7 +16,9 @@ data class SpellListSc(
     val pauseBeginMs: Long?,
     val status: IntArray?,
     val phase: Int,
-    val linkData: LinkData?
+    val linkData: LinkData?,
+    val difficulty: Int,
+    val enableTools: Boolean
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -37,6 +39,8 @@ data class SpellListSc(
         if (!status.contentEquals(other.status)) return false
         if (phase != other.phase) return false
         if (linkData != other.linkData) return false
+        if (difficulty != other.difficulty) return false
+        if (enableTools != other.enableTools) return false
 
         return true
     }
@@ -55,6 +59,8 @@ data class SpellListSc(
         result = 31 * result + status.contentHashCode()
         result = 31 * result + phase
         result = 31 * result + linkData.hashCode()
+        result = 31 * result + difficulty
+        result = 31 * result + enableTools.hashCode()
         return result
     }
 }

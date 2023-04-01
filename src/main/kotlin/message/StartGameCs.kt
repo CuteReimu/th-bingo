@@ -13,8 +13,8 @@ data class StartGameCs(
     val games: Array<String>,
     val ranks: Array<String>?,
     var needWin: Int,
-    var difficulty: Int
-
+    var difficulty: Int,
+    val enableTools: Boolean?
 ) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
@@ -53,6 +53,8 @@ data class StartGameCs(
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
         room.needWin = needWin
         room.locked = true
+        room.difficulty = difficulty
+        room.enableTools = enableTools ?: false
         room.type.onStart(room)
         Store.putRoom(room)
         Store.notifyPlayersInRoom(
@@ -74,7 +76,9 @@ data class StartGameCs(
                     phase = room.phase,
                     pauseBeginMs = 0L,
                     status = null,
-                    totalPauseTime = 0L
+                    totalPauseTime = 0L,
+                    difficulty = difficulty,
+                    enableTools = room.enableTools
                 )
             )
         )
@@ -91,6 +95,8 @@ data class StartGameCs(
         if (!games.contentEquals(other.games)) return false
         if (!ranks.contentEquals(other.ranks)) return false
         if (needWin != other.needWin) return false
+        if (difficulty != other.difficulty) return false
+        if (enableTools != other.enableTools) return false
 
         return true
     }
@@ -101,6 +107,8 @@ data class StartGameCs(
         result = 31 * result + games.contentHashCode()
         result = 31 * result + ranks.contentHashCode()
         result = 31 * result + needWin
+        result = 31 * result + difficulty
+        result = 31 * result + enableTools.hashCode()
         return result
     }
 }

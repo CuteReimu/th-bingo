@@ -43,7 +43,9 @@ data class CreateRoomCs(
                 bpData = null,
                 linkData = null,
                 phase = 0,
-                watchers = arrayListOf()
+                watchers = arrayListOf(),
+                difficulty = 0,
+                enableTools = false
             )
         )
         Store.notifyPlayerInfo(token, protoName)
