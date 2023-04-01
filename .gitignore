@@ -1,3 +1,5 @@
+application.properties
+/.idea/
 /cache/
 *.xlsx
 /.gradle/

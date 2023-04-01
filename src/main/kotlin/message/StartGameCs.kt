@@ -1,10 +1,7 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
-import org.tfcc.bingo.Difficulty
-import org.tfcc.bingo.SpellLog
-import org.tfcc.bingo.SpellStatus
-import org.tfcc.bingo.Store
+import org.tfcc.bingo.*
 import java.util.*
 
 class StartGameCs(
@@ -82,5 +79,6 @@ class StartGameCs(
                 )
             )
         )
+        MiraiPusher.push(room)
     }
 }
