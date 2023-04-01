@@ -6,7 +6,7 @@ import org.tfcc.bingo.Store
 import org.tfcc.bingo.Supervisor
 import org.tfcc.bingo.toSpellStatus
 
-data class UpdateSpellCs(val idx: Int, val status: Int) : Handler {
+class UpdateSpellCs(val idx: Int, val status: Int) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (idx < 0 || idx >= 25) throw HandlerException("idx超出范围")

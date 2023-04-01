@@ -3,7 +3,7 @@ package org.tfcc.bingo.message
 import io.netty.channel.ChannelHandlerContext
 import org.tfcc.bingo.Store
 
-data class ChangeCardCountCs(val cnt: IntArray) : Handler {
+class ChangeCardCountCs(val cnt: IntArray) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (cnt.size != 2 || cnt[0] < 0 || cnt[0] > 9999 || cnt[1] < 0 || cnt[1] > 9999)
@@ -17,20 +17,4 @@ data class ChangeCardCountCs(val cnt: IntArray) : Handler {
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ChangeCardCountCs
-
-        if (!cnt.contentEquals(other.cnt)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        return cnt.contentHashCode()
-    }
-
 }

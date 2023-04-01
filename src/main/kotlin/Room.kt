@@ -2,7 +2,7 @@ package org.tfcc.bingo
 
 import org.tfcc.bingo.message.HandlerException
 
-data class Room(
+class Room(
     val roomId: String,
     var roomType: Int,
     val host: String,
@@ -28,74 +28,6 @@ data class Room(
     var difficulty: Int,
     var enableTools: Boolean
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Room
-
-        if (roomId != other.roomId) return false
-        if (roomType != other.roomType) return false
-        if (host != other.host) return false
-        if (!players.contentEquals(other.players)) return false
-        if (started != other.started) return false
-        if (spells != null) {
-            if (other.spells == null) return false
-            if (!spells.contentEquals(other.spells)) return false
-        } else if (other.spells != null) return false
-        if (startMs != other.startMs) return false
-        if (gameTime != other.gameTime) return false
-        if (countDown != other.countDown) return false
-        if (spellStatus != null) {
-            if (other.spellStatus == null) return false
-            if (!spellStatus.contentEquals(other.spellStatus)) return false
-        } else if (other.spellStatus != null) return false
-        if (!score.contentEquals(other.score)) return false
-        if (locked != other.locked) return false
-        if (needWin != other.needWin) return false
-        if (!changeCardCount.contentEquals(other.changeCardCount)) return false
-        if (totalPauseMs != other.totalPauseMs) return false
-        if (pauseBeginMs != other.pauseBeginMs) return false
-        if (lastWinner != other.lastWinner) return false
-        if (bpData != other.bpData) return false
-        if (linkData != other.linkData) return false
-        if (phase != other.phase) return false
-        if (lastOperateMs != other.lastOperateMs) return false
-        if (watchers != other.watchers) return false
-        if (difficulty != other.difficulty) return false
-        if (enableTools != other.enableTools) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = roomId.hashCode()
-        result = 31 * result + roomType
-        result = 31 * result + host.hashCode()
-        result = 31 * result + players.contentHashCode()
-        result = 31 * result + started.hashCode()
-        result = 31 * result + (spells?.contentHashCode() ?: 0)
-        result = 31 * result + startMs.hashCode()
-        result = 31 * result + gameTime
-        result = 31 * result + countDown
-        result = 31 * result + (spellStatus?.contentHashCode() ?: 0)
-        result = 31 * result + score.contentHashCode()
-        result = 31 * result + locked.hashCode()
-        result = 31 * result + needWin
-        result = 31 * result + changeCardCount.contentHashCode()
-        result = 31 * result + totalPauseMs.hashCode()
-        result = 31 * result + pauseBeginMs.hashCode()
-        result = 31 * result + lastWinner
-        result = 31 * result + (bpData?.hashCode() ?: 0)
-        result = 31 * result + (linkData?.hashCode() ?: 0)
-        result = 31 * result + phase
-        result = 31 * result + lastOperateMs.hashCode()
-        result = 31 * result + watchers.hashCode()
-        result = 31 * result + difficulty
-        result = 31 * result + enableTools.hashCode()
-        return result
-    }
-
     val type
         get() = when (roomType) {
             1 -> RoomTypeNormal

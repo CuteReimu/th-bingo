@@ -6,7 +6,7 @@ import org.tfcc.bingo.Player
 import org.tfcc.bingo.Store
 import org.tfcc.bingo.Supervisor
 
-data class LoginCs(val token: String?) : Handler {
+class LoginCs(val token: String?) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (this.token.isNullOrEmpty() || !this.token.matches(Regex("[a-z0-9]{1,100}"))) {

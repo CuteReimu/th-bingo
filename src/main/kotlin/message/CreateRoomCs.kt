@@ -5,7 +5,7 @@ import org.tfcc.bingo.Player
 import org.tfcc.bingo.Room
 import org.tfcc.bingo.Store
 
-data class CreateRoomCs(
+class CreateRoomCs(
     val name: String?,
     val rid: String?,
     val type: Int,

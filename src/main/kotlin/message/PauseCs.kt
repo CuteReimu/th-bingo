@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext
 import org.tfcc.bingo.Store
 import java.util.*
 
-data class PauseCs(val pause: Boolean) : Handler {
+class PauseCs(val pause: Boolean) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         val now = Date().time

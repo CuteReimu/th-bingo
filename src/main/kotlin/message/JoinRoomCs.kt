@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext
 import org.tfcc.bingo.Player
 import org.tfcc.bingo.Store
 
-data class JoinRoomCs(
+class JoinRoomCs(
     val name: String,
     val rid: String
 ) : Handler {

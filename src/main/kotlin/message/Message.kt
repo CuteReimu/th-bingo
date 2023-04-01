@@ -1,6 +1,6 @@
 package org.tfcc.bingo.message
 
-data class Message(
+class Message(
     val name: String?,
     val reply: String?,
     val trigger: String?,

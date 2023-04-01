@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext
 import org.tfcc.bingo.SpellLog
 import org.tfcc.bingo.Store
 
-data class StopGameCs(val winner: Int) : Handler {
+class StopGameCs(val winner: Int) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (winner != -1 && winner != 0 && winner != 1)

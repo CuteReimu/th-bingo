@@ -5,7 +5,7 @@ import org.tfcc.bingo.RoomTypeLink
 import org.tfcc.bingo.Store
 import java.util.*
 
-data class LinkTimeCs(val whose: Int, val start: Boolean) : Handler {
+class LinkTimeCs(val whose: Int, val start: Boolean) : Handler {
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (whose != 0 && whose != 1) throw HandlerException("参数错误")
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")

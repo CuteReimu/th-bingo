@@ -1,6 +1,6 @@
 package org.tfcc.bingo.message
 
-data class UpdateSpellSc(
+class UpdateSpellSc(
     val idx: Int,
     val status: Int,
     val whoseTurn: Int,

@@ -3,7 +3,7 @@ package org.tfcc.bingo.message
 import io.netty.channel.ChannelHandlerContext
 import org.tfcc.bingo.Store
 
-data class UpdateNameCs(val name: String) : Handler {
+class UpdateNameCs(val name: String) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (name.isEmpty()) throw HandlerException("名字为空")

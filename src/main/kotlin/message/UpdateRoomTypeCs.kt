@@ -3,7 +3,7 @@ package org.tfcc.bingo.message
 import io.netty.channel.ChannelHandlerContext
 import org.tfcc.bingo.Store
 
-data class UpdateRoomTypeCs(val type: Int) : Handler {
+class UpdateRoomTypeCs(val type: Int) : Handler {
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (type < 1 || type > 3) throw HandlerException("不支持的游戏类型")
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
