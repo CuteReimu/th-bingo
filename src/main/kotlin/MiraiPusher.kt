@@ -2,8 +2,9 @@ package org.tfcc.bingo
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -18,13 +19,12 @@ object MiraiPusher {
     fun push(room: Room) {
         if (!enablePush) return
         val text = "Bingo比赛正在激烈进行，快来围观吧：\n$selfRoomAddr/${room.roomId}"
-        runBlocking {
-            launch {
-                val session = verify()
-                bind(session)
-                pushQQGroups.forEach { sendGroupMessage(session, it, text) }
-                release(session)
-            }
+        @OptIn(DelicateCoroutinesApi::class)
+        GlobalScope.launch {
+            val session = verify()
+            bind(session)
+            pushQQGroups.forEach { sendGroupMessage(session, it, text) }
+            release(session)
         }
     }
 
