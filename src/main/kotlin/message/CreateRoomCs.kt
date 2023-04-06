@@ -15,7 +15,7 @@ class CreateRoomCs(
         if (name.isNullOrEmpty()) throw HandlerException("名字为空")
         if (name.toByteArray().size > 48) throw HandlerException("名字太长")
         if (rid.isNullOrEmpty()) throw HandlerException("房间ID为空")
-        if (!rid.matches(Regex("[a-z0-9]{1,16}"))) throw HandlerException("房间ID不合法")
+        if (!rid.matches(Regex("\\d{1,16}"))) throw HandlerException("房间ID不合法")
         if (type < 1 || type > 3) throw HandlerException("不支持的游戏类型")
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId != null && Store.getRoom(player.roomId) != null) throw HandlerException("已经在房间里了")

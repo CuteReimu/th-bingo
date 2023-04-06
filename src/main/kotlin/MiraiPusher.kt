@@ -16,8 +16,13 @@ import java.time.Duration
 import java.util.*
 
 object MiraiPusher {
+    private var lastPushTime = 0L
+
     fun push(room: Room) {
         if (!enablePush) return
+        val now = System.currentTimeMillis()
+        if (now - lastPushTime < pushInterval * 60000L) return
+        lastPushTime = now
         val text = "Bingo比赛正在激烈进行，快来围观吧：\n$selfRoomAddr/${room.roomId}"
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
@@ -79,6 +84,7 @@ object MiraiPusher {
     private val miraiVerifyKey: String
     private val robotQQ: Long
     private val pushQQGroups: LongArray
+    private val pushInterval: Long
 
     init {
         val pps = Properties()
@@ -95,6 +101,7 @@ object MiraiPusher {
         pps.putIfAbsent("mirai_verify_key", "")
         pps.putIfAbsent("robot_qq", "12345678")
         pps.putIfAbsent("push_qq_groups", "")
+        pps.putIfAbsent("push_interval", "10")
         enablePush = pps.getProperty("enable_push").toBoolean()
         selfRoomAddr = pps.getProperty("self_room_addr")
         miraiHttpUrl = pps.getProperty("mirai_http_url")
@@ -104,6 +111,7 @@ object MiraiPusher {
             if (isEmpty()) return@run longArrayOf()
             split(",").map(String::toLong).toLongArray()
         }
+        pushInterval = pps.getProperty("push_interval").toLong()
         try {
             FileOutputStream("application.properties").use { out -> pps.store(out, "application.properties") }
         } catch (e: Exception) {
