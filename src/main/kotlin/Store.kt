@@ -14,6 +14,7 @@ object Store {
     private val logger = Logger.getLogger(Store.javaClass)
     private val cache: DiskLruCache
     private val gson = Gson()
+    val robotPlayer = Player(token = "训练用毛玉", name = "训练用毛玉", roomId = null)
 
     init {
         val cacheDir = File("cache")
@@ -58,6 +59,7 @@ object Store {
 
     @Throws(HandlerException::class)
     fun putPlayer(player: Player) {
+        if (player.token == robotPlayer.token) return
         player.lastOperateMs = Date().time
         if (isWindows)
             cache.remove("player-${player.token}")
@@ -73,6 +75,7 @@ object Store {
     }
 
     fun getPlayer(token: String): Player? {
+        if (token == robotPlayer.token) return robotPlayer
         val entry = cache.get("player-$token") ?: return null
         entry.getInputStream(0).use { `is` ->
             BufferedReader(InputStreamReader(`is`, Charsets.UTF_8)).use { return gson.fromJson(it, Player::class.java) }
@@ -80,6 +83,7 @@ object Store {
     }
 
     private fun removePlayer(token: String) {
+        if (token == robotPlayer.token) return
         cache.remove("player-$token")
     }
 
