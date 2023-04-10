@@ -7,9 +7,7 @@ import org.tfcc.bingo.message.HandlerException
 import org.tfcc.bingo.message.Message
 import org.tfcc.bingo.message.RoomInfoSc
 import org.tfcc.bingo.message.writeMessage
-import java.io.File
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.*
 import java.util.*
 
 object Store {
@@ -66,7 +64,7 @@ object Store {
         val editor = cache.edit("player-${player.token}") ?: throw HandlerException("缓存错误")
         try {
             editor.newOutputStream(0).use { os ->
-                OutputStreamWriter(os, Charsets.UTF_8).use { gson.toJson(player, it) }
+                BufferedWriter(OutputStreamWriter(os, Charsets.UTF_8)).use { gson.toJson(player, it) }
             }
             editor.commit()
         } finally {
@@ -77,7 +75,7 @@ object Store {
     fun getPlayer(token: String): Player? {
         val entry = cache.get("player-$token") ?: return null
         entry.getInputStream(0).use { `is` ->
-            InputStreamReader(`is`, Charsets.UTF_8).use { return gson.fromJson(it, Player::class.java) }
+            BufferedReader(InputStreamReader(`is`, Charsets.UTF_8)).use { return gson.fromJson(it, Player::class.java) }
         }
     }
 
@@ -93,7 +91,7 @@ object Store {
         val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")
         try {
             editor.newOutputStream(0).use { os ->
-                OutputStreamWriter(os, Charsets.UTF_8).use { gson.toJson(room, it) }
+                BufferedWriter(OutputStreamWriter(os, Charsets.UTF_8)).use { gson.toJson(room, it) }
             }
             editor.commit()
         } finally {
@@ -104,7 +102,7 @@ object Store {
     fun getRoom(roomId: String): Room? {
         val entry = cache.get("room-$roomId") ?: return null
         entry.getInputStream(0).use { `is` ->
-            InputStreamReader(`is`, Charsets.UTF_8).use { return gson.fromJson(it, Room::class.java) }
+            BufferedReader(InputStreamReader(`is`, Charsets.UTF_8)).use { return gson.fromJson(it, Room::class.java) }
         }
     }
 
