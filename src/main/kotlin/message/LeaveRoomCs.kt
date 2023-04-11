@@ -17,7 +17,7 @@ class LeaveRoomCs : Handler {
         var isWatcher = false
         if (room.host == token) {
             for (p in room.players) {
-                if (p.isNotEmpty()) {
+                if (p.isNotEmpty() && p != Store.robotPlayer.token) {
                     tokens.add(p)
                     Store.putPlayer(Player(p))
                 }
@@ -35,7 +35,7 @@ class LeaveRoomCs : Handler {
                 isWatcher = true
                 room.watchers.remove(token)
             }
-            val players = room.players.filter { s -> s.isNotEmpty() }
+            val players = room.players.filter { s -> s.isNotEmpty() && s != Store.robotPlayer.token }
             if (room.host.isNotEmpty()) tokens.add(room.host)
             tokens.addAll(players)
             tokens.addAll(room.watchers)
