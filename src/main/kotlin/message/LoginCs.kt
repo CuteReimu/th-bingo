@@ -18,9 +18,8 @@ class LoginCs(val token: String?) : Handler {
             logger.warn("already online, kick old session")
             oldChannel.close()
         }
-        if (Store.getPlayer(this.token) == null) {
-            Store.putPlayer(Player(this.token))
-        }
+        val player = Store.getPlayer(this.token) ?: Player(this.token)
+        Store.putPlayer(player)
         Supervisor.put(ctx.channel(), this.token)
         val msg = Store.buildPlayerInfo(this.token)
         ctx.writeMessage(Message(name = msg.name, reply = protoName, trigger = msg.trigger, data = msg.data))
