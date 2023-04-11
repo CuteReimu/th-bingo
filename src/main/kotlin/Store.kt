@@ -3,10 +3,7 @@ package org.tfcc.bingo
 import com.google.gson.Gson
 import com.jakewharton.disklrucache.DiskLruCache
 import org.apache.log4j.Logger
-import org.tfcc.bingo.message.HandlerException
-import org.tfcc.bingo.message.Message
-import org.tfcc.bingo.message.RoomInfoSc
-import org.tfcc.bingo.message.writeMessage
+import org.tfcc.bingo.message.*
 import java.io.*
 import java.util.*
 
@@ -23,7 +20,7 @@ object Store {
         cache = DiskLruCache.open(cacheDir, 1, 1, 10 * 1024 * 1024)
         Timer().schedule(object : TimerTask() {
             override fun run() {
-                clean()
+                Dispatcher.pool.submit(::clean)
             }
         }, 500, 30 * 60 * 1000)
     }
