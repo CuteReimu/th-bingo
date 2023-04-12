@@ -19,7 +19,7 @@ object RoomTypeNormal : RoomType {
         val st = room.spellStatus!![idx]
         if (status == BANNED)
             throw HandlerException("不支持的操作")
-        val now = Date().time
+        val now = System.currentTimeMillis()
         if (room.pauseBeginMs != 0L && token != room.host)
             throw HandlerException("暂停中，不能操作")
         if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs)

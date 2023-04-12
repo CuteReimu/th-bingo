@@ -44,7 +44,7 @@ class StartGameCs(
         )
         SpellLog.logRandSpells(room.spells!!)
         room.started = true
-        room.startMs = Date().time
+        room.startMs = System.currentTimeMillis()
         room.countDown = countdown
         room.gameTime = gameTime
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }

@@ -27,7 +27,7 @@ object Store {
 
     private fun clean() {
         logger.debug("开始清除过期缓存")
-        val now = Date().time
+        val now = System.currentTimeMillis()
         val rooms = File("cache").listFiles { _, name -> name.startsWith("room-") && name.endsWith(".0") }
         if (rooms != null) {
             for (f in rooms) {
@@ -57,7 +57,7 @@ object Store {
     @Throws(HandlerException::class)
     fun putPlayer(player: Player) {
         if (player.token == robotPlayer.token) return
-        player.lastOperateMs = Date().time
+        player.lastOperateMs = System.currentTimeMillis()
         if (isWindows)
             cache.remove("player-${player.token}")
         val editor = cache.edit("player-${player.token}") ?: throw HandlerException("缓存错误")
@@ -86,7 +86,7 @@ object Store {
 
     @Throws(HandlerException::class)
     fun putRoom(room: Room, needUpdateOperateMs: Boolean = true) {
-        if (needUpdateOperateMs) room.lastOperateMs = Date().time
+        if (needUpdateOperateMs) room.lastOperateMs = System.currentTimeMillis()
         if (isWindows)
             cache.remove("room-${room.roomId}")
         val editor = cache.edit("room-${room.roomId}") ?: throw HandlerException("缓存错误")

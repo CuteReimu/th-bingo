@@ -17,7 +17,7 @@ class GetSpellsCs : Handler {
                 player.name,
                 SpellListSc(
                     spells = room.spells!!,
-                    time = Date().time,
+                    time = System.currentTimeMillis(),
                     startTime = room.startMs,
                     gameTime = room.gameTime,
                     countdown = room.countDown,
