@@ -226,12 +226,6 @@ object SpellFactory {
         spells01.addAll(spells[1].subList(0, lv2Count))
         spells01.addAll(spells[2].subList(0, lv3Count))
         spells01.shuffle(rand)
-        // 第二、四排的第二、四列不出现4和5级
-        val s11 = spells01[0]
-        val s13 = spells01[1]
-        val s31 = spells01[2]
-        val s33 = spells01[3]
-        val spells012 = ArrayList(spells01.subList(4, spells01.size))
 
         val topSpellList = ArrayList<Spell>()
         spells[3].shuffle(rand)
@@ -240,11 +234,13 @@ object SpellFactory {
         topSpellList.addAll(spells[4].subList(0, lv5Count))
         topSpellList.shuffle(rand)
 
-        val s22 = topSpellList[0] // 中间4，5级
-        val s40 = topSpellList[1] // 左下4，5级
-        val s44 = topSpellList[2] // 右下4，5级
-        spells012.addAll(topSpellList.subList(3, topSpellList.size))
-        spells012.shuffle(rand) // 打乱lv1-lv5
+        // 第二、四排的第二、四列固定4级
+        val s22 = spells[4][0] // 中间5级
+        val s11 = spells[3][0]
+        val s13 = spells[3][1]
+        val s31 = spells[3][2]
+        val s33 = spells[3][3]
+        spells01.shuffle(rand) // 打乱lv1-lv3
         var j = 0
         return Array(25) { i ->
             when (i) {
@@ -255,9 +251,7 @@ object SpellFactory {
                 12 -> s22
                 16 -> s31
                 18 -> s33
-                20 -> s40
-                24 -> s44
-                else -> spells012[j++]
+                else -> spells01[j++]
             }
         }
     }
