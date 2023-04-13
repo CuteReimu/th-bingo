@@ -51,7 +51,7 @@ object RoomTypeLink : RoomType {
                             if (st == SpellStatus.BOTH_SELECT) SpellStatus.RIGHT_SELECT else status
                         }
 
-                        else -> throw HandlerException("权限不足")
+                        else -> throw HandlerException("还未轮到你")
                     }
                 } else { // 收卡阶段
                     if (room.host.isNotEmpty())
@@ -90,7 +90,7 @@ object RoomTypeLink : RoomType {
                             if (st == SpellStatus.BOTH_SELECT) SpellStatus.LEFT_SELECT else status
                         }
 
-                        else -> throw HandlerException("权限不足")
+                        else -> throw HandlerException("还未轮到你")
                     }
                 } else { // 收卡阶段
                     if (room.host.isNotEmpty())
