@@ -16,7 +16,7 @@ class LoginCs(val token: String?) : Handler {
         val oldChannel = Supervisor.getChannel(this.token)
         if (oldChannel != null) {
             logger.warn("already online, kick old session")
-            oldChannel.close()
+            oldChannel.writeMessage(Message(data = ErrorSc(-403, "有另一个客户端登录了此账号")))
         }
         val player = Store.getPlayer(this.token) ?: Player(this.token)
         Store.putPlayer(player)
