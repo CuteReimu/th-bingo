@@ -4,9 +4,7 @@ import org.tfcc.bingo.message.HandlerException
 import kotlin.math.abs
 
 object RoomTypeLink : RoomType {
-    override fun canPause(): Boolean {
-        return false
-    }
+    override val canPause = false
 
     override fun onStart(room: Room) {
         room.spellStatus!![0] = SpellStatus.LEFT_SELECT

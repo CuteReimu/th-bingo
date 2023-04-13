@@ -5,9 +5,7 @@ import org.tfcc.bingo.message.HandlerException
 import java.util.*
 
 object RoomTypeNormal : RoomType {
-    override fun canPause(): Boolean {
-        return true
-    }
+    override val canPause = true
 
     @Throws(HandlerException::class)
     override fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {

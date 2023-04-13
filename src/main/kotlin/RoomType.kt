@@ -12,7 +12,7 @@ sealed interface RoomType {
         throw HandlerException("不支持下一回合的游戏类型")
     }
 
-    fun canPause(): Boolean
+    val canPause: Boolean
 
     @Throws(HandlerException::class)
     fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell>
