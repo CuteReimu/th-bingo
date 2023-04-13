@@ -9,9 +9,10 @@ class StartGameCs(
     val countdown: Int, // 倒计时，单位：秒
     val games: Array<String>,
     val ranks: Array<String>?,
-    var needWin: Int,
-    var difficulty: Int,
-    val enableTools: Boolean?
+    val needWin: Int,
+    val difficulty: Int,
+    val enableTools: Boolean?,
+    val isPrivate: Boolean?
 ) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
@@ -22,7 +23,6 @@ class StartGameCs(
         if (games.size > 99) throw HandlerException("选择的作品数太多")
         if (ranks != null && ranks.size > 6) throw HandlerException("选择的难度数太多")
         if (needWin > 99) throw HandlerException("需要胜场的数值不正确")
-        if (needWin <= 0) needWin = 1
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
@@ -48,7 +48,7 @@ class StartGameCs(
         room.countDown = countdown
         room.gameTime = gameTime
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
-        room.needWin = needWin
+        room.needWin = needWin.coerceAtLeast(1)
         room.locked = true
         room.difficulty = difficulty
         room.enableTools = enableTools == true
@@ -66,7 +66,7 @@ class StartGameCs(
                     startTime = room.startMs,
                     gameTime = gameTime,
                     countdown = countdown,
-                    needWin = needWin,
+                    needWin = room.needWin,
                     whoseTurn = room.bpData?.whoseTurn ?: 0,
                     banPick = room.bpData?.banPick ?: 0,
                     linkData = room.linkData,
@@ -79,7 +79,7 @@ class StartGameCs(
                 )
             )
         )
-        if (!room.players.contains(Store.robotPlayer.token)) // 单人练习模式不推送
+        if (isPrivate != true && !room.players.contains(Store.robotPlayer.token)) // 单人练习模式不推送
             MiraiPusher.push(room)
     }
 }
