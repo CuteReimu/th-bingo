@@ -4,6 +4,8 @@ import org.tfcc.bingo.message.HandlerException
 import kotlin.math.abs
 
 object RoomTypeLink : RoomType {
+    override val name = "Link赛"
+
     override val canPause = false
 
     override fun onStart(room: Room) {

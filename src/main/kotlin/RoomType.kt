@@ -3,6 +3,8 @@ package org.tfcc.bingo
 import org.tfcc.bingo.message.HandlerException
 
 sealed interface RoomType {
+    val name: String
+
     fun onStart(room: Room) {
         // Do nothing
     }

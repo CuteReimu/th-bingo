@@ -23,7 +23,7 @@ object MiraiPusher {
         val now = System.currentTimeMillis()
         if (now - lastPushTime < pushInterval * 60000L) return
         lastPushTime = now
-        val text = "Bingo比赛正在激烈进行，快来围观吧：\n$selfRoomAddr/${room.roomId}"
+        val text = "Bingo ${room.type.name}正在激烈进行，快来围观吧：\n$selfRoomAddr/${room.roomId}"
         @OptIn(DelicateCoroutinesApi::class)
         GlobalScope.launch {
             val session = verify()

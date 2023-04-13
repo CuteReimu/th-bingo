@@ -4,6 +4,8 @@ import org.tfcc.bingo.message.HandlerException
 import java.util.concurrent.ThreadLocalRandom
 
 object RoomTypeBP : RoomType {
+    override val name = "BP赛"
+
     override val canPause = true
 
     override fun onStart(room: Room) {

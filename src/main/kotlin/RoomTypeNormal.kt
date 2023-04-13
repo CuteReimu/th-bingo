@@ -5,6 +5,8 @@ import org.tfcc.bingo.message.HandlerException
 import java.util.*
 
 object RoomTypeNormal : RoomType {
+    override val name = "标准赛"
+
     override val canPause = true
 
     @Throws(HandlerException::class)
