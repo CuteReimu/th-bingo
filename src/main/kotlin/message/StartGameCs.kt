@@ -33,6 +33,7 @@ class StartGameCs(
         }
         if (room.started) throw HandlerException("游戏已经开始")
         if (room.players.contains("")) throw HandlerException("玩家没满")
+        val start = System.currentTimeMillis()
         room.spells = room.type.randSpells(
             games, ranks,
             when (difficulty) {
@@ -42,9 +43,11 @@ class StartGameCs(
                 else -> Difficulty.N
             }
         )
+        val now = System.currentTimeMillis()
+        println("随符卡耗时：${now - start}")
         SpellLog.logRandSpells(room.spells!!)
         room.started = true
-        room.startMs = System.currentTimeMillis()
+        room.startMs = now
         room.countDown = countdown
         room.gameTime = gameTime
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }

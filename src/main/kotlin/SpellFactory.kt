@@ -92,37 +92,9 @@ object SpellFactory {
     @Throws(HandlerException::class)
     fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
         val lvCount = difficulty.value + arrayOf(4, 1)
-        val files = File(".").listFiles() ?: throw HandlerException("找不到符卡文件")
-        val allSpells = ArrayList<Spell>()
-        for (file in files) {
-            if (file.extension != "xlsx" || file.name.startsWith("log")) continue
-            val wb = XSSFWorkbook(FileInputStream(file))
-            val sheet = wb.getSheetAt(0)
-            for (i in 1..sheet.lastRowNum) {
-                val row = sheet.getRow(i)
-                if (row.lastCellNum >= 6) {
-                    val star = row.getCell(6).numericCellValue.toInt()
-                    val inGame = games.contains(row.getCell(1).numericCellValue.toInt().toString()) &&
-                            (ranks == null || ranks.contains(row.getCell(5).stringCellValue.trim()))
-                    if (star in 1..5 && inGame) {
-                        allSpells.add(
-                            Spell(
-                                game = row.getCell(1).numericCellValue.toInt().toString(),
-                                name = row.getCell(3).stringCellValue,
-                                rank = row.getCell(5).stringCellValue,
-                                star = star,
-                                desc = row.getCell(4)?.stringCellValue ?: "",
-                                id = if (row.lastCellNum < 8) 0
-                                else row.getCell(8)?.numericCellValue?.toInt() ?: 0
-                            )
-                        )
-                    }
-                }
-            }
-        }
         val rand = ThreadLocalRandom.current()
+        val allSpells = SpellConfig.get(SpellConfig.NormalGame, games, ranks).shuffled(rand)
         // 打乱后去除重复符卡
-        allSpells.shuffle(rand)
         val starToSpells = allSpells.distinctBy { "${it.game}-${it.id}" }.groupBy { it.star }
         val spells = Array(5) { starToSpells[it + 1] ?: listOf() }
         if (spells.zip(lvCount).any { (it, size) -> it.size < size })
@@ -153,37 +125,9 @@ object SpellFactory {
     @Throws(HandlerException::class)
     fun randSpellsLink(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
         val lvCount = difficulty.value + arrayOf(4, 1)
-        val files = File(".").listFiles() ?: throw HandlerException("找不到符卡文件")
-        val allSpells = ArrayList<Spell>()
-        for (file in files) {
-            if (file.extension != "xlsx" || file.name.startsWith("log")) continue
-            val wb = XSSFWorkbook(FileInputStream(file))
-            val sheet = wb.getSheetAt(0)
-            for (i in 1..sheet.lastRowNum) {
-                val row = sheet.getRow(i)
-                if (row.lastCellNum >= 6) {
-                    val star = row.getCell(6).numericCellValue.toInt()
-                    val inGame = games.contains(row.getCell(1).numericCellValue.toInt().toString()) &&
-                            (ranks == null || ranks.contains(row.getCell(5).stringCellValue.trim()))
-                    if (star in 1..5 && inGame) {
-                        allSpells.add(
-                            Spell(
-                                game = row.getCell(1).numericCellValue.toInt().toString(),
-                                name = row.getCell(3).stringCellValue,
-                                rank = row.getCell(5).stringCellValue,
-                                star = star,
-                                desc = row.getCell(4)?.stringCellValue ?: "",
-                                id = if (row.lastCellNum < 8) 0
-                                else row.getCell(8)?.numericCellValue?.toInt() ?: 0
-                            )
-                        )
-                    }
-                }
-            }
-        }
         val rand = ThreadLocalRandom.current()
+        val allSpells = SpellConfig.get(SpellConfig.NormalGame, games, ranks).shuffled(rand)
         // 打乱后去除重复符卡
-        allSpells.shuffle(rand)
         val starToSpells = allSpells.distinctBy { "${it.game}-${it.id}" }.groupBy { it.star }
         val spells = Array(5) { starToSpells[it + 1] ?: listOf() }
         if (spells.zip(lvCount).any { (it, size) -> it.size < size })
