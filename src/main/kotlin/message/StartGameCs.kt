@@ -40,7 +40,7 @@ class StartGameCs(
                 1 -> Difficulty.E
                 2 -> Difficulty.N
                 3 -> Difficulty.L
-                else -> Difficulty.N
+                else -> Difficulty.random()
             }
         )
         val now = System.currentTimeMillis()

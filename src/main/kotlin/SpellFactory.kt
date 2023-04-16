@@ -91,13 +91,13 @@ object SpellFactory {
      */
     @Throws(HandlerException::class)
     fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
-        val lvCount = difficulty.value + arrayOf(4, 1)
+        val lvCount = difficulty.value + intArrayOf(4, 1)
         val rand = ThreadLocalRandom.current()
         val allSpells = SpellConfig.get(SpellConfig.NormalGame, games, ranks).shuffled(rand)
         // 打乱后去除重复符卡
         val starToSpells = allSpells.distinctBy { "${it.game}-${it.id}" }.groupBy { it.star }
         val spells = Array(5) { starToSpells[it + 1] ?: listOf() }
-        if (spells.zip(lvCount).any { (it, size) -> it.size < size })
+        if (spells.withIndex().any { (i, it) -> it.size < lvCount[i] })
             throw HandlerException("符卡数量不足")
 
         val easySpell = (0..2).flatMap { i -> spells[i].subList(0, lvCount[i]) }.shuffled(rand)
@@ -124,13 +124,13 @@ object SpellFactory {
      */
     @Throws(HandlerException::class)
     fun randSpellsLink(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
-        val lvCount = difficulty.value + arrayOf(4, 1)
+        val lvCount = difficulty.value + intArrayOf(4, 1)
         val rand = ThreadLocalRandom.current()
         val allSpells = SpellConfig.get(SpellConfig.NormalGame, games, ranks).shuffled(rand)
         // 打乱后去除重复符卡
         val starToSpells = allSpells.distinctBy { "${it.game}-${it.id}" }.groupBy { it.star }
         val spells = Array(5) { starToSpells[it + 1] ?: listOf() }
-        if (spells.zip(lvCount).any { (it, size) -> it.size < size })
+        if (spells.withIndex().any { (i, it) -> it.size < lvCount[i] })
             throw HandlerException("符卡数量不足")
         val s00 = spells[0][0] // 左上lv1
         val s04 = spells[0][4] // 右上lv1
