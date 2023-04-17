@@ -5,8 +5,6 @@ import org.tfcc.bingo.message.HandlerException
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.util.*
-import kotlin.collections.HashMap
 
 /**
  * 记录每张卡的出现次数，选择次数，收取次数，平均收取时长
@@ -48,15 +46,15 @@ object SpellLog {
         for (model in logList) {
             if (!model.value.changed) continue
             val row = sheet.getRow(model.value.id)
-            with(row){
+            with(row) {
                 getCell(1)?.setCellValue(model.value.appear.toDouble())
-                    ?:createCell(1).setCellValue(model.value.appear.toDouble())
+                    ?: createCell(1).setCellValue(model.value.appear.toDouble())
                 getCell(2)?.setCellValue(model.value.select.toDouble())
-                    ?:createCell(2).setCellValue(model.value.select.toDouble())
+                    ?: createCell(2).setCellValue(model.value.select.toDouble())
                 getCell(3)?.setCellValue(model.value.get.toDouble())
-                    ?:createCell(3).setCellValue(model.value.get.toDouble())
+                    ?: createCell(3).setCellValue(model.value.get.toDouble())
                 getCell(4)?.setCellValue(model.value.time.toDouble())
-                    ?:createCell(4).setCellValue(model.value.time.toDouble())
+                    ?: createCell(4).setCellValue(model.value.time.toDouble())
             }
         }
         wb.write(FileOutputStream(file))
@@ -95,12 +93,12 @@ object SpellLog {
         val sheet = wb.getSheetAt(0)
         for (i in 1..sheet.lastRowNum) {
             val row = sheet.getRow(i)
-            logList[row.getCell(0).stringCellValue] = LogModel(
+            logList[row.getCell(0).stringCellValue.trim()] = LogModel(
                 id = i,
-                appear = row.getCell(1)?.numericCellValue?.toInt()?:0,
-                select = row.getCell(2)?.numericCellValue?.toInt()?:0,
-                get = row.getCell(3)?.numericCellValue?.toInt()?:0,
-                time = row.getCell(4)?.numericCellValue?.toLong()?:0,
+                appear = row.getCell(1)?.numericCellValue?.toInt() ?: 0,
+                select = row.getCell(2)?.numericCellValue?.toInt() ?: 0,
+                get = row.getCell(3)?.numericCellValue?.toInt() ?: 0,
+                time = row.getCell(4)?.numericCellValue?.toLong() ?: 0,
             )
         }
     }
