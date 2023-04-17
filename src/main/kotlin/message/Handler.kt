@@ -2,7 +2,7 @@ package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
 
-class HandlerException(msg: String) : Exception(msg)
+open class HandlerException(msg: String) : Exception(msg)
 
 interface Handler {
     @Throws(HandlerException::class)

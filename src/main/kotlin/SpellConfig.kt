@@ -25,11 +25,16 @@ object SpellConfig {
     /**
      * 获取符卡相关的xlsx配置
      * @param type 可以传入 [NormalGame] 或 [BPGame]
+     * @return 一个[Map]。它的key是"$game-$star"的字符串，例如"6-3"表示th6的3星卡；它的value是一个包含所有满足条件的符卡列表。
      */
-    fun get(type: Int, games: Array<String>, ranks: Array<String>?): List<Spell> =
-        get(type).filter { spell -> games.contains(spell.game) && (ranks == null || ranks.contains(spell.rank)) }
+    fun get(type: Int, games: Array<String>, ranks: Array<String>?): Map<String, List<Spell>> =
+        get(type).mapValues { (_, spellList) ->
+            spellList.filter { spell ->
+                games.contains(spell.game) && (ranks == null || ranks.contains(spell.rank))
+            }
+        }
 
-    private fun get(type: Int): List<Spell> {
+    private fun get(type: Int): Map<String, List<Spell>> {
         val config = cache[type] ?: throw IllegalArgumentException("不支持的比赛类型")
         val files = File(".").listFiles()?.filter { file ->
             file.extension == "xlsx" && !file.name.startsWith("log")
@@ -47,14 +52,14 @@ object SpellConfig {
         }
         if (md5sum != null && config.md5sum != null && md5sum == config.md5sum)
             return config.allSpells
-        val allSpells = ArrayList<Spell>()
+        val allSpells = HashMap<String, ArrayList<Spell>>()
         for (file in files) {
             val wb = XSSFWorkbook(FileInputStream(file))
             val sheet = wb.getSheetAt(0)
             for (i in 1..sheet.lastRowNum) {
                 val row = sheet.getRow(i)
                 val spell = config.spellBuilder(row) ?: continue
-                allSpells.add(spell)
+                allSpells.getOrPut("${spell.game}-${spell.star}") { arrayListOf() }.add(spell)
             }
         }
         config.md5sum = md5sum
@@ -108,7 +113,7 @@ object SpellConfig {
         val spellBuilder: (XSSFRow) -> Spell?
     ) {
         var md5sum: Set<String>? = null
-        var allSpells: List<Spell> = listOf()
+        var allSpells: Map<String, List<Spell>> = mapOf()
     }
 
     private val isWindows = System.getProperty("os.name").lowercase().contains("windows")

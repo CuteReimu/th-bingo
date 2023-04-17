@@ -5,6 +5,7 @@ import org.tfcc.bingo.message.HandlerException
 import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.Random
 import kotlin.random.asKotlinRandom
 
 object SpellFactory {
@@ -91,32 +92,29 @@ object SpellFactory {
      */
     @Throws(HandlerException::class)
     fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
-        val lvCount = difficulty.value + intArrayOf(4, 1)
-        val rand = ThreadLocalRandom.current()
-        val allSpells = SpellConfig.get(SpellConfig.NormalGame, games, ranks).shuffled(rand)
-        // 打乱后去除重复符卡
-        val starToSpells = allSpells.distinctBy { "${it.game}-${it.id}" }.groupBy { it.star }
-        val spells = Array(5) { starToSpells[it + 1] ?: listOf() }
-        if (spells.withIndex().any { (i, it) -> it.size < lvCount[i] })
-            throw HandlerException("符卡数量不足")
-
-        val easySpell = (0..2).flatMap { i -> spells[i].subList(0, lvCount[i]) }.shuffled(rand)
-        val topSpell = (3..4).flatMap { i -> spells[i].subList(0, lvCount[i]) }.shuffled(rand)
-
+        val lvCount = difficulty.value
+        val rand = ThreadLocalRandom.current().asKotlinRandom()
+        val allSpells = SpellConfig.get(SpellConfig.NormalGame, games, ranks)
         val idx = intArrayOf(0, 1, 3, 4)
-        idx.shuffle(rand.asKotlinRandom())
+        val star123 = Array(lvCount[0]) { "1" } + Array(lvCount[1]) { "2" } + Array(lvCount[2]) { "3" }
+        val star45 = arrayOf("4", "4", "4", "4", "5")
+        idx.shuffle(rand)
+        star45.shuffle(rand)
+        star123.shuffle(rand)
         var j = 0
-        return Array(25) { i ->
-            when (i) {
-                // 每行、每列都只有一个大于等于lv4
-                idx[0] -> topSpell[0]
-                5 + idx[1] -> topSpell[1]
-                12 -> topSpell[2]
-                15 + idx[2] -> topSpell[3]
-                20 + idx[3] -> topSpell[4]
-                else -> easySpell[j++]
-            }
+        val gamesAndStars = Array(25) { i ->
+            games.random(rand) + "-" +
+                    when (i) {
+                        // 每行、每列都只有一个大于等于lv4
+                        idx[0] -> star45[0]
+                        5 + idx[1] -> star45[1]
+                        12 -> star45[2]
+                        15 + idx[2] -> star45[3]
+                        20 + idx[3] -> star45[4]
+                        else -> star123[j++]
+                    }
         }
+        return allSpells.choose(gamesAndStars, rand)
     }
 
     /**
@@ -124,40 +122,40 @@ object SpellFactory {
      */
     @Throws(HandlerException::class)
     fun randSpellsLink(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
-        val lvCount = difficulty.value + intArrayOf(4, 1)
-        val rand = ThreadLocalRandom.current()
-        val allSpells = SpellConfig.get(SpellConfig.NormalGame, games, ranks).shuffled(rand)
-        // 打乱后去除重复符卡
-        val starToSpells = allSpells.distinctBy { "${it.game}-${it.id}" }.groupBy { it.star }
-        val spells = Array(5) { starToSpells[it + 1] ?: listOf() }
-        if (spells.withIndex().any { (i, it) -> it.size < lvCount[i] })
-            throw HandlerException("符卡数量不足")
-        val s00 = spells[0][0] // 左上lv1
-        val s04 = spells[0][4] // 右上lv1
-        val easySpell = ArrayList<Spell>()
-        easySpell.addAll(spells[0].subList(2, lvCount[0]))
-        easySpell.addAll(spells[1].subList(0, lvCount[1]))
-        easySpell.addAll(spells[2].subList(0, lvCount[2]))
-        easySpell.shuffle(rand)
-
-        // 第二、四排的第二、四列固定4级
-        val s22 = spells[4][0] // 中间5级
-        val s11 = spells[3][0]
-        val s13 = spells[3][1]
-        val s31 = spells[3][2]
-        val s33 = spells[3][3]
+        val lvCount = difficulty.value
+        val rand = ThreadLocalRandom.current().asKotlinRandom()
+        val allSpells = SpellConfig.get(SpellConfig.NormalGame, games, ranks)
+        val idx = intArrayOf(0, 1, 3, 4)
+        val star123 = Array(lvCount[0]) { "1" } + Array(lvCount[1]) { "2" } + Array(lvCount[2]) { "3" }
+        idx.shuffle(rand)
+        star123.shuffle(rand)
         var j = 0
-        return Array(25) { i ->
-            when (i) {
-                0 -> s00
-                4 -> s04
-                6 -> s11
-                8 -> s13
-                12 -> s22
-                16 -> s31
-                18 -> s33
-                else -> easySpell[j++]
+        val gamesAndStars = Array(25) { i ->
+            games.random(rand) + "-" +
+                    when (i) {
+                        0, 4 -> "1" // 左上lv1，右上lv1
+                        6, 8, 16, 18 -> "4" // 第二、四排的第二、四列固定4级
+                        12 -> "5" // 中间5级
+                        else -> star123[j++]
+                    }
+        }
+        return allSpells.choose(gamesAndStars, rand)
+    }
+
+    private fun Map<String, List<Spell>>.choose(keys: Array<String>, rand: Random): Array<Spell> {
+        var failedTimes = 0
+        val exists = HashSet<String>() // "$game-$id"
+        return Array(keys.size) {
+            val spells = this[keys[it]] ?: throw SpellNotEnoughException()
+            while (failedTimes < 100) {
+                val spell = spells.randomOrNull(rand) ?: throw SpellNotEnoughException()
+                if (exists.add("${spell.game}-${spell.id}"))
+                    return@Array spell
+                failedTimes++
             }
+            throw SpellNotEnoughException()
         }
     }
+
+    internal class SpellNotEnoughException : HandlerException("符卡数量不足")
 }
