@@ -114,7 +114,7 @@ object SpellLog {
             val wb = XSSFWorkbook(FileInputStream(file))
             val sheet = wb.getSheetAt(0)
             for (i in 1..sheet.lastRowNum) {
-                logSheet.createRow(i).createCell(0).setCellValue(sheet.getRow(i).getCell(3).stringCellValue)
+                logSheet.createRow(i).createCell(0).setCellValue(sheet.getRow(i).getCell(3).stringCellValue.trim())
             }
         }
         logWB.write(FileOutputStream(logFile))
