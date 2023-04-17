@@ -66,10 +66,10 @@ object SpellConfig {
         if (row.lastCellNum < 6) return null
         return Spell(
             game = row.getCell(1).numericCellValue.toInt().toString(),
-            name = row.getCell(3).stringCellValue,
-            rank = row.getCell(5).stringCellValue,
+            name = row.getCell(3).stringCellValue.trim(),
+            rank = row.getCell(5).stringCellValue.trim(),
             star = row.getCell(6).numericCellValue.toInt(),
-            desc = row.getCell(4)?.stringCellValue ?: "",
+            desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
             id = if (row.lastCellNum < 8) 0
             else row.getCell(8)?.numericCellValue?.toInt() ?: 0
         )
@@ -79,10 +79,10 @@ object SpellConfig {
         if (row.lastCellNum < 6) return null
         return Spell(
             game = row.getCell(1).numericCellValue.toInt().toString(),
-            name = row.getCell(3).stringCellValue,
-            rank = row.getCell(5).stringCellValue,
+            name = row.getCell(3).stringCellValue.trim(),
+            rank = row.getCell(5).stringCellValue.trim(),
             star = row.getCell(7).numericCellValue.toInt(),
-            desc = row.getCell(4)?.stringCellValue ?: "",
+            desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
             id = if (row.lastCellNum < 8) 0
             else row.getCell(8)?.numericCellValue?.toInt() ?: 0
         )
