@@ -41,7 +41,7 @@ object SpellConfig {
                         spellMap.putIfAbsent("$game-${spell.id}", spell)
                     }
                 }
-                if (spellMap.isNotEmpty()) gameMap2[game] = LinkedList(spellMap.values)
+                if (spellMap.isNotEmpty()) gameMap2[game] = LinkedList(spellMap.values.shuffled(rand))
             }
             if (gameMap2.isNotEmpty()) map[star] = gameMap2
         }
