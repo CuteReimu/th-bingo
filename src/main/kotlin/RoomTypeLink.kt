@@ -18,7 +18,7 @@ object RoomTypeLink : RoomType {
     }
 
     @Throws(HandlerException::class)
-    override fun randSpells0(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
+    override fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
         return SpellFactory.randSpellsLink(games, ranks, difficulty)
     }
 

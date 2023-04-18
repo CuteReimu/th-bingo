@@ -8,7 +8,9 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStreamReader
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 object SpellConfig {
     /** 标准赛和Link赛用同一个配置 */
@@ -23,18 +25,37 @@ object SpellConfig {
     ) // 因为用的SingleThreadExecutor，因此无需考虑线程安全问题
 
     /**
-     * 获取符卡相关的xlsx配置
+     * 随符卡
      * @param type 可以传入 [NormalGame] 或 [BPGame]
-     * @return 一个[Map]。它的key是"$game-$star"的字符串，例如"6-3"表示th6的3星卡；它的value是一个包含所有满足条件的符卡列表。
+     * @param stars 星级的分布列表
      */
-    fun get(type: Int, games: Array<String>, ranks: Array<String>?): Map<String, List<Spell>> =
-        get(type).mapValues { (_, spellList) ->
-            spellList.filter { spell ->
-                games.contains(spell.game) && (ranks == null || ranks.contains(spell.rank))
+    fun get(type: Int, games: Array<String>, ranks: Array<String>?, stars: IntArray, rand: Random): Array<Spell> {
+        val map = HashMap<Int, HashMap<String, LinkedList<Spell>>>()
+        for ((star, gameMap) in get(type)) {
+            val gameMap2 = HashMap<String, LinkedList<Spell>>()
+            for ((game, spellList) in gameMap) {
+                if (game !in games) continue
+                val spellMap = HashMap<String, Spell>()
+                for (spell in spellList.shuffled(rand)) {
+                    if (ranks == null || ranks.contains(spell.rank)) {
+                        spellMap.putIfAbsent("$game-${spell.id}", spell)
+                    }
+                }
+                if (spellMap.isNotEmpty()) gameMap2[game] = LinkedList(spellMap.values)
             }
+            if (gameMap2.isNotEmpty()) map[star] = gameMap2
         }
+        return Array(stars.size) {
+            val gameMap = map[stars[it]] ?: throw HandlerException("符卡数量不足")
+            val game = gameMap.keys.randomOrNull(rand) ?: throw HandlerException("符卡数量不足")
+            val spellList = gameMap[game]!!
+            val spell = spellList.removeFirst()
+            if (spellList.isEmpty()) gameMap.remove(game)
+            spell
+        }
+    }
 
-    private fun get(type: Int): Map<String, List<Spell>> {
+    private fun get(type: Int): Map<Int, Map<String, List<Spell>>> {
         val config = cache[type] ?: throw IllegalArgumentException("不支持的比赛类型")
         val files = File(".").listFiles()?.filter { file ->
             file.extension == "xlsx" && !file.name.startsWith("log")
@@ -52,14 +73,14 @@ object SpellConfig {
         }
         if (md5sum != null && config.md5sum != null && md5sum == config.md5sum)
             return config.allSpells
-        val allSpells = HashMap<String, ArrayList<Spell>>()
+        val allSpells = HashMap<Int, HashMap<String, ArrayList<Spell>>>()
         for (file in files) {
             val wb = XSSFWorkbook(FileInputStream(file))
             val sheet = wb.getSheetAt(0)
             for (i in 1..sheet.lastRowNum) {
                 val row = sheet.getRow(i)
                 val spell = config.spellBuilder(row) ?: continue
-                allSpells.getOrPut("${spell.game}-${spell.star}") { arrayListOf() }.add(spell)
+                allSpells.getOrPut(spell.star) { hashMapOf() }.getOrPut(spell.game) { arrayListOf() }.add(spell)
             }
         }
         config.md5sum = md5sum
@@ -113,7 +134,7 @@ object SpellConfig {
         val spellBuilder: (XSSFRow) -> Spell?
     ) {
         var md5sum: Set<String>? = null
-        var allSpells: Map<String, List<Spell>> = mapOf()
+        var allSpells: Map<Int, Map<String, List<Spell>>> = mapOf()
     }
 
     private val isWindows = System.getProperty("os.name").lowercase().contains("windows")
