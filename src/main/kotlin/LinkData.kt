@@ -5,9 +5,11 @@ class LinkData {
     var linkIdxB = ArrayList<Int>()
     var startMsA = 0L
     var endMsA = 0L
+    var eventA = 0
     var startMsB = 0L
     var endMsB = 0L
+    var eventB = 0
 
-    fun selectCompleteA() = (startMsA > 0 || startMsB > 0) && linkIdxA.last() == 24
-    fun selectCompleteB() = (startMsA > 0 || startMsB > 0) && linkIdxB.last() == 20
+    fun selectCompleteA() = (eventA > 0 || eventB > 0) && linkIdxA.last() == 24
+    fun selectCompleteB() = (eventA > 0 || eventB > 0) && linkIdxB.last() == 20
 }
