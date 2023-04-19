@@ -114,6 +114,10 @@ object RoomTypeLink : RoomType {
     }
 
     private infix fun Int.near(other: Int): Boolean {
+        when (this % 5) {
+            0 -> if (other == this - 1) return false
+            4 -> if (other == this + 1) return false
+        }
         val diff = abs(this - other)
         return diff == 1 || diff == 4 || diff == 5 || diff == 6
     }
