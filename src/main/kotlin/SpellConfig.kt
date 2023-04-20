@@ -35,22 +35,21 @@ object SpellConfig {
             val gameMap2 = HashMap<String, LinkedList<Spell>>()
             for ((game, spellList) in gameMap) {
                 if (game !in games) continue
-                val spellMap = HashMap<String, Spell>()
-                for (spell in spellList.shuffled(rand)) {
-                    if (ranks == null || ranks.contains(spell.rank)) {
-                        spellMap.putIfAbsent("$game-${spell.id}", spell)
-                    }
-                }
-                if (spellMap.isNotEmpty()) gameMap2[game] = LinkedList(spellMap.values.shuffled(rand))
+                val spellList2 = spellList.filter { ranks == null || it.rank in ranks }
+                if (spellList2.isNotEmpty()) gameMap2[game] = LinkedList(spellList2.shuffled(rand))
             }
             if (gameMap2.isNotEmpty()) map[star] = gameMap2
         }
+        val spellIds = HashSet<String>()
         return Array(stars.size) {
             val gameMap = map[stars[it]] ?: throw HandlerException("符卡数量不足")
-            val game = gameMap.keys.randomOrNull(rand) ?: throw HandlerException("符卡数量不足")
-            val spellList = gameMap[game]!!
-            val spell = spellList.removeFirst()
-            if (spellList.isEmpty()) gameMap.remove(game)
+            var spell: Spell
+            do {
+                val game = gameMap.keys.randomOrNull(rand) ?: throw HandlerException("符卡数量不足")
+                val spellList = gameMap[game]!!
+                spell = spellList.removeFirst()
+                if (spellList.isEmpty()) gameMap.remove(game)
+            } while (!spellIds.add("${spell.game}-${spell.id}"))
             spell
         }
     }
