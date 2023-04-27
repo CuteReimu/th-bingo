@@ -27,22 +27,36 @@ object SpellConfig {
     /**
      * 随符卡
      * @param type 可以传入 [NormalGame] 或 [BPGame]
-     * @param stars 星级的分布列表
+     * @param exPos ex符卡的位置
+     * @param stars 星级的分布
      */
-    fun get(type: Int, games: Array<String>, ranks: Array<String>?, stars: IntArray, rand: Random): Array<Spell> {
-        val map = HashMap<Int, HashMap<String, LinkedList<Spell>>>()
-        for ((star, gameMap) in get(type)) {
-            val gameMap2 = HashMap<String, LinkedList<Spell>>()
-            for ((game, spellList) in gameMap) {
-                if (game !in games) continue
-                val spellList2 = spellList.filter { ranks == null || it.rank in ranks }
-                if (spellList2.isNotEmpty()) gameMap2[game] = LinkedList(spellList2.shuffled(rand))
+    fun get(
+        type: Int,
+        games: Array<String>,
+        ranks: Array<String>?,
+        exPos: IntArray,
+        stars: IntArray,
+        rand: Random
+    ): Array<Spell> {
+        val map = HashMap<Int, HashMap<Boolean, HashMap<String, LinkedList<Spell>>>>()
+        for ((star, isExMap) in get(type)) {
+            val isExMap2 = HashMap<Boolean, HashMap<String, LinkedList<Spell>>>()
+            for ((isEx, gameMap) in isExMap) {
+                for ((game, spellList) in gameMap) {
+                    if (game !in games) continue
+                    val spellList2 = spellList.filter { ranks == null || it.rank in ranks }
+                    if (spellList2.isNotEmpty()) {
+                        val gameMap2 = isExMap2.getOrPut(isEx) { HashMap<String, LinkedList<Spell>>() }
+                        gameMap2[game] = LinkedList(spellList2.shuffled(rand))
+                    }
+                }
             }
-            if (gameMap2.isNotEmpty()) map[star] = gameMap2
+            if (isExMap2.isNotEmpty()) map[star] = isExMap2
         }
         val spellIds = HashSet<String>()
-        return Array(stars.size) {
-            val gameMap = map[stars[it]] ?: throw HandlerException("符卡数量不足")
+        val result = Array(stars.size) {
+            val isExMap = map[stars[it]] ?: throw HandlerException("符卡数量不足")
+            val gameMap = isExMap[false] ?: throw HandlerException("符卡数量不足")
             var spell: Spell
             do {
                 val game = gameMap.keys.randomOrNull(rand) ?: throw HandlerException("符卡数量不足")
@@ -52,9 +66,35 @@ object SpellConfig {
             } while (!spellIds.add("${spell.game}-${spell.id}"))
             spell
         }
+        for (i in exPos.indices) {
+            var index = exPos[i]
+            var firstTry = true
+            tryOnce@ while (true) {
+                if (firstTry) {
+                    firstTry = false
+                } else {
+                    index = (index + 1) % result.size
+                    if (index == exPos[i]) throw HandlerException("符卡数量不足")
+                    if (index in exPos) continue
+                }
+                val isExMap = map[stars[index]] ?: continue
+                val gameMap = isExMap[true] ?: continue
+                var spell: Spell
+                do {
+                    val game = gameMap.keys.randomOrNull(rand) ?: continue@tryOnce
+                    val spellList = gameMap[game]!!
+                    spell = spellList.removeFirst()
+                    if (spellList.isEmpty()) gameMap.remove(game)
+                } while (!spellIds.add("${spell.game}-${spell.id}"))
+                exPos[i] = index
+                result[index] = spell
+                break
+            }
+        }
+        return result
     }
 
-    private fun get(type: Int): Map<Int, Map<String, List<Spell>>> {
+    private fun get(type: Int): Map<Int, Map<Boolean, Map<String, List<Spell>>>> {
         val config = cache[type] ?: throw IllegalArgumentException("不支持的比赛类型")
         val files = File(".").listFiles()?.filter { file ->
             file.extension == "xlsx" && !file.name.startsWith("log")
@@ -72,14 +112,17 @@ object SpellConfig {
         }
         if (md5sum != null && config.md5sum != null && md5sum == config.md5sum)
             return config.allSpells
-        val allSpells = HashMap<Int, HashMap<String, ArrayList<Spell>>>()
+        val allSpells = HashMap<Int, HashMap<Boolean, HashMap<String, ArrayList<Spell>>>>()
         for (file in files) {
             val wb = XSSFWorkbook(FileInputStream(file))
             val sheet = wb.getSheetAt(0)
             for (i in 1..sheet.lastRowNum) {
                 val row = sheet.getRow(i)
                 val spell = config.spellBuilder(row) ?: continue
-                allSpells.getOrPut(spell.star) { hashMapOf() }.getOrPut(spell.game) { arrayListOf() }.add(spell)
+                allSpells.getOrPut(spell.star) { hashMapOf() }
+                    .getOrPut(spell.rank != "L") { hashMapOf() }
+                    .getOrPut(spell.game) { arrayListOf() }
+                    .add(spell)
             }
         }
         config.md5sum = md5sum
@@ -133,7 +176,9 @@ object SpellConfig {
         val spellBuilder: (XSSFRow) -> Spell?
     ) {
         var md5sum: Set<String>? = null
-        var allSpells: Map<Int, Map<String, List<Spell>>> = mapOf()
+
+        /** star => ( isEx => ( game => spellList ) ) */
+        var allSpells: Map<Int, Map<Boolean, Map<String, List<Spell>>>> = mapOf()
     }
 
     private val isWindows = System.getProperty("os.name").lowercase().contains("windows")

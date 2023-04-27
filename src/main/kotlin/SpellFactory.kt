@@ -6,6 +6,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.*
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.Random
 import kotlin.random.asKotlinRandom
 
 object SpellFactory {
@@ -112,7 +113,7 @@ object SpellFactory {
                 else -> star123[j++]
             }
         }
-        return SpellConfig.get(SpellConfig.NormalGame, games, ranks, stars, rand)
+        return SpellConfig.get(SpellConfig.NormalGame, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     /**
@@ -135,6 +136,16 @@ object SpellFactory {
                 else -> star123[j++]
             }
         }
-        return SpellConfig.get(SpellConfig.NormalGame, games, ranks, stars, rand)
+        return SpellConfig.get(SpellConfig.NormalGame, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+    }
+
+    private fun ranksToExPos(ranks: Array<String>?, rand: Random): IntArray {
+        if (ranks != null && ranks.all { it == "L" })
+            return intArrayOf()
+        val idx = intArrayOf(0, 1, 2, 3, 4)
+        idx.shuffle(rand)
+        for ((i, j) in idx.withIndex())
+            idx[i] = i * 5 + j
+        return idx
     }
 }
