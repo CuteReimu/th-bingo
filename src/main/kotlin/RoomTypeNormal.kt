@@ -28,9 +28,15 @@ object RoomTypeNormal : RoomType {
             if (!status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
                 throw HandlerException("倒计时还没结束")
             // 倒计时没结束，需要按照倒计时已经结束的时间点计算开始收卡的时间
-            SpellLog.logSpellOperate(status, room.spells!![idx], token, room.startMs + room.countDown.toLong() * 1000L)
+            SpellLog.logSpellOperate(
+                status,
+                room.spells!![idx],
+                token,
+                room.startMs + room.countDown.toLong() * 1000L,
+                SpellLog.GameType.NORMAL
+            )
         } else {
-            SpellLog.logSpellOperate(status, room.spells!![idx], token)
+            SpellLog.logSpellOperate(status, room.spells!![idx], token, gameType = SpellLog.GameType.NORMAL)
         }
 
         return when (token) {

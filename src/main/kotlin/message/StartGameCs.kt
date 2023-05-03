@@ -45,7 +45,7 @@ class StartGameCs(
         )
         val now = System.currentTimeMillis()
         println("随符卡耗时：${now - start}")
-        SpellLog.logRandSpells(room.spells!!)
+        SpellLog.logRandSpells(room.spells!!,room.type)
         room.started = true
         room.startMs = now
         room.countDown = countdown

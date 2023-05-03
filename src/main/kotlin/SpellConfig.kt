@@ -127,6 +127,7 @@ object SpellConfig {
         }
         config.md5sum = md5sum
         config.allSpells = allSpells
+        SpellLog.createLogFile() // 重读时重新载入log
         return allSpells
     }
 
