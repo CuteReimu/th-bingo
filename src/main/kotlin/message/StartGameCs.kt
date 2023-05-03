@@ -1,6 +1,7 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
+import org.apache.log4j.Logger
 import org.tfcc.bingo.*
 import java.util.*
 
@@ -44,8 +45,8 @@ class StartGameCs(
             }
         )
         val now = System.currentTimeMillis()
-        println("随符卡耗时：${now - start}")
-        SpellLog.logRandSpells(room.spells!!,room.type)
+        logger.debug("随符卡耗时：${now - start}")
+        SpellLog.logRandSpells(room.spells!!, room.type)
         room.started = true
         room.startMs = now
         room.countDown = countdown
@@ -84,5 +85,9 @@ class StartGameCs(
         )
         if (isPrivate != true && !room.players.contains(Store.robotPlayer.token)) // 单人练习模式不推送
             MiraiPusher.push(room)
+    }
+
+    companion object {
+        private val logger: Logger = Logger.getLogger(StartGameCs::class.java)
     }
 }
