@@ -23,7 +23,7 @@ object RoomTypeLink : RoomType {
     }
 
     @Throws(HandlerException::class)
-    override fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus): SpellStatus {
+    override fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus, now: Long): SpellStatus {
         val st = room.spellStatus!![idx]
         if (status == SpellStatus.BANNED)
             throw HandlerException("不支持的操作")

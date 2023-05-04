@@ -23,7 +23,7 @@ object RoomTypeBP : RoomType {
     }
 
     @Throws(HandlerException::class)
-    override fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus): SpellStatus {
+    override fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus, now: Long): SpellStatus {
         val st = room.spellStatus!![idx]
 //        SpellLog.logSpellOperate(status, room.spells!![idx], token)
         if (token == room.players[0]) {

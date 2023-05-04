@@ -79,7 +79,8 @@ class StartGameCs(
                     status = null,
                     totalPauseTime = 0L,
                     difficulty = difficulty,
-                    enableTools = room.enableTools
+                    enableTools = room.enableTools,
+                    lastGetTime = room.lastGetTime
                 )
             )
         )

@@ -18,6 +18,7 @@ class Room(
     var locked = false // 连续多局就需要锁上
     var needWin: Int = 0 // 需要赢几局才算赢
     val changeCardCount = intArrayOf(0, 0)
+    val lastGetTime = longArrayOf(0, 0) // 上次收卡时间
     var totalPauseMs: Long = 0 // 累计暂停时长，毫秒
     var pauseBeginMs: Long = 0 // 开始暂停时刻，毫秒，0表示没暂停
     var lastWinner: Int = 0 // 上一场是谁赢，1或2
