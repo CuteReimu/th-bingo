@@ -1,12 +1,8 @@
 package org.tfcc.bingo.message
 
-class Message(
-    val name: String?,
-    val reply: String?,
-    val trigger: String?,
-    val data: Any?
-) {
-    constructor(data: Any?) : this(null, null, null, data)
-    constructor(reply: String?, data: Any?) : this(null, reply, null, data)
-    constructor(reply: String?, trigger: String?, data: Any?) : this(null, reply, trigger, data)
-}
+data class Message(
+    val name: String? = null,
+    val reply: String? = null,
+    val trigger: String? = null,
+    val data: Any? = null
+)

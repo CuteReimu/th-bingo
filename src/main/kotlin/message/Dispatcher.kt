@@ -55,7 +55,7 @@ object Dispatcher {
             val m = gson.fromJson(text, Message::class.java)
             if (m.name == null) {
                 logger.warn("unknown message")
-                ctx.writeMessage(Message(ErrorSc(400, "illegal request")))
+                ctx.writeMessage(Message(data = ErrorSc(400, "illegal request")))
                 return
             }
             if (m.name != "heart_cs")
@@ -75,7 +75,7 @@ object Dispatcher {
             }
             if (cls == null) {
                 logger.warn("can not find handler: ${m.name}")
-                ctx.writeMessage(Message(ErrorSc(404, "404 not found")))
+                ctx.writeMessage(Message(data = ErrorSc(404, "404 not found")))
                 return
             }
             pool.submit {
@@ -83,7 +83,7 @@ object Dispatcher {
                 if (m.name != "login_cs") {
                     token = Supervisor.getPlayerToken(ctx.channel().id())
                     if (token == null) {
-                        ctx.writeMessage(Message("error_sc", m.name, null, ErrorSc(-1, "You haven't login")))
+                        ctx.writeMessage(Message("error_sc", m.name, data = ErrorSc(-1, "You haven't login")))
                         return@submit
                     }
                 }
@@ -96,17 +96,17 @@ object Dispatcher {
                     handler.handle(ctx, token ?: "", m.name)
                 } catch (e: HandlerException) {
                     logger.warn("handle failed: ${m.name}, error: ", e)
-                    ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
+                    ctx.writeMessage(Message(reply = m.name, data = ErrorSc(500, e.message)))
                 } catch (e: JsonSyntaxException) {
                     logger.error("json unmarshal failed: ${m.name}, error: ", e)
-                    ctx.writeMessage(Message(m.name, ErrorSc(400, e.message)))
+                    ctx.writeMessage(Message(reply = m.name, data = ErrorSc(400, e.message)))
                 } catch (e: Throwable) {
                     logger.error("handler unknown throwable: ${m.name}, error: ", e)
-                    ctx.writeMessage(Message(m.name, ErrorSc(500, e.message)))
+                    ctx.writeMessage(Message(reply = m.name, data = ErrorSc(500, e.message)))
                 }
             }
         } catch (e: JsonSyntaxException) {
-            ctx.writeMessage(Message("error_sc", null, null, ErrorSc(400, "illegal json")))
+            ctx.writeMessage(Message(data = ErrorSc(400, "illegal json")))
         }
     }
 

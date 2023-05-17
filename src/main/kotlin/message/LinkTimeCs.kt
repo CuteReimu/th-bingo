@@ -67,6 +67,6 @@ class LinkTimeCs(val whose: Int, val event: Int) : Handler {
             data.eventB = event
         }
         Store.putRoom(room)
-        Store.notifyPlayersInRoom(token, protoName, Message(LinkDataSc(data)))
+        Store.notifyPlayersInRoom(token, protoName, Message(data = LinkDataSc(data)))
     }
 }

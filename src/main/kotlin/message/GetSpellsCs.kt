@@ -13,9 +13,9 @@ class GetSpellsCs : Handler {
         if (!room.started) throw HandlerException("游戏还未开始")
         ctx.writeMessage(
             Message(
-                protoName,
-                player.name,
-                SpellListSc(
+                reply = protoName,
+                trigger = player.name,
+                data = SpellListSc(
                     spells = room.spells!!,
                     time = System.currentTimeMillis(),
                     startTime = room.startMs,

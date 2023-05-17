@@ -10,7 +10,7 @@ class LoginCs(val token: String?) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (this.token.isNullOrEmpty() || !this.token.matches(Regex("[a-z0-9]{1,100}"))) {
-            ctx.writeMessage(Message(protoName, ErrorSc(400, "invalid token")))
+            ctx.writeMessage(Message(reply = protoName, data = ErrorSc(400, "invalid token")))
             return
         }
         val oldChannel = Supervisor.getChannel(this.token)

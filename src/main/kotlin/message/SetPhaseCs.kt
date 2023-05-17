@@ -15,6 +15,6 @@ class SetPhaseCs(val phase: Int) : Handler {
         }
         room.phase = phase
         Store.putRoom(room)
-        Store.notifyPlayersInRoom(token, protoName, Message(SetPhaseSc(phase)))
+        Store.notifyPlayersInRoom(token, protoName, Message(data = SetPhaseSc(phase)))
     }
 }

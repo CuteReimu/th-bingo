@@ -29,9 +29,14 @@ class UpdateSpellCs(val idx: Int, val status: Int) : Handler {
                 val conn = Supervisor.getChannel(token1) ?: continue
                 conn.writeMessage(
                     Message(
-                        if (token1 == token) protoName else null,
-                        player.name,
-                        UpdateSpellSc(idx, newStatus.value, room.bpData?.whoseTurn ?: 0, room.bpData?.banPick ?: 0)
+                        reply = if (token1 == token) protoName else null,
+                        trigger = player.name,
+                        data = UpdateSpellSc(
+                            idx,
+                            newStatus.value,
+                            room.bpData?.whoseTurn ?: 0,
+                            room.bpData?.banPick ?: 0
+                        )
                     )
                 )
             }

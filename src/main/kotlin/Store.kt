@@ -112,19 +112,19 @@ object Store {
     }
 
     fun buildPlayerInfo(token: String): Message {
-        val player = getPlayer(token) ?: return Message("room_info_sc", null, null, null)
-        player.roomId ?: return Message("room_info_sc", null, player.name, null)
-        val room = getRoom(player.roomId) ?: return Message("room_info_sc", null, player.name, null)
+        val player = getPlayer(token) ?: return Message("room_info_sc")
+        player.roomId ?: return Message("room_info_sc")
+        val room = getRoom(player.roomId) ?: return Message("room_info_sc", trigger = player.name)
         val data = packRoomInfo(room)
-        return Message(data)
+        return Message(data = data)
     }
 
     private fun buildPlayerInfo(token: String, winnerIdx: Int): Message {
-        val player = getPlayer(token) ?: return Message("room_info_sc", null, null, null)
-        player.roomId ?: return Message("room_info_sc", null, player.name, null)
-        val room = getRoom(player.roomId) ?: return Message("room_info_sc", null, player.name, null)
+        val player = getPlayer(token) ?: return Message("room_info_sc")
+        player.roomId ?: return Message("room_info_sc", trigger = player.name)
+        val room = getRoom(player.roomId) ?: return Message("room_info_sc", trigger = player.name)
         val data = packRoomInfo(room, winnerIdx)
-        return Message(data)
+        return Message(data = data)
     }
 
     fun getAllPlayersInRoom(token: String): Array<String>? {
@@ -146,14 +146,7 @@ object Store {
         val message = buildPlayerInfo(token)
         for (token1 in getAllPlayersInRoom(token) ?: return) {
             val conn = Supervisor.getChannel(token1) ?: continue
-            conn.writeMessage(
-                if (token1 != token) message else Message(
-                    message.name,
-                    reply,
-                    message.trigger,
-                    message.data
-                )
-            )
+            conn.writeMessage(if (token1 != token) message else message.copy(reply = reply))
         }
     }
 
@@ -161,14 +154,7 @@ object Store {
         val message = buildPlayerInfo(token, winnerIdx)
         for (token1 in getAllPlayersInRoom(token) ?: return) {
             val conn = Supervisor.getChannel(token1) ?: continue
-            conn.writeMessage(
-                if (token1 != token) message else Message(
-                    message.name,
-                    reply,
-                    message.trigger,
-                    message.data
-                )
-            )
+            conn.writeMessage(if (token1 != token) message else message.copy(reply = reply))
         }
     }
 
@@ -177,14 +163,7 @@ object Store {
         val trigger = getPlayer(token)?.name
         for (token1 in tokens ?: return) {
             val conn = Supervisor.getChannel(token1) ?: continue
-            conn.writeMessage(
-                if (token1 != token) message else Message(
-                    message.name,
-                    reply,
-                    trigger,
-                    message.data
-                )
-            )
+            conn.writeMessage(if (token1 != token) message else message.copy(reply = reply, trigger = trigger))
         }
     }
 
