@@ -52,6 +52,8 @@
 第一次运行会生成配置文件 `application.properties`，修改后重启即可
 
 ```properties
+# 推送至少间隔时间（分）
+push_interval=10
 # 是否开启推送功能
 enable_push=true
 # bingo比赛的房间url
