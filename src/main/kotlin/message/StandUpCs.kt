@@ -12,6 +12,8 @@ class StandUpCs : Handler {
         if (room.locked) throw HandlerException("连续比赛还未结束")
         val index = room.players.indexOf(token)
         if (index < 0) throw HandlerException("你不是选手")
+        if (room.host.isEmpty() && room.players[1 - index].let { it.isEmpty() || it == Store.robotPlayer.token })
+            throw HandlerException("你是房间里的最后一位选手，不能成为观众")
         room.players[index] = ""
         room.watchers.add(token)
         Store.putRoom(room)
