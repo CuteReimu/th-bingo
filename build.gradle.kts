@@ -19,7 +19,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.apache.poi:poi-ooxml:5.2.3")
     implementation("com.jakewharton:disklrucache:2.0.2")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
 }
 
