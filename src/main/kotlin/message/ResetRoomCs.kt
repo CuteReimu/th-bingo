@@ -18,8 +18,10 @@ class ResetRoomCs : Handler {
         for (i in room.score.indices)
             room.score[i] = 0
         room.locked = false
-        for (i in room.changeCardCount.indices)
+        for (i in room.changeCardCount.indices) {
             room.changeCardCount[i] = 0
+            room.lastGetTime[i] = 0
+        }
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)
     }
