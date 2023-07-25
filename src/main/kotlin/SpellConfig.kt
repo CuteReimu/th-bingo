@@ -145,7 +145,7 @@ object SpellConfig {
     }
 
     private fun buildBPSpell(row: XSSFRow): Spell? {
-        if (row.lastCellNum < 6) return null
+        if (row.lastCellNum < 7) return null
         return Spell(
             game = row.getCell(1).numericCellValue.toInt().toString(),
             name = row.getCell(3).stringCellValue.trim(),
