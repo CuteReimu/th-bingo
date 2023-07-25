@@ -65,7 +65,7 @@ object MiraiPusher {
         if (code != 0) throw Exception("sendGroupMessage failed: $code")
     }
 
-    fun release(sessionKey: String) {
+    private fun release(sessionKey: String) {
         val postData = """{"sessionKey":"$sessionKey","qq":$robotQQ}""".toRequestBody(contentType)
         val request = Request.Builder().url("$miraiHttpUrl/release").post(postData).build()
         val resp = client.newCall(request).execute()
