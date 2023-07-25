@@ -55,8 +55,9 @@ class LeaveRoomCs : Handler {
                 if (roomDestroyed) {
                     conn.writeMessage(Message("room_info_sc", null, token, null))
                 } else {
-                    if (message == null)
-                        message = Store.buildPlayerInfo(t)
+                    if (message == null) {
+                        message = Store.buildPlayerInfo(t).copy(trigger = token)
+                    }
                     conn.writeMessage(message)
                 }
             }
