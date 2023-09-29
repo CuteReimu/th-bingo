@@ -18,6 +18,5 @@ class SpellListSc(
     val phase: Int,
     val linkData: LinkData?,
     val difficulty: Int,
-    val enableTools: Boolean,
     val lastGetTime: LongArray
 )

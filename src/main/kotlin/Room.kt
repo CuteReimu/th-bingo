@@ -27,7 +27,6 @@ class Room(
     var phase: Int = 0 // 纯客户端用，服务器只记录
     val watchers = ArrayList<String>() // 观众
     var difficulty: Int = 0
-    var enableTools = false
     var lastOperateMs: Long = 0 // 最后一次操作的时间戳，毫秒
     val type
         get() = when (roomType) {

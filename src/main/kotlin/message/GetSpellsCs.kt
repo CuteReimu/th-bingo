@@ -30,7 +30,6 @@ class GetSpellsCs : Handler {
                     linkData = room.linkData,
                     phase = room.phase,
                     difficulty = room.difficulty,
-                    enableTools = room.enableTools,
                     lastGetTime = room.lastGetTime
                 )
             )

@@ -12,7 +12,6 @@ class StartGameCs(
     val ranks: Array<String>?,
     val needWin: Int,
     val difficulty: Int,
-    val enableTools: Boolean?,
     val isPrivate: Boolean?
 ) : Handler {
     @Throws(HandlerException::class)
@@ -55,7 +54,6 @@ class StartGameCs(
         room.needWin = needWin.coerceAtLeast(1)
         room.locked = true
         room.difficulty = difficulty
-        room.enableTools = enableTools == true
         room.type.onStart(room)
         Store.putRoom(room)
         Store.notifyPlayersInRoom(
@@ -79,7 +77,6 @@ class StartGameCs(
                     status = null,
                     totalPauseTime = 0L,
                     difficulty = difficulty,
-                    enableTools = room.enableTools,
                     lastGetTime = room.lastGetTime
                 )
             )
