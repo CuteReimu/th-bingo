@@ -17,6 +17,7 @@ class Room(
     val score = intArrayOf(0, 0) // 比分
     var locked = false // 连续多局就需要锁上
     var needWin: Int = 0 // 需要赢几局才算赢
+    var coldDownTime = 29 * 1000
     val changeCardCount = intArrayOf(0, 0)
     val lastGetTime = longArrayOf(0, 0) // 上次收卡时间
     var totalPauseMs: Long = 0 // 累计暂停时长，毫秒

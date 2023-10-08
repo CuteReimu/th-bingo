@@ -54,7 +54,7 @@ object RoomTypeNormal : RoomType {
                         status
 
                     LEFT_SELECT -> {
-                        val remainSelectTime = room.lastGetTime[0] + 29000 - now
+                        val remainSelectTime = room.lastGetTime[0] + room.coldDownTime - now
                         if (remainSelectTime > 0)
                             throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
                         if (st == RIGHT_SELECT) BOTH_SELECT else status
@@ -80,7 +80,7 @@ object RoomTypeNormal : RoomType {
                         status
 
                     RIGHT_SELECT -> {
-                        val remainSelectTime = room.lastGetTime[1] + 29000 - now
+                        val remainSelectTime = room.lastGetTime[1] + room.coldDownTime - now
                         if (remainSelectTime > 0)
                             throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
                         if (st == LEFT_SELECT) BOTH_SELECT else status
