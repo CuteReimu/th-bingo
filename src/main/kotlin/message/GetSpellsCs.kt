@@ -21,6 +21,7 @@ class GetSpellsCs : Handler {
                     startTime = room.startMs,
                     gameTime = room.gameTime,
                     countdown = room.countDown,
+                    cdTime = room.cdTime,
                     needWin = room.needWin,
                     whoseTurn = room.bpData?.whoseTurn ?: 0,
                     banPick = room.bpData?.banPick ?: 0,

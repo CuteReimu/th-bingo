@@ -9,6 +9,7 @@ class SpellListSc(
     val startTime: Long,
     val gameTime: Int, // 游戏总时间（不含倒计时），单位：分
     val countdown: Int, // 倒计时，单位：秒
+    val cdTime: Int,
     val needWin: Int,
     val whoseTurn: Int,
     val banPick: Int,

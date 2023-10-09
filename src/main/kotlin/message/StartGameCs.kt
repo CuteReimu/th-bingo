@@ -13,7 +13,7 @@ class StartGameCs(
     val needWin: Int,
     val difficulty: Int,
     val isPrivate: Boolean?,
-    val coldDownTime: Int = 30,
+    val cdTime: Int = 30,
 ) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
@@ -53,7 +53,7 @@ class StartGameCs(
         room.gameTime = gameTime
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
         room.needWin = needWin.coerceAtLeast(1)
-        room.coldDownTime = (coldDownTime - 1) * 1000
+        room.cdTime = cdTime
         room.locked = true
         room.difficulty = difficulty
         room.type.onStart(room)
@@ -70,6 +70,7 @@ class StartGameCs(
                     startTime = room.startMs,
                     gameTime = gameTime,
                     countdown = countdown,
+                    cdTime = room.cdTime,
                     needWin = room.needWin,
                     whoseTurn = room.bpData?.whoseTurn ?: 0,
                     banPick = room.bpData?.banPick ?: 0,
