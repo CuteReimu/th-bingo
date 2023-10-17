@@ -64,7 +64,7 @@ object RoomTypeNormal : RoomType {
                         if (st == BOTH_SELECT) RIGHT_SELECT else status
 
                     else ->
-                        throw HandlerException("内部错误")
+                        throw HandlerException("status不合法")
                 }
             }
 
@@ -90,7 +90,7 @@ object RoomTypeNormal : RoomType {
                         if (st == BOTH_SELECT) LEFT_SELECT else status
 
                     else ->
-                        throw HandlerException("内部错误")
+                        throw HandlerException("status不合法")
                 }
             }
 
