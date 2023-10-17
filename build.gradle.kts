@@ -20,7 +20,7 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:5.2.4")
     implementation("com.jakewharton:disklrucache:2.0.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
 tasks.withType<KotlinCompile> {
