@@ -1,12 +1,13 @@
 package org.tfcc.bingo
 
 import org.apache.log4j.Logger
+import org.apache.poi.openxml4j.opc.OPCPackage
+import org.apache.poi.openxml4j.opc.PackageAccess
 import org.apache.poi.xssf.usermodel.XSSFRow
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.tfcc.bingo.message.HandlerException
 import java.io.BufferedReader
 import java.io.File
-import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -114,15 +115,16 @@ object SpellConfig {
             return config.allSpells
         val allSpells = HashMap<Int, HashMap<Boolean, HashMap<String, ArrayList<Spell>>>>()
         for (file in files) {
-            val wb = XSSFWorkbook(FileInputStream(file))
-            val sheet = wb.getSheetAt(0)
-            for (i in 1..sheet.lastRowNum) {
-                val row = sheet.getRow(i)
-                val spell = config.spellBuilder(row) ?: continue
-                allSpells.getOrPut(spell.star) { hashMapOf() }
-                    .getOrPut(spell.rank != "L") { hashMapOf() }
-                    .getOrPut(spell.game) { arrayListOf() }
-                    .add(spell)
+            XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
+                val sheet = wb.getSheetAt(0)
+                for (i in 1..sheet.lastRowNum) {
+                    val row = sheet.getRow(i)
+                    val spell = config.spellBuilder(row) ?: continue
+                    allSpells.getOrPut(spell.star) { hashMapOf() }
+                        .getOrPut(spell.rank != "L") { hashMapOf() }
+                        .getOrPut(spell.game) { arrayListOf() }
+                        .add(spell)
+                }
             }
         }
         config.md5sum = md5sum

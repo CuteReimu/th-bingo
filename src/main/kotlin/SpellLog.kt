@@ -1,6 +1,8 @@
 package org.tfcc.bingo
 
 import org.apache.log4j.Logger
+import org.apache.poi.openxml4j.opc.OPCPackage
+import org.apache.poi.openxml4j.opc.PackageAccess
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.tfcc.bingo.message.HandlerException
 import java.io.ByteArrayOutputStream
@@ -58,7 +60,7 @@ object SpellLog {
             val file = File("log.xlsx")
             if (!file.exists()) file.createNewFile()
             val os = ByteArrayOutputStream()
-            XSSFWorkbook(file).use { wb ->
+            XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
                 for (i in 0 until logList.size) {
                     val sheet = wb.getSheetAt(i)
                     for (model in logList[i]) {
@@ -122,7 +124,7 @@ object SpellLog {
         if (!file.exists()) {
             createLogFile()
         }
-        XSSFWorkbook(file).use { wb ->
+        XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
             (0..2).map {
                 logList.add(HashMap())
                 val sheet = wb.getSheetAt(it)
@@ -151,7 +153,7 @@ object SpellLog {
                     logWB.createSheet("normal")
                     logWB.createSheet("bp")
                     logWB.createSheet("link")
-                    XSSFWorkbook(file).use { wb ->
+                    XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
                         for (j in 0..2) {
                             val sheet = wb.getSheetAt(0)
                             val logSheet = logWB.getSheetAt(j)
