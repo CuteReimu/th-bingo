@@ -21,7 +21,7 @@ object RoomTypeNormal : RoomType {
             throw HandlerException("不支持的操作")
         if (room.pauseBeginMs != 0L && token != room.host)
             throw HandlerException("暂停中，不能操作")
-        if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs)
+        if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs && !room.isHost(token) && !room.scoreDraw())
             throw HandlerException("游戏时间到")
         if (room.startMs > now - room.countDown.toLong() * 1000L) {
             if (!status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
@@ -97,5 +97,14 @@ object RoomTypeNormal : RoomType {
             else ->
                 throw HandlerException("内部错误")
         }
+    }
+
+    private fun Room.scoreDraw(): Boolean {
+        var left = 0
+        spellStatus!!.forEach {
+            if (it == LEFT_GET) left++
+            else if (it == RIGHT_GET) left--
+        }
+        return left == 0
     }
 }

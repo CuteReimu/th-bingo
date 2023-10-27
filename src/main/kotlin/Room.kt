@@ -39,4 +39,8 @@ class Room(
             3 -> RoomTypeLink
             else -> throw HandlerException("不支持的游戏类型")
         }
+
+    fun isHost(token: String) =
+        if (host.isEmpty()) token in players
+        else token == host
 }

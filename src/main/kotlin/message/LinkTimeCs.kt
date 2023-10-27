@@ -10,11 +10,7 @@ class LinkTimeCs(val whose: Int, val event: Int) : Handler {
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
-        if (room.host.isNotEmpty()) {
-            if (room.host != token) throw HandlerException("没有权限")
-        } else {
-            if (!room.players.contains(token)) throw HandlerException("没有权限")
-        }
+        if (!room.isHost(token)) throw HandlerException("没有权限")
         if (room.type != RoomTypeLink) throw HandlerException("不支持这种操作")
         val data = room.linkData!!
         if (whose == 0) {

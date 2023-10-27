@@ -9,11 +9,7 @@ class ResetRoomCs : Handler {
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
-        if (room.host.isNotEmpty()) {
-            if (room.host != token) throw HandlerException("没有权限")
-        } else {
-            if (!room.players.contains(token)) throw HandlerException("没有权限")
-        }
+        if (!room.isHost(token)) throw HandlerException("没有权限")
         if (room.started) throw HandlerException("游戏已开始，不能重置房间")
         for (i in room.score.indices)
             room.score[i] = 0

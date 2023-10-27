@@ -8,11 +8,7 @@ class SetPhaseCs(val phase: Int) : Handler {
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
-        if (room.host.isNotEmpty()) {
-            if (room.host != token) throw HandlerException("没有权限")
-        } else {
-            if (!room.players.contains(token)) throw HandlerException("没有权限")
-        }
+        if (!room.isHost(token)) throw HandlerException("没有权限")
         room.phase = phase
         Store.putRoom(room)
         Store.notifyPlayersInRoom(token, protoName, Message(data = SetPhaseSc(phase)))
