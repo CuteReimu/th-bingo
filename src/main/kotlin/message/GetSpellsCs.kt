@@ -19,10 +19,6 @@ class GetSpellsCs : Handler {
                     spells = room.spells!!,
                     time = System.currentTimeMillis(),
                     startTime = room.startMs,
-                    gameTime = room.gameTime,
-                    countdown = room.countDown,
-                    cdTime = room.cdTime,
-                    needWin = room.needWin,
                     whoseTurn = room.bpData?.whoseTurn ?: 0,
                     banPick = room.bpData?.banPick ?: 0,
                     totalPauseTime = room.totalPauseMs,
@@ -30,7 +26,6 @@ class GetSpellsCs : Handler {
                     status = IntArray(room.spellStatus!!.size) { i -> room.spellStatus!![i].value },
                     linkData = room.linkData,
                     phase = room.phase,
-                    difficulty = room.difficulty,
                     lastGetTime = room.lastGetTime
                 )
             )
