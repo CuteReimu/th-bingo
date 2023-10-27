@@ -10,7 +10,8 @@ class CreateRoomCs(
     val rid: String?,
     val type: Int,
     val solo: Boolean?,
-    val addRobot: Boolean?
+    val addRobot: Boolean?,
+    val roomConfig: RoomConfig,
 ) : Handler {
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (name.isNullOrEmpty()) throw HandlerException("名字为空")
@@ -21,9 +22,11 @@ class CreateRoomCs(
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId != null && Store.getRoom(player.roomId) != null) throw HandlerException("已经在房间里了")
         if (Store.getRoom(rid) != null) throw HandlerException("房间已存在")
+        roomConfig.validate()
         val room = Room(roomId = rid, roomType = type, host = if (solo == true) "" else token)
         if (solo == true) room.players[0] = token
         if (addRobot == true) room.players[1] = Store.robotPlayer.token
+        roomConfig.updateRoom(room)
         Store.putPlayer(Player(token = token, roomId = rid, name = name))
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)

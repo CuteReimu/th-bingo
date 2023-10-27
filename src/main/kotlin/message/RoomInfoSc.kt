@@ -9,5 +9,6 @@ class RoomInfoSc(
     val started: Boolean?,
     val score: IntArray?,
     val winner: Int?,
-    val watchers: Array<String>?
+    val watchers: Array<String>?,
+    val roomConfig: RoomConfig,
 )

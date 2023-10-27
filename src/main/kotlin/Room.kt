@@ -15,6 +15,9 @@ class Room(
     var countDown: Int = 0 // 倒计时，秒
     var spellStatus: Array<SpellStatus>? = null // 每个格子的状态
     val score = intArrayOf(0, 0) // 比分
+    var games: Array<String> = arrayOf("6", "7", "8", "10", "11", "12", "13", "14", "15", "16", "17", "18")
+    var ranks: Array<String>? = null
+    var isPrivate: Boolean = false
     var locked = false // 连续多局就需要锁上
     var needWin: Int = 0 // 需要赢几局才算赢
     var cdTime = 30

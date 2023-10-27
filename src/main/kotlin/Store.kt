@@ -184,7 +184,8 @@ object Store {
             started = room.started,
             score = room.score,
             winner = null,
-            watchers = watchers
+            watchers = watchers,
+            roomConfig = RoomConfig.fromRoom(room),
         )
     }
 
@@ -205,7 +206,8 @@ object Store {
             started = room.started,
             score = room.score,
             winner = winnerIdx,
-            watchers = watchers
+            watchers = watchers,
+            roomConfig = RoomConfig.fromRoom(room),
         )
     }
 }
