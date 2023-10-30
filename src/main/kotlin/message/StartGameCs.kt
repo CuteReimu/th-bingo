@@ -31,6 +31,7 @@ class StartGameCs : Handler {
         room.startMs = now
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
         room.locked = true
+        room.banPick = null
         room.type.onStart(room)
         Store.putRoom(room)
         Store.notifyPlayersInRoom(

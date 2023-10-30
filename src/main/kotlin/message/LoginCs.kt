@@ -23,6 +23,12 @@ class LoginCs(val token: String?) : Handler {
         Supervisor.put(ctx.channel(), this.token)
         val msg = Store.buildPlayerInfo(this.token)
         ctx.writeMessage(Message(name = msg.name, reply = protoName, trigger = msg.trigger, data = msg.data))
+        if (player.roomId != null) {
+            val room = Store.getRoom(player.roomId)
+            room?.banPick?.let { bp ->
+                ctx.writeMessage(Message(trigger = msg.trigger, data = bp.toPb(room.players.indexOf(token))))
+            }
+        }
     }
 
     companion object {

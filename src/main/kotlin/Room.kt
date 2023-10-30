@@ -32,6 +32,7 @@ class Room(
     val watchers = ArrayList<String>() // 观众
     var difficulty: Int = 0
     var lastOperateMs: Long = 0 // 最后一次操作的时间戳，毫秒
+    var banPick: BanPick? = null
     val type
         get() = when (roomType) {
             1 -> RoomTypeNormal
