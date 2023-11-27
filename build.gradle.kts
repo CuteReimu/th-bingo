@@ -17,7 +17,7 @@ dependencies {
     implementation("io.netty:netty-all:4.1.101.Final")
     implementation("log4j:log4j:1.2.17")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.apache.poi:poi-ooxml:5.2.4")
+    implementation("org.apache.poi:poi-ooxml:5.2.5")
     implementation("com.jakewharton:disklrucache:2.0.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
