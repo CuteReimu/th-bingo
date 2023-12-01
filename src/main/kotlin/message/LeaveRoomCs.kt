@@ -10,8 +10,10 @@ class LeaveRoomCs : Handler {
         val player = Store.getPlayer(token) ?: throw HandlerException("找不到玩家")
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
-        if ((room.host == token || room.players.contains(token)) && room.started) throw HandlerException("比赛已经开始了，不能退出")
-        if (room.players.contains(token) && room.locked) throw HandlerException("连续比赛没结束，不能退出")
+        if (room.host == token || room.players.contains(token)) {
+            if (room.started) throw HandlerException("比赛已经开始了，不能退出")
+            if (room.locked) throw HandlerException("连续比赛没结束，不能退出")
+        }
         val tokens = ArrayList<String>()
         val roomDestroyed: Boolean
         var isWatcher = false
