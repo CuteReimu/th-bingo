@@ -22,6 +22,6 @@ class BanPickCs(val selection: String) : Handler {
         }
         Store.putRoom(room)
         bp.notifyAll(room, player, protoName)
-        if (phase == 9999) Store.notifyPlayerInfo(token, protoName)
+        if (phase == 9999) Store.notifyPlayerInfo(token, null)
     }
 }
