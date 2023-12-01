@@ -18,6 +18,7 @@ class ResetRoomCs : Handler {
             room.changeCardCount[i] = 0
             room.lastGetTime[i] = 0
         }
+        room.banPick = null
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)
     }
