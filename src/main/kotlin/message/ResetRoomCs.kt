@@ -18,7 +18,23 @@ class ResetRoomCs : Handler {
             room.changeCardCount[i] = 0
             room.lastGetTime[i] = 0
         }
-        room.banPick = null
+        if (room.banPick != null) {
+            Store.notifyPlayersInRoom(
+                token, null, Message(
+                    data = BanPickInfoSc(
+                        whoFirst = 0,
+                        phase = -1,
+                        aPick = arrayOf(),
+                        aBan = arrayOf(),
+                        bPick = arrayOf(),
+                        bBan = arrayOf(),
+                        aOpenEx = 0,
+                        bOpenEx = 0,
+                    )
+                )
+            )
+            room.banPick = null
+        }
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)
     }

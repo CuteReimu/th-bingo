@@ -10,7 +10,7 @@ class UpdateRoomConfigCs(val roomConfig: RoomConfig) : Handler {
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
         if (!room.isHost(token)) throw HandlerException("没有权限")
         if (room.started) throw HandlerException("游戏已经开始")
-        roomConfig.validate()
+        roomConfig.validate(true)
         roomConfig.updateRoom(room)
         Store.putRoom(room)
         Store.notifyPlayerInfo(token, protoName)
