@@ -60,7 +60,7 @@ object SpellLog {
             val file = File("log.xlsx")
             if (!file.exists()) file.createNewFile()
             val os = ByteArrayOutputStream()
-            XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
+            XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ_WRITE)).use { wb ->
                 for (i in 0 until logList.size) {
                     val sheet = wb.getSheetAt(i)
                     for (model in logList[i]) {
@@ -158,8 +158,15 @@ object SpellLog {
                             val sheet = wb.getSheetAt(0)
                             val logSheet = logWB.getSheetAt(j)
                             for (i in 1..sheet.lastRowNum) {
-                                logSheet.createRow(i).createCell(0)
-                                    .setCellValue(sheet.getRow(i).getCell(3).stringCellValue.trim())
+                                sheet.getRow(i).getCell(3).stringCellValue.trim().let {
+                                    logSheet.createRow(i).createCell(0)
+                                        .setCellValue(it)
+                                    // 新增的符卡需要增加到现有列表中
+                                    if (logList.isNotEmpty() && logList[j][it] == null) {
+                                        logList[j][it] =
+                                            LogModel(sheet.getRow(i).getCell(1).numericCellValue.toInt(), 0, 0, 0, 0)
+                                    }
+                                }
                             }
                         }
                     }
