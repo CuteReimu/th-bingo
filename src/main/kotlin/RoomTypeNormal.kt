@@ -26,19 +26,8 @@ object RoomTypeNormal : RoomType {
         if (room.startMs > now - room.countDown.toLong() * 1000L) {
             if (!status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
                 throw HandlerException("倒计时还没结束")
-            // 倒计时没结束，需要按照倒计时已经结束的时间点计算开始收卡的时间
-            SpellLog.logSpellOperate(
-                status,
-                room.spells!![idx],
-                token,
-                room.startMs + room.countDown.toLong() * 1000L,
-                SpellLog.GameType.NORMAL
-            )
-        } else {
-            SpellLog.logSpellOperate(status, room.spells!![idx], token, gameType = SpellLog.GameType.NORMAL)
         }
-
-        return when (token) {
+        val result = when (token) {
             room.host ->
                 status
 
@@ -97,6 +86,20 @@ object RoomTypeNormal : RoomType {
             else ->
                 throw HandlerException("内部错误")
         }
+        // 等操作结束后再记录
+        if (room.startMs > now - room.countDown.toLong() * 1000L) {
+            // 倒计时没结束，需要按照倒计时已经结束的时间点计算开始收卡的时间
+            SpellLog.logSpellOperate(
+                status,
+                room.spells!![idx],
+                token,
+                room.startMs + room.countDown.toLong() * 1000L,
+                SpellLog.GameType.NORMAL
+            )
+        } else {
+            SpellLog.logSpellOperate(status, room.spells!![idx], token, gameType = SpellLog.GameType.NORMAL)
+        }
+        return result
     }
 
     private fun Room.scoreDraw(): Boolean {

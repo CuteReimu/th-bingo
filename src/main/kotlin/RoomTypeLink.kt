@@ -27,8 +27,8 @@ object RoomTypeLink : RoomType {
         val st = room.spellStatus!![idx]
         if (status == SpellStatus.BANNED)
             throw HandlerException("不支持的操作")
-        SpellLog.logSpellOperate(status, room.spells!![idx], token, gameType = SpellLog.GameType.LINK)
-        return when (token) {
+
+        val result = when (token) {
             room.host -> status
 
             room.players[0] -> {
@@ -111,6 +111,8 @@ object RoomTypeLink : RoomType {
 
             else -> throw HandlerException("内部错误")
         }
+        SpellLog.logSpellOperate(status, room.spells!![idx], token, gameType = SpellLog.GameType.LINK)
+        return result
     }
 
     private infix fun Int.near(other: Int): Boolean {
