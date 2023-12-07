@@ -93,13 +93,14 @@ class BanPick(private val whoFirst: Int) {
         if (selection.isNotEmpty()) {
             if (phase != 1 && phase != 2 && selection == "EX") throw HandlerException("不能选择EX")
             if (selection !in games && selection != "EX") throw HandlerException("参数错误")
-            if (phase <= 4) {
-                pick[playerIndex] = arrayOf(*pick[playerIndex], selection)
-                if (selection == "EX") openEx = arrayOf(1, 1)
-            } else {
-                if (selection in pick[0] || selection in pick[1]) throw HandlerException("已经保了的作品，不能ban")
-                ban[playerIndex] = arrayOf(*ban[playerIndex], selection)
-            }
+        }
+        if (phase <= 4) {
+            pick[playerIndex] = arrayOf(*pick[playerIndex], selection)
+            if (selection == "EX") openEx = arrayOf(1, 1)
+        } else {
+            if (selection.isNotEmpty() && (selection in pick[0] || selection in pick[1]))
+                throw HandlerException("已经保了的作品，不能ban")
+            ban[playerIndex] = arrayOf(*ban[playerIndex], selection)
         }
         phase = when (phase) {
             1 -> 2
