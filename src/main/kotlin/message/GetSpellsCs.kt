@@ -11,6 +11,7 @@ class GetSpellsCs : Handler {
         if (player.roomId.isNullOrEmpty()) throw HandlerException("不在房间里")
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
         if (!room.started) throw HandlerException("游戏还未开始")
+        val now = System.currentTimeMillis()
         ctx.writeMessage(
             Message(
                 reply = protoName,
@@ -27,7 +28,9 @@ class GetSpellsCs : Handler {
                     status = IntArray(room.spellStatus!!.size) { i -> room.spellStatus!![i].value },
                     linkData = room.linkData,
                     phase = room.phase,
-                    lastGetTime = room.lastGetTime
+                    lastGetTime = room.lastGetTime.map {
+                        if (room.pauseBeginMs > 0) it + (now - room.pauseBeginMs) else it
+                    }.toLongArray()
                 )
             )
         )

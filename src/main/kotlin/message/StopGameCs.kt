@@ -22,7 +22,7 @@ class StopGameCs(val winner: Int) : Handler {
         }
         room.started = false
         room.spells = null
-        room.lastGetTime.run { indices.forEach { this[it] = 0 } }
+        room.lastGetTime.indices.forEach { room.lastGetTime[it] = 0 }
         room.startMs = 0
         // room.gameTime = 0
         // room.countDown = 0
