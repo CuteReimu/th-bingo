@@ -34,7 +34,7 @@ class PauseCs(val pause: Boolean) : Handler {
         Store.notifyPlayersInRoom(
             token,
             protoName,
-            Message(data = PauseSc(now, room.totalPauseMs, room.pauseBeginMs))
+            Message(data = PauseSc(now, room.totalPauseMs, room.pauseBeginMs, room.pauseEndMs, room.lastGetTime))
         )
     }
 }
