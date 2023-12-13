@@ -49,6 +49,7 @@ class StartGameCs : Handler {
                     linkData = room.linkData,
                     phase = room.phase,
                     pauseBeginMs = 0L,
+                    pauseEndMs = 0L,
                     status = null,
                     totalPauseTime = 0L,
                     lastGetTime = room.lastGetTime

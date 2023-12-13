@@ -11,6 +11,7 @@ class SpellListSc(
     val banPick: Int,
     val totalPauseTime: Long,
     val pauseBeginMs: Long,
+    val pauseEndMs: Long,
     val status: IntArray?,
     val phase: Int,
     val linkData: LinkData?,

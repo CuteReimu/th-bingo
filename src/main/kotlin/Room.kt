@@ -25,6 +25,7 @@ class Room(
     val lastGetTime = longArrayOf(0, 0) // 上次收卡时间
     var totalPauseMs: Long = 0 // 累计暂停时长，毫秒
     var pauseBeginMs: Long = 0 // 开始暂停时刻，毫秒，0表示没暂停
+    var pauseEndMs: Long = 0 // 上一次结束暂停的时刻，毫秒，0表示从未暂停过
     var lastWinner: Int = 0 // 上一场是谁赢，1或2
     var bpData: BpData? = null
     var linkData: LinkData? = null

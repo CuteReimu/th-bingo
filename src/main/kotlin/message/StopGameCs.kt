@@ -29,6 +29,7 @@ class StopGameCs(val winner: Int) : Handler {
         room.spellStatus = null
         room.totalPauseMs = 0
         room.pauseBeginMs = 0
+        room.pauseEndMs = 0
         room.bpData = null
         Store.putRoom(room)
         if (winner == -1)
