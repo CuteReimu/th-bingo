@@ -25,7 +25,6 @@ class PauseCs(val pause: Boolean) : Handler {
             if (room.pauseBeginMs != 0L) {
                 val delta = now - room.pauseBeginMs
                 room.totalPauseMs += delta
-                room.lastGetTime.forEachIndexed { i, v -> if (v > 0) room.lastGetTime[i] = v + delta }
                 room.pauseBeginMs = 0
                 room.pauseEndMs = now
             }

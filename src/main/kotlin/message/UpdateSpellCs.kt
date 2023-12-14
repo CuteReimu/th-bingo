@@ -20,7 +20,7 @@ class UpdateSpellCs(val idx: Int, val status: Int) : Handler {
         room.spellStatus!![idx] = newStatus
         val playerIndex = room.players.indexOf(token)
         if (playerIndex >= 0 && spellStatus.isGetStatus())
-            room.lastGetTime[playerIndex] = now
+            room.lastGetTime[playerIndex] = now - room.totalPauseMs - room.startMs
         Store.putRoom(room)
         for (token1 in Store.getAllPlayersInRoom(token) ?: return) {
             if (token1.isNotEmpty()) {

@@ -28,9 +28,7 @@ class GetSpellsCs : Handler {
                     status = IntArray(room.spellStatus!!.size) { i -> room.spellStatus!![i].value },
                     linkData = room.linkData,
                     phase = room.phase,
-                    lastGetTime = room.lastGetTime.map {
-                        if (room.pauseBeginMs > 0) it + (now - room.pauseBeginMs) else it
-                    }.toLongArray()
+                    lastGetTime = room.lastGetTime
                 )
             )
         )
