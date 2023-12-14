@@ -22,7 +22,7 @@ class Room(
     var needWin: Int = 0 // 需要赢几局才算赢
     var cdTime = 30
     val changeCardCount = intArrayOf(0, 0)
-    val lastGetTime = longArrayOf(0, 0) // 上次收卡时间
+    val lastGetTime = longArrayOf(0, 0) // 从游戏开始到上次收卡经过的毫秒数，去掉暂停时间
     var totalPauseMs: Long = 0 // 累计暂停时长，毫秒
     var pauseBeginMs: Long = 0 // 开始暂停时刻，毫秒，0表示没暂停
     var pauseEndMs: Long = 0 // 上一次结束暂停的时刻，毫秒，0表示从未暂停过
