@@ -31,6 +31,7 @@ class StopGameCs(val winner: Int) : Handler {
         room.pauseBeginMs = 0
         room.pauseEndMs = 0
         room.bpData = null
+        room.linkData = null
         Store.putRoom(room)
         if (winner == -1)
             Store.notifyPlayerInfo(token, protoName)

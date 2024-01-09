@@ -15,7 +15,14 @@ object RoomTypeNormal : RoomType {
     }
 
     @Throws(HandlerException::class)
-    override fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus, now: Long): SpellStatus {
+    override fun handleUpdateSpell(
+        room: Room,
+        token: String,
+        idx: Int,
+        status: SpellStatus,
+        now: Long,
+        isReset: Boolean
+    ): SpellStatus {
         val st = room.spellStatus!![idx]
         if (status == BANNED)
             throw HandlerException("不支持的操作")
@@ -43,7 +50,8 @@ object RoomTypeNormal : RoomType {
                         status
 
                     LEFT_SELECT -> {
-                        val remainSelectTime = if (room.lastGetTime[0] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[0])
+                        val remainSelectTime =
+                            if (room.lastGetTime[0] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[0])
                         if (remainSelectTime > 0)
                             throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
                         if (st == RIGHT_SELECT) BOTH_SELECT else status
@@ -69,7 +77,8 @@ object RoomTypeNormal : RoomType {
                         status
 
                     RIGHT_SELECT -> {
-                        val remainSelectTime = if (room.lastGetTime[1] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[1])
+                        val remainSelectTime =
+                            if (room.lastGetTime[1] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[1])
                         if (remainSelectTime > 0)
                             throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
                         if (st == LEFT_SELECT) BOTH_SELECT else status

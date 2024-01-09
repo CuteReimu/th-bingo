@@ -47,12 +47,13 @@ class StartGameCs : Handler {
                     whoseTurn = room.bpData?.whoseTurn ?: 0,
                     banPick = room.bpData?.banPick ?: 0,
                     linkData = room.linkData,
+                    bpData = room.bpData,
                     phase = room.phase,
                     pauseBeginMs = 0L,
                     pauseEndMs = 0L,
                     status = null,
                     totalPauseTime = 0L,
-                    lastGetTime = room.lastGetTime
+                    lastGetTime = room.lastGetTime,
                 )
             )
         )

@@ -1,5 +1,6 @@
 package org.tfcc.bingo.message
 
+import org.tfcc.bingo.BpData
 import org.tfcc.bingo.LinkData
 import org.tfcc.bingo.Spell
 
@@ -15,5 +16,6 @@ class SpellListSc(
     val status: IntArray?,
     val phase: Int,
     val linkData: LinkData?,
-    val lastGetTime: LongArray
+    val bpData: BpData?,
+    val lastGetTime: LongArray,
 )

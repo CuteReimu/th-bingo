@@ -5,7 +5,7 @@ import org.tfcc.bingo.Store
 import org.tfcc.bingo.Supervisor
 import org.tfcc.bingo.toSpellStatus
 
-class UpdateSpellCs(val idx: Int, val status: Int) : Handler {
+class UpdateSpellCs(val idx: Int, val status: Int, val isReset: Boolean = false) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (idx < 0 || idx >= 25) throw HandlerException("idx超出范围")
@@ -16,7 +16,7 @@ class UpdateSpellCs(val idx: Int, val status: Int) : Handler {
         if (!room.started) throw HandlerException("游戏还没开始")
         if (room.host != token && !room.players.contains(token)) throw HandlerException("没有权限")
         val now = System.currentTimeMillis()
-        val newStatus = room.type.handleUpdateSpell(room, token, idx, spellStatus, now)
+        val newStatus = room.type.handleUpdateSpell(room, token, idx, spellStatus, now, isReset)
         room.spellStatus!![idx] = newStatus
         val playerIndex = room.players.indexOf(token)
         if (playerIndex >= 0 && spellStatus.isGetStatus())
@@ -33,7 +33,8 @@ class UpdateSpellCs(val idx: Int, val status: Int) : Handler {
                             idx,
                             newStatus.value,
                             room.bpData?.whoseTurn ?: 0,
-                            room.bpData?.banPick ?: 0
+                            room.bpData?.banPick ?: 0,
+                            isReset
                         )
                     )
                 )

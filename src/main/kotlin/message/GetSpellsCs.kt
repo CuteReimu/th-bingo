@@ -26,6 +26,7 @@ class GetSpellsCs : Handler {
                     pauseEndMs = room.pauseEndMs,
                     status = IntArray(room.spellStatus!!.size) { i -> room.spellStatus!![i].value },
                     linkData = room.linkData,
+                    bpData = room.bpData,
                     phase = room.phase,
                     lastGetTime = room.lastGetTime
                 )

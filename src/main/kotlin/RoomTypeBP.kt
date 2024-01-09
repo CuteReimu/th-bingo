@@ -13,7 +13,9 @@ object RoomTypeBP : RoomType {
             whoseTurn = if (room.lastWinner > 0) room.lastWinner - 1 else ThreadLocalRandom.current().nextInt(2),
             banPick = 1,
             round = 0,
-            lessThan4 = false
+            lessThan4 = false,
+            spellFailedCountA = IntArray(25),
+            spellFailedCountB = IntArray(25),
         )
     }
 
@@ -23,25 +25,43 @@ object RoomTypeBP : RoomType {
     }
 
     @Throws(HandlerException::class)
-    override fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus, now: Long): SpellStatus {
+    override fun handleUpdateSpell(
+        room: Room,
+        token: String,
+        idx: Int,
+        status: SpellStatus,
+        now: Long,
+        isReset: Boolean
+    ): SpellStatus {
         val st = room.spellStatus!![idx]
 //        SpellLog.logSpellOperate(status, room.spells!![idx], token)
-        if (token == room.players[0]) {
-            if (room.bpData!!.whoseTurn != 0)
-                throw HandlerException("不是你的回合")
-            if (st != SpellStatus.NONE ||
-                room.bpData!!.banPick == 0 && status != SpellStatus.LEFT_SELECT ||
-                room.bpData!!.banPick == 1 && status != SpellStatus.BANNED
-            ) throw HandlerException("权限不足")
-            nextRound(room)
-        } else if (token == room.players[1]) {
-            if (room.bpData!!.whoseTurn != 1)
-                throw HandlerException("不是你的回合")
-            if (st != SpellStatus.NONE ||
-                room.bpData!!.banPick == 0 && status != SpellStatus.RIGHT_SELECT ||
-                room.bpData!!.banPick == 1 && status != SpellStatus.BANNED
-            ) throw HandlerException("权限不足")
-            nextRound(room)
+        when (token) {
+            room.players[0] -> {
+                if (room.bpData!!.whoseTurn != 0)
+                    throw HandlerException("不是你的回合")
+                if (st != SpellStatus.NONE ||
+                    room.bpData!!.banPick == 0 && status != SpellStatus.LEFT_SELECT ||
+                    room.bpData!!.banPick == 1 && status != SpellStatus.BANNED
+                ) throw HandlerException("权限不足")
+                nextRound(room)
+            }
+
+            room.players[1] -> {
+                if (room.bpData!!.whoseTurn != 1)
+                    throw HandlerException("不是你的回合")
+                if (st != SpellStatus.NONE ||
+                    room.bpData!!.banPick == 0 && status != SpellStatus.RIGHT_SELECT ||
+                    room.bpData!!.banPick == 1 && status != SpellStatus.BANNED
+                ) throw HandlerException("权限不足")
+                nextRound(room)
+            }
+
+            else -> {
+                if (!isReset && status == SpellStatus.NONE) {
+                    if (st == SpellStatus.LEFT_SELECT) room.bpData!!.spellFailedCountA[idx]++
+                    else if (st == SpellStatus.RIGHT_SELECT) room.bpData!!.spellFailedCountB[idx]++
+                }
+            }
         }
         return status
     }
