@@ -15,6 +15,7 @@ class CreateRoomCs(
 ) : Handler {
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (name.isNullOrEmpty()) throw HandlerException("名字为空")
+        if (name == Store.robotPlayer.name) throw HandlerException("不能使用这个名字")
         if (name.toByteArray().size > 48) throw HandlerException("名字太长")
         if (rid.isNullOrEmpty()) throw HandlerException("房间ID为空")
         if (!rid.matches(Regex("\\d{1,16}"))) throw HandlerException("房间ID不合法")

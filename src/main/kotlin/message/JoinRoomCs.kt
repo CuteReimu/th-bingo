@@ -10,6 +10,7 @@ class JoinRoomCs(
 ) : Handler {
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (name.isEmpty()) throw HandlerException("名字为空")
+        if (name == Store.robotPlayer.name) throw HandlerException("不能使用这个名字")
         if (name.toByteArray().size > 48) throw HandlerException("名字太长")
         if (rid.isEmpty()) throw HandlerException("房间ID为空")
         if (rid.toByteArray().size > 16) throw HandlerException("房间ID太长")
