@@ -34,6 +34,7 @@ class Room(
     var difficulty: Int = 0
     var lastOperateMs: Long = 0 // 最后一次操作的时间戳，毫秒
     var banPick: BanPick? = null
+    var debugSpells: IntArray? = null
     val type
         get() = when (roomType) {
             1 -> RoomTypeNormal

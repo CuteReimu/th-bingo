@@ -26,6 +26,14 @@ class StartGameCs : Handler {
         )
         val now = System.currentTimeMillis()
         logger.debug("随符卡耗时：${now - start}")
+        room.debugSpells?.also { debugSpells ->
+            room.spells!!.forEachIndexed { index, spell ->
+                if (debugSpells[index] != 0) {
+                    val roomType = if (room.roomType == 2) SpellConfig.BPGame else SpellConfig.NormalGame
+                    SpellConfig.getSpellById(roomType, spell.id)?.also { room.spells!![index] = it }
+                }
+            }
+        }
         SpellLog.logRandSpells(room.spells!!, room.type)
         room.started = true
         room.startMs = now

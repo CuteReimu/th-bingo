@@ -114,6 +114,7 @@ object SpellConfig {
         if (md5sum != null && config.md5sum != null && md5sum == config.md5sum)
             return config.allSpells
         val allSpells = HashMap<Int, HashMap<Boolean, HashMap<String, ArrayList<Spell>>>>()
+        val spellsById = HashMap<Int, Spell>()
         for (file in files) {
             XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
                 val sheet = wb.getSheetAt(0)
@@ -124,14 +125,18 @@ object SpellConfig {
                         .getOrPut(spell.rank != "L") { hashMapOf() }
                         .getOrPut(spell.game) { arrayListOf() }
                         .add(spell)
+                    spellsById[spell.id] = spell
                 }
             }
         }
         config.md5sum = md5sum
         config.allSpells = allSpells
+        config.spellsById = spellsById
         SpellLog.createLogFile() // 重读时重新载入log
         return allSpells
     }
+
+    fun getSpellById(type: Int, id: Int): Spell? = cache[type]?.spellsById?.get(id)
 
     private fun buildNormalSpell(row: XSSFRow): Spell? {
         if (row.lastCellNum < 6) return null
@@ -182,6 +187,8 @@ object SpellConfig {
 
         /** star => ( isEx => ( game => spellList ) ) */
         var allSpells: Map<Int, Map<Boolean, Map<String, List<Spell>>>> = mapOf()
+
+        var spellsById: Map<Int, Spell> = mapOf()
     }
 
     private val isWindows = System.getProperty("os.name").lowercase().contains("windows")
