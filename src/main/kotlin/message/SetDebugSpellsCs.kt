@@ -13,6 +13,14 @@ class SetDebugSpellsCs(val spells: IntArray?) : Handler {
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
         if (!room.isHost(token)) throw HandlerException("没有权限")
         room.debugSpells = spells
+        if (spells != null) {
+            val roomType = if (room.roomType == 2) SpellConfig.BPGame else SpellConfig.NormalGame
+            room.spells!!.forEachIndexed { i, _ ->
+                if (spells[i] != 0) {
+                    SpellConfig.getSpellById(roomType, spells[i])?.also { room.spells!![i] = it }
+                }
+            }
+        }
         Store.putRoom(room)
         ctx.writeMessage(Message(name = "set_debug_spells_sc", reply = protoName))
     }

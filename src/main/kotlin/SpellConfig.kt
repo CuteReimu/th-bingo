@@ -114,7 +114,7 @@ object SpellConfig {
         if (md5sum != null && config.md5sum != null && md5sum == config.md5sum)
             return config.allSpells
         val allSpells = HashMap<Int, HashMap<Boolean, HashMap<String, ArrayList<Spell>>>>()
-        val spellsById = HashMap<Int, Spell>()
+        val spellsByIndex = HashMap<Int, Spell>()
         for (file in files) {
             XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
                 val sheet = wb.getSheetAt(0)
@@ -125,22 +125,23 @@ object SpellConfig {
                         .getOrPut(spell.rank != "L") { hashMapOf() }
                         .getOrPut(spell.game) { arrayListOf() }
                         .add(spell)
-                    spellsById[spell.id] = spell
+                    spellsByIndex[spell.index] = spell
                 }
             }
         }
         config.md5sum = md5sum
         config.allSpells = allSpells
-        config.spellsById = spellsById
+        config.spellsByIndex = spellsByIndex
         SpellLog.createLogFile() // 重读时重新载入log
         return allSpells
     }
 
-    fun getSpellById(type: Int, id: Int): Spell? = cache[type]?.spellsById?.get(id)
+    fun getSpellById(type: Int, id: Int): Spell? = cache[type]?.spellsByIndex?.get(id)
 
     private fun buildNormalSpell(row: XSSFRow): Spell? {
         if (row.lastCellNum < 6) return null
         return Spell(
+            index = row.getCell(0).numericCellValue.toInt(),
             game = row.getCell(1).numericCellValue.toInt().toString(),
             name = row.getCell(3).stringCellValue.trim(),
             rank = row.getCell(5).stringCellValue.trim(),
@@ -154,6 +155,7 @@ object SpellConfig {
     private fun buildBPSpell(row: XSSFRow): Spell? {
         if (row.lastCellNum < 7) return null
         return Spell(
+            index = row.getCell(0).numericCellValue.toInt(),
             game = row.getCell(1).numericCellValue.toInt().toString(),
             name = row.getCell(3).stringCellValue.trim(),
             rank = row.getCell(5).stringCellValue.trim(),
@@ -188,7 +190,7 @@ object SpellConfig {
         /** star => ( isEx => ( game => spellList ) ) */
         var allSpells: Map<Int, Map<Boolean, Map<String, List<Spell>>>> = mapOf()
 
-        var spellsById: Map<Int, Spell> = mapOf()
+        var spellsByIndex: Map<Int, Spell> = mapOf()
     }
 
     private val isWindows = System.getProperty("os.name").lowercase().contains("windows")
