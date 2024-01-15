@@ -32,6 +32,7 @@ object SpellFactory {
                     if (star in 1..3 && inGame) {
                         spells[star - 1].add(
                             Spell(
+                                index = row.getCell(0).numericCellValue.toInt(),
                                 game = row.getCell(1).numericCellValue.toInt().toString(),
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
@@ -45,6 +46,7 @@ object SpellFactory {
                     if (star == 3 && !inGame) {
                         spells[3].add(
                             Spell(
+                                index = row.getCell(0).numericCellValue.toInt(),
                                 game = row.getCell(1).numericCellValue.toInt().toString(),
                                 name = row.getCell(3).stringCellValue,
                                 rank = row.getCell(5).stringCellValue,
