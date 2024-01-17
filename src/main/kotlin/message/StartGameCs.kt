@@ -15,7 +15,18 @@ class StartGameCs : Handler {
         if (room.started) throw HandlerException("游戏已经开始")
         if (room.players.contains("")) throw HandlerException("玩家没满")
         val start = System.currentTimeMillis()
-        room.spells = room.type.randSpells(room.games, room.ranks, room.difficulty)
+        var retryCount = 0
+        while (true) {
+            try {
+                room.spells = room.type.randSpells(room.games, room.ranks, room.difficulty)
+                break
+            } catch (e: HandlerException) {
+                if (++retryCount >= 10 || e.message != "符卡数量不足") {
+                    logger.error("随符卡失败", e)
+                    throw e
+                }
+            }
+        }
         val now = System.currentTimeMillis()
         logger.debug("随符卡耗时：${now - start}")
         room.debugSpells?.also { debugSpells ->
