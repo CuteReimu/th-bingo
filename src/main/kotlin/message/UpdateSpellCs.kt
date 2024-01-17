@@ -1,11 +1,17 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
+import org.tfcc.bingo.SpellStatus.*
 import org.tfcc.bingo.Store
 import org.tfcc.bingo.Supervisor
 import org.tfcc.bingo.toSpellStatus
 
-class UpdateSpellCs(val idx: Int, val status: Int, val isReset: Boolean = false) : Handler {
+class UpdateSpellCs(
+    val idx: Int,
+    val status: Int,
+    val isReset: Boolean = false,
+    val controlRobot: Boolean = false
+) : Handler {
     @Throws(HandlerException::class)
     override fun handle(ctx: ChannelHandlerContext, token: String, protoName: String) {
         if (idx < 0 || idx >= 25) throw HandlerException("idx超出范围")
@@ -15,8 +21,18 @@ class UpdateSpellCs(val idx: Int, val status: Int, val isReset: Boolean = false)
         val room = Store.getRoom(player.roomId) ?: throw HandlerException("找不到房间")
         if (!room.started) throw HandlerException("游戏还没开始")
         if (room.host != token && !room.players.contains(token)) throw HandlerException("没有权限")
+        if (controlRobot) {
+            if (room.players[0] != token)
+                throw HandlerException("你不能控制${Store.robotPlayer.name}")
+            if (room.players[1] != Store.robotPlayer.token)
+                throw HandlerException("找不到${Store.robotPlayer.name}")
+        }
         val now = System.currentTimeMillis()
-        val newStatus = room.type.handleUpdateSpell(room, token, idx, spellStatus, now, isReset)
+        val newStatus =
+            if (controlRobot)
+                room.type.handleUpdateSpell(room, Store.robotPlayer.token, idx, spellStatus, now, isReset)
+            else
+                room.type.handleUpdateSpell(room, token, idx, spellStatus, now, isReset)
         room.spellStatus!![idx] = newStatus
         val playerIndex = room.players.indexOf(token)
         if (playerIndex >= 0 && spellStatus.isGetStatus())
