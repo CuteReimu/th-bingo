@@ -17,7 +17,7 @@ sealed interface RoomType {
     val canPause: Boolean
 
     @Throws(HandlerException::class)
-    fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell>
+    fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Int): Array<Spell>
 
     @Throws(HandlerException::class)
     fun handleUpdateSpell(

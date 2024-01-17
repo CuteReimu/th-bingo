@@ -15,15 +15,7 @@ class StartGameCs : Handler {
         if (room.started) throw HandlerException("游戏已经开始")
         if (room.players.contains("")) throw HandlerException("玩家没满")
         val start = System.currentTimeMillis()
-        room.spells = room.type.randSpells(
-            room.games, room.ranks,
-            when (room.difficulty) {
-                1 -> Difficulty.E
-                2 -> Difficulty.N
-                3 -> Difficulty.L
-                else -> Difficulty.random()
-            }
-        )
+        room.spells = room.type.randSpells(room.games, room.ranks, room.difficulty)
         val now = System.currentTimeMillis()
         logger.debug("随符卡耗时：${now - start}")
         room.debugSpells?.also { debugSpells ->

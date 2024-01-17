@@ -10,8 +10,15 @@ object RoomTypeNormal : RoomType {
     override val canPause = true
 
     @Throws(HandlerException::class)
-    override fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
-        return SpellFactory.randSpells(games, ranks, difficulty)
+    override fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Int): Array<Spell> {
+        return SpellFactory.randSpells(
+            games, ranks, when (difficulty) {
+                1 -> Difficulty.E
+                2 -> Difficulty.N
+                3 -> Difficulty.L
+                else -> Difficulty.random()
+            }
+        )
     }
 
     @Throws(HandlerException::class)
