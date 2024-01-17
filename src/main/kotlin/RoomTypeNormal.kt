@@ -51,26 +51,24 @@ object RoomTypeNormal : RoomType {
                         throw HandlerException("权限不足")
                     if (st == RIGHT_GET)
                         throw HandlerException("对方已打完")
-                    when (status) {
-                        LEFT_GET ->
-                            status
+                }
+                when (status) {
+                    LEFT_GET ->
+                        status
 
-                        LEFT_SELECT -> {
-                            val remainSelectTime =
-                                if (room.lastGetTime[0] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[0])
-                            if (remainSelectTime > 0)
-                                throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
-                            if (st == RIGHT_SELECT) BOTH_SELECT else status
-                        }
-
-                        NONE ->
-                            if (st == BOTH_SELECT) RIGHT_SELECT else status
-
-                        else ->
-                            throw HandlerException("status不合法")
+                    LEFT_SELECT -> {
+                        val remainSelectTime =
+                            if (room.lastGetTime[0] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[0])
+                        if (remainSelectTime > 0)
+                            throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
+                        if (st == RIGHT_SELECT) BOTH_SELECT else status
                     }
-                } else {
-                    status
+
+                    NONE ->
+                        if (st == BOTH_SELECT) RIGHT_SELECT else status
+
+                    else ->
+                        throw HandlerException("status不合法")
                 }
             }
 
@@ -80,26 +78,24 @@ object RoomTypeNormal : RoomType {
                         throw HandlerException("权限不足")
                     if (st == LEFT_GET)
                         throw HandlerException("对方已打完")
-                    when (status) {
-                        RIGHT_GET ->
-                            status
+                }
+                when (status) {
+                    RIGHT_GET ->
+                        status
 
-                        RIGHT_SELECT -> {
-                            val remainSelectTime =
-                                if (room.lastGetTime[1] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[1])
-                            if (remainSelectTime > 0)
-                                throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
-                            if (st == LEFT_SELECT) BOTH_SELECT else status
-                        }
-
-                        NONE ->
-                            if (st == BOTH_SELECT) LEFT_SELECT else status
-
-                        else ->
-                            throw HandlerException("status不合法")
+                    RIGHT_SELECT -> {
+                        val remainSelectTime =
+                            if (room.lastGetTime[1] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[1])
+                        if (remainSelectTime > 0)
+                            throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
+                        if (st == LEFT_SELECT) BOTH_SELECT else status
                     }
-                } else {
-                    status
+
+                    NONE ->
+                        if (st == BOTH_SELECT) LEFT_SELECT else status
+
+                    else ->
+                        throw HandlerException("status不合法")
                 }
             }
 
