@@ -1,7 +1,7 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 import org.tfcc.bingo.Player
 import org.tfcc.bingo.Store
 import org.tfcc.bingo.Supervisor
@@ -29,9 +29,5 @@ class LoginCs(val token: String?) : Handler {
                 ctx.writeMessage(Message(trigger = msg.trigger, data = bp.toPb(room.players.indexOf(token))))
             }
         }
-    }
-
-    companion object {
-        private val logger: Logger = Logger.getLogger(LoginCs::class.java)
     }
 }

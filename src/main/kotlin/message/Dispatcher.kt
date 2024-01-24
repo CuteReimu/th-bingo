@@ -8,7 +8,7 @@ import io.netty.channel.Channel
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 import org.tfcc.bingo.Supervisor
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
@@ -40,12 +40,11 @@ fun Channel.writeMessage(message: Message): ChannelFuture {
     } else message
     val text = Dispatcher.gson.toJson(finalMessage)
     if (finalMessage.name != "heart_sc")
-        Dispatcher.logger.debug("发给${id().asShortText()}：$text")
+        logger.debug("发给${id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 
 object Dispatcher {
-    val logger: Logger = Logger.getLogger(Dispatcher.javaClass)
     val pool: ExecutorService = Executors.newSingleThreadExecutor()
     private val cache = ConcurrentHashMap<String, Class<Handler>>()
     val gson: Gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()

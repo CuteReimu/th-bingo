@@ -2,13 +2,12 @@ package org.tfcc.bingo
 
 import com.google.gson.Gson
 import com.jakewharton.disklrucache.DiskLruCache
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 import org.tfcc.bingo.message.*
 import java.io.*
 import java.util.*
 
 object Store {
-    private val logger = Logger.getLogger(Store.javaClass)
     private val cache: DiskLruCache
     private val gson = Gson()
     val robotPlayer = Player(token = "训练用毛玉", name = "训练用毛玉", roomId = null)

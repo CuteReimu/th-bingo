@@ -1,6 +1,6 @@
 package org.tfcc.bingo
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.openxml4j.opc.PackageAccess
 import org.apache.poi.xssf.usermodel.XSSFRow
@@ -194,5 +194,4 @@ object SpellConfig {
     }
 
     private val isWindows = System.getProperty("os.name").lowercase().contains("windows")
-    private val logger = Logger.getLogger(SpellConfig.javaClass)
 }

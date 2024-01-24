@@ -6,17 +6,9 @@ import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelOption
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.util.internal.logging.InternalLoggerFactory
-import io.netty.util.internal.logging.Log4JLoggerFactory
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 
 object Network {
-    private val logger = Logger.getLogger(this.javaClass)
-
-    init {
-        InternalLoggerFactory.setDefaultFactory(Log4JLoggerFactory.INSTANCE)
-    }
-
     fun onInit() {
         initGameNetwork()
     }

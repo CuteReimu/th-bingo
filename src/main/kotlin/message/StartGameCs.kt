@@ -1,7 +1,7 @@
 package org.tfcc.bingo.message
 
 import io.netty.channel.ChannelHandlerContext
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 import org.tfcc.bingo.*
 import java.util.*
 
@@ -70,9 +70,5 @@ class StartGameCs : Handler {
         )
         if (!room.isPrivate && !room.players.contains(Store.robotPlayer.token)) // 单人练习模式不推送
             MiraiPusher.push(room)
-    }
-
-    companion object {
-        private val logger: Logger = Logger.getLogger(StartGameCs::class.java)
     }
 }

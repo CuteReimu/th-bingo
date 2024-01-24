@@ -6,7 +6,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
 import io.netty.handler.codec.http.websocketx.WebSocketFrame
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 import org.tfcc.bingo.Supervisor
 import org.tfcc.bingo.message.Dispatcher
 import org.tfcc.bingo.message.HandlerException
@@ -49,7 +49,6 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
     @Throws(Exception::class)
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
         if (cause is SocketException && "Connection reset" == cause.message) return
-        @Suppress("DEPRECATION")
         super.exceptionCaught(ctx, cause)
     }
 
@@ -70,9 +69,5 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
         // 返回应答消息
         val request = frame.text()
         Dispatcher.handle(ctx, request)
-    }
-
-    companion object {
-        private val logger = Logger.getLogger(WebSocketServerChannelHandler::class.java)
     }
 }

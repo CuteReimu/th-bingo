@@ -1,6 +1,6 @@
 package org.tfcc.bingo
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.kotlin.logger
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.openxml4j.opc.PackageAccess
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
@@ -13,8 +13,6 @@ import java.io.FileOutputStream
  * 记录每张卡的出现次数，选择次数，收取次数，平均收取时长
  */
 object SpellLog {
-    private val logger = Logger.getLogger(SpellLog::class.java)
-
     private val logList = ArrayList<HashMap<String, LogModel>>()
 
     /** 收卡时间记录 */
