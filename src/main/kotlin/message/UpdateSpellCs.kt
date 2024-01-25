@@ -28,13 +28,10 @@ class UpdateSpellCs(
                 throw HandlerException("找不到${Store.robotPlayer.name}")
         }
         val now = System.currentTimeMillis()
-        val newStatus =
-            if (controlRobot)
-                room.type.handleUpdateSpell(room, Store.robotPlayer.token, idx, spellStatus, now, isReset)
-            else
-                room.type.handleUpdateSpell(room, token, idx, spellStatus, now, isReset)
+        val playerToken = if (controlRobot) Store.robotPlayer.token else token
+        val newStatus = room.type.handleUpdateSpell(room, playerToken, idx, spellStatus, now, isReset)
         room.spellStatus!![idx] = newStatus
-        val playerIndex = room.players.indexOf(token)
+        val playerIndex = room.players.indexOf(playerToken)
         if (playerIndex >= 0 && spellStatus.isGetStatus())
             room.lastGetTime[playerIndex] = now - room.totalPauseMs - room.startMs
         Store.putRoom(room)
