@@ -17,7 +17,7 @@ dependencies {
     implementation("io.netty:netty-all:4.1.107.Final")
     implementation("org.apache.logging.log4j:log4j-api:2.22.1")
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.4.0")
-    implementation("org.apache.logging.log4j:log4j-core:2.22.1")
+    implementation("org.apache.logging.log4j:log4j-core:2.23.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.22")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
