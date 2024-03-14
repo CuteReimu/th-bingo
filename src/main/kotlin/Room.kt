@@ -35,6 +35,7 @@ class Room(
     var lastOperateMs: Long = 0 // 最后一次操作的时间戳，毫秒
     var banPick: BanPick? = null
     var debugSpells: IntArray? = null
+    var reservedType: Int? = null
     val type
         get() = when (roomType) {
             1 -> RoomTypeNormal
