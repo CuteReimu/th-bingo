@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.netty:netty-all:4.1.107.Final")
+    implementation("io.netty:netty-all:4.1.108.Final")
     implementation("org.apache.logging.log4j:log4j-api:2.23.1")
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.4.0")
     implementation("org.apache.logging.log4j:log4j-core:2.23.1")
