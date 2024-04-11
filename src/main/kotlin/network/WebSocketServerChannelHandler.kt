@@ -13,7 +13,6 @@ import org.tfcc.bingo.message.HandlerException
 import org.tfcc.bingo.message.LeaveRoomCs
 import java.net.SocketException
 
-
 class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame>() {
     @Throws(Exception::class)
     override fun channelRead0(ctx: ChannelHandlerContext, msg: WebSocketFrame) {
@@ -22,13 +21,13 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
 
     @Throws(Exception::class)
     override fun channelActive(ctx: ChannelHandlerContext) {
-        //添加连接
+        // 添加连接
         logger.debug("客户端加入连接：${ctx.channel()}")
     }
 
     @Throws(Exception::class)
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        //断开连接
+        // 断开连接
         logger.debug("客户端断开连接：${ctx.channel()}")
         val token = Supervisor.removeChannel(ctx.channel()) ?: return
         Dispatcher.pool.submit {

@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.9.23"
     application
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 group = "org.tfcc.bingo"
@@ -50,4 +51,8 @@ tasks.withType<Jar> {
     from({
         configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
     })
+}
+
+ktlint {
+    version.set("0.50.0")
 }

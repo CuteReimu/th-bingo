@@ -35,7 +35,8 @@ object RoomTypeNormal : RoomType {
             throw HandlerException("不支持的操作")
         if (room.pauseBeginMs != 0L && token != room.host)
             throw HandlerException("暂停中，不能操作")
-        if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs && !room.isHost(token) && !room.scoreDraw())
+        if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs &&
+            !room.isHost(token) && !room.scoreDraw())
             throw HandlerException("游戏时间到")
         val isCountingDown = room.startMs > now - room.countDown.toLong() * 1000L
         if (isCountingDown) {
@@ -59,7 +60,8 @@ object RoomTypeNormal : RoomType {
 
                     LEFT_SELECT -> {
                         val remainSelectTime =
-                            if (room.lastGetTime[0] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[0])
+                            if (room.lastGetTime[0] == 0L) 0
+                            else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[0])
                         if (remainSelectTime > 0)
                             throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
                         if (st == RIGHT_SELECT) {
@@ -89,7 +91,8 @@ object RoomTypeNormal : RoomType {
 
                     RIGHT_SELECT -> {
                         val remainSelectTime =
-                            if (room.lastGetTime[1] == 0L) 0 else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[1])
+                            if (room.lastGetTime[1] == 0L) 0
+                            else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[1])
                         if (remainSelectTime > 0)
                             throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
                         if (st == LEFT_SELECT) {

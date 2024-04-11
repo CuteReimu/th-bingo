@@ -43,7 +43,8 @@ object Store {
             for (f in players) {
                 val name = f.name
                 val player = getPlayer(name.substring("player-".length, name.length - ".0".length)) ?: continue
-                if (now >= player.lastOperateMs + 6 * 60 * 60 * 1000 && (player.roomId == null || getRoom(player.roomId) == null)) {
+                if (now >= player.lastOperateMs + 6 * 60 * 60 * 1000 &&
+                    (player.roomId == null || getRoom(player.roomId) == null)) {
                     logger.info("玩家 ${player.token} 过期, 自动清除")
                     removePlayer(player.token)
                 }

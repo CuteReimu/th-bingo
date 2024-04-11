@@ -177,7 +177,9 @@ object SpellLog {
     }
 
     enum class LogType {
-        APPEAR, SELECT, GET
+        APPEAR,
+        SELECT,
+        GET
     }
 
     annotation class GameType {

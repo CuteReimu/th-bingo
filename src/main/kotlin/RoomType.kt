@@ -20,12 +20,5 @@ sealed interface RoomType {
     fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Int): Array<Spell>
 
     @Throws(HandlerException::class)
-    fun handleUpdateSpell(
-        room: Room,
-        token: String,
-        idx: Int,
-        status: SpellStatus,
-        now: Long,
-        isReset: Boolean
-    ): SpellStatus
+    fun handleUpdateSpell(room: Room, token: String, idx: Int, status: SpellStatus, now: Long, isReset: Boolean): SpellStatus
 }
