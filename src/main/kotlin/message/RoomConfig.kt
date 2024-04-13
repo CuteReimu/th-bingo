@@ -9,7 +9,6 @@ class RoomConfig(
     val ranks: Array<String>?,
     val needWin: Int?,
     val difficulty: Int?,
-    val isPrivate: Boolean?,
     val cdTime: Int?, // 选卡cd，收卡后要多少秒才能选下一张卡
     val reservedType: Int?, // 纯客户端用的一个类型字段
 ) {
@@ -41,7 +40,6 @@ class RoomConfig(
         ranks?.let { room.ranks = it }
         needWin?.let { room.needWin = it.coerceAtLeast(1) }
         difficulty?.let { room.difficulty = it }
-        isPrivate?.let { room.isPrivate = it }
         cdTime?.let { room.cdTime = it }
         reservedType?.let { room.reservedType = it }
     }
@@ -54,7 +52,6 @@ class RoomConfig(
             ranks = room.ranks,
             needWin = room.needWin,
             difficulty = room.difficulty,
-            isPrivate = room.isPrivate,
             cdTime = room.cdTime,
             reservedType = room.reservedType,
         )

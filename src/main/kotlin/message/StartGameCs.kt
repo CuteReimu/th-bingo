@@ -68,7 +68,5 @@ class StartGameCs : Handler {
                 )
             )
         )
-        if (!room.isPrivate && !room.players.contains(Store.robotPlayer.token)) // 单人练习模式不推送
-            MiraiPusher.push(room)
     }
 }
