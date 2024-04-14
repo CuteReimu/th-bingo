@@ -35,7 +35,7 @@ object RoomTypeNormal : RoomType {
             throw HandlerException("不支持的操作")
         if (room.pauseBeginMs != 0L && token != room.host)
             throw HandlerException("暂停中，不能操作")
-        if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs &&
+        if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.countDown.toLong() * 1000 - room.totalPauseMs &&
             !room.isHost(token) && !room.scoreDraw())
             throw HandlerException("游戏时间到")
         val isCountingDown = room.startMs > now - room.countDown.toLong() * 1000L

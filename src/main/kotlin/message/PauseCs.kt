@@ -14,7 +14,7 @@ class PauseCs(val pause: Boolean) : Handler {
         if (!room.type.canPause) throw HandlerException("不支持暂停的游戏类型")
         if (!room.isHost(token)) throw HandlerException("没有权限")
         if (!room.started) throw HandlerException("游戏还没开始，不能暂停")
-        if (pause && room.startMs <= now - room.gameTime.toLong() * 60000L - room.totalPauseMs)
+        if (pause && room.startMs <= now - room.gameTime.toLong() * 60000L - room.countDown.toLong() * 1000 - room.totalPauseMs)
             throw HandlerException("游戏时间到，不能暂停")
         if (room.startMs > now - room.countDown.toLong() * 1000L)
             throw HandlerException("倒计时还没结束，不能暂停")
