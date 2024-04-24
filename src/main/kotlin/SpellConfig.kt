@@ -139,7 +139,7 @@ object SpellConfig {
     fun getSpellById(type: Int, id: Int): Spell? = cache[type]?.spellsByIndex?.get(id)
 
     private fun buildNormalSpell(row: XSSFRow): Spell? {
-        if (row.lastCellNum < 6) return null
+        if (row.lastCellNum < 15) return null
         return Spell(
             index = row.getCell(0).numericCellValue.toInt(),
             game = row.getCell(1).numericCellValue.toInt().toString(),
@@ -147,13 +147,18 @@ object SpellConfig {
             rank = row.getCell(5).stringCellValue.trim(),
             star = row.getCell(6).numericCellValue.toInt(),
             desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
-            id = if (row.lastCellNum < 8) 0
-            else row.getCell(8)?.numericCellValue?.toInt() ?: 0
+            id = row.getCell(8).numericCellValue.toInt(),
+            fastest = row.getCell(9).numericCellValue.toFloat(),
+            one = row.getCell(10).numericCellValue.toFloat(),
+            two = row.getCell(11).numericCellValue.toFloat(),
+            three = row.getCell(12).numericCellValue.toFloat(),
+            final = row.getCell(13).numericCellValue.toFloat(),
+            bonusRate = row.getCell(14).numericCellValue.toFloat(),
         )
     }
 
     private fun buildBPSpell(row: XSSFRow): Spell? {
-        if (row.lastCellNum < 7) return null
+        if (row.lastCellNum < 15) return null
         return Spell(
             index = row.getCell(0).numericCellValue.toInt(),
             game = row.getCell(1).numericCellValue.toInt().toString(),
@@ -161,8 +166,13 @@ object SpellConfig {
             rank = row.getCell(5).stringCellValue.trim(),
             star = row.getCell(7).numericCellValue.toInt(),
             desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
-            id = if (row.lastCellNum < 8) 0
-            else row.getCell(8)?.numericCellValue?.toInt() ?: 0
+            id = row.getCell(8).numericCellValue.toInt(),
+            fastest = row.getCell(9).numericCellValue.toFloat(),
+            one = row.getCell(10).numericCellValue.toFloat(),
+            two = row.getCell(11).numericCellValue.toFloat(),
+            three = row.getCell(12).numericCellValue.toFloat(),
+            final = row.getCell(13).numericCellValue.toFloat(),
+            bonusRate = row.getCell(14).numericCellValue.toFloat(),
         )
     }
 
