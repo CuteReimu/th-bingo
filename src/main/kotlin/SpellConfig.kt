@@ -56,11 +56,11 @@ object SpellConfig {
         }
         val spellIds = HashSet<String>()
         val result = Array(stars.size) {
-            val isExMap = map[stars[it]] ?: throw HandlerException("符卡数量不足")
-            val gameMap = isExMap[false] ?: throw HandlerException("符卡数量不足")
+            val isExMap = map[stars[it]] ?: throw HandlerException("${stars[it]}星符卡数量不足")
+            val gameMap = isExMap[false] ?: throw HandlerException("${stars[it]}星符卡数量不足")
             var spell: Spell
             do {
-                val game = gameMap.keys.randomOrNull(rand) ?: throw HandlerException("符卡数量不足")
+                val game = gameMap.keys.randomOrNull(rand) ?: throw HandlerException("${stars[it]}星符卡数量不足")
                 val spellList = gameMap[game]!!
                 spell = spellList.removeFirst()
                 if (spellList.isEmpty()) gameMap.remove(game)
@@ -75,7 +75,7 @@ object SpellConfig {
                     firstTry = false
                 } else {
                     index = (index + 1) % result.size
-                    if (index == exPos[i]) throw HandlerException("符卡数量不足")
+                    if (index == exPos[i]) throw HandlerException("EX符卡数量不足")
                     if (index in exPos) continue
                 }
                 val isExMap = map[stars[index]] ?: continue
