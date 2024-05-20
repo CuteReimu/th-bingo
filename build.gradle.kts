@@ -20,7 +20,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.4.0")
     implementation("org.apache.logging.log4j:log4j-core:2.23.1")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.9.23")
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
     implementation("com.jakewharton:disklrucache:2.0.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
