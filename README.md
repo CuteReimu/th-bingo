@@ -40,3 +40,13 @@
 协议与`org.tfcc.bingo.message`下的类(`Dispatcher.kt`、`Handler.kt`、`Message.kt`除外)一一对应。
 
 例如`"name": "error_sc"`对应ErrorSc
+
+## 开发相关
+
+### gradle镜像
+
+如果gradle下载太慢，可以修改`gradle/wrapper/gradle-wrapper.properties`中的`distributionUrl`：
+
+```diff
+- distributionUrl=https\://services.gradle.org/distributions/gradle-7.4.2-bin.zip
++ distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-7.4.2-bin.zip
