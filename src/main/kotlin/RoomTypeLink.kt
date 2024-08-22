@@ -125,7 +125,9 @@ object RoomTypeLink : RoomType {
 
             else -> throw HandlerException("内部错误")
         }
-        SpellLog.logSpellOperate(status, room.spells!![idx], token, gameType = SpellLog.GameType.LINK)
+        if (room.host.isNotEmpty() && token != Store.robotPlayer.token){
+          SpellLog.logSpellOperate(status, room.spells!![idx], token, gameType = SpellLog.GameType.LINK)
+        }
         return result
     }
 

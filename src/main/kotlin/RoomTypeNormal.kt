@@ -112,6 +112,10 @@ object RoomTypeNormal : RoomType {
             else ->
                 throw HandlerException("内部错误")
         }
+        // 无导播模式不记录
+        if (room.host.isEmpty() || token == Store.robotPlayer.token){
+          return result
+        }
         // 等操作结束后再记录
         if (room.startMs > now - room.countDown.toLong() * 1000L) {
             // 倒计时没结束，需要按照倒计时已经结束的时间点计算开始收卡的时间
