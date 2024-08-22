@@ -113,8 +113,8 @@ object RoomTypeNormal : RoomType {
                 throw HandlerException("内部错误")
         }
         // 无导播模式不记录
-        if (room.host.isEmpty() || token == Store.robotPlayer.token){
-          return result
+        if (room.host.isEmpty() || token == Store.robotPlayer.token) {
+            return result
         }
         // 等操作结束后再记录
         if (room.startMs > now - room.countDown.toLong() * 1000L) {
