@@ -3,6 +3,8 @@ package org.tfcc.bingo
 import org.apache.logging.log4j.kotlin.logger
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.openxml4j.opc.PackageAccess
+import org.apache.poi.ss.usermodel.CellType.*
+import org.apache.poi.xssf.usermodel.XSSFCell
 import org.apache.poi.xssf.usermodel.XSSFRow
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.tfcc.bingo.message.HandlerException
@@ -138,6 +140,13 @@ object SpellConfig {
 
     fun getSpellById(type: Int, id: Int): Spell? = cache[type]?.spellsByIndex?.get(id)
 
+    private fun XSSFCell?.getFloatValue(): Float {
+        if (this == null) return 0f
+        if (cellType == STRING)
+            return stringCellValue.ifBlank { return 0f }.toFloat()
+        return numericCellValue.toFloat()
+    }
+
     private fun buildNormalSpell(row: XSSFRow): Spell? {
         if (row.lastCellNum < 15) return null
         return Spell(
@@ -147,13 +156,13 @@ object SpellConfig {
             rank = row.getCell(5).stringCellValue.trim(),
             star = row.getCell(6).numericCellValue.toInt(),
             desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
-            id = row.getCell(8).numericCellValue.toInt(),
-            fastest = row.getCell(9).numericCellValue.toFloat(),
-            one = row.getCell(10).numericCellValue.toFloat(),
-            two = row.getCell(11).numericCellValue.toFloat(),
-            three = row.getCell(12).numericCellValue.toFloat(),
-            final = row.getCell(13).numericCellValue.toFloat(),
-            bonusRate = row.getCell(14).numericCellValue.toFloat(),
+            id = row.getCell(8)?.numericCellValue?.toInt() ?: 0,
+            fastest = row.getCell(9).getFloatValue(),
+            one = row.getCell(10).getFloatValue(),
+            two = row.getCell(11).getFloatValue(),
+            three = row.getCell(12).getFloatValue(),
+            final = row.getCell(13).getFloatValue(),
+            bonusRate = row.getCell(14).getFloatValue(),
         )
     }
 
@@ -167,12 +176,12 @@ object SpellConfig {
             star = row.getCell(7).numericCellValue.toInt(),
             desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
             id = row.getCell(8).numericCellValue.toInt(),
-            fastest = row.getCell(9).numericCellValue.toFloat(),
-            one = row.getCell(10).numericCellValue.toFloat(),
-            two = row.getCell(11).numericCellValue.toFloat(),
-            three = row.getCell(12).numericCellValue.toFloat(),
-            final = row.getCell(13).numericCellValue.toFloat(),
-            bonusRate = row.getCell(14).numericCellValue.toFloat(),
+            fastest = row.getCell(9).getFloatValue(),
+            one = row.getCell(10).getFloatValue(),
+            two = row.getCell(11).getFloatValue(),
+            three = row.getCell(12).getFloatValue(),
+            final = row.getCell(13).getFloatValue(),
+            bonusRate = row.getCell(14).getFloatValue(),
         )
     }
 
