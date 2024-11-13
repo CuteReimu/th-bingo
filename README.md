@@ -6,6 +6,8 @@
 [![](https://img.shields.io/github/contributors/CuteReimu/th-bingo)](https://github.com/CuteReimu/th-bingo/graphs/contributors "贡献者")
 [![](https://img.shields.io/github/license/CuteReimu/th-bingo)](https://github.com/CuteReimu/th-bingo/blob/master/LICENSE "许可协议")
 
+**本项目目前处于重构阶段，并且在重构结束前，不进行任何BUG的修复和新需求的修改**
+
 ## 使用
 
 ```shell
@@ -14,32 +16,7 @@
 
 ## 协议
 
-协议全部采用json的格式
-
-| 字段      | 类型  | 备注                                      |
-|---------|-----|-----------------------------------------|
-| name    | str | 协议名                                     |
-| reply   | str | 回应的协议名，如果只是推送协议则没有这个字段                  |
-| trigger | str | 触发事件的玩家的名字，如果没有则没有这个字段                  |
-| data    | obj | 协议内容，下文一一列举（如果返回协议体为空，则没有这个字段，以便减小协议大小） |
-
-示例：
-
-```json
-{
-  "name": "error_sc",
-  "reply": "join_room_cs",
-  "trigger": "xxx",
-  "data": {
-    "code": 1,
-    "msg": "create room failed"
-  }
-}
-```
-
-协议与`org.tfcc.bingo.message`下的类(`Dispatcher.kt`、`Handler.kt`、`Message.kt`除外)一一对应。
-
-例如`"name": "error_sc"`对应`ErrorSc`
+协议相关见：[doc](doc/README.md)
 
 ## 开发相关
 
