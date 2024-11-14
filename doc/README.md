@@ -25,7 +25,7 @@ http协议全部采用POST请求，请求体和回包都采用json格式。
 
 ```jsonc
 {
-  "code": 0,
+  "code": 0, // 0表示成功，其它表示失败
   "msg": "ok", // 如果code不为0，则为错误信息，否则没有这个字段
   "data": { // 协议内容，下文一一列举（如果协议体为空，则没有这个字段，以便减小协议大小）
     "token": "xxxxx"
@@ -117,7 +117,7 @@ http协议全部采用POST请求，请求体和回包都采用json格式。
 ```jsonc
 {
   "name": "create_room",
-  "data": { // 很多协议的结构都和这个一样
+  "data": { // 下文很多协议的结构都和这个一样
     "rid": "test01", // 房间名
     "type": 1, // 1-标准赛，2-BP赛，3-link赛
     "solo": false, // 是否为无导播局
@@ -178,7 +178,7 @@ http协议全部采用POST请求，请求体和回包都采用json格式。
 
 ```jsonc
 {
-  "name": "update_room",
+  "name": "update_room_config",
   "data": { // 和create_room结构一样
   }
 }
@@ -188,7 +188,7 @@ http协议全部采用POST请求，请求体和回包都采用json格式。
 
 ```jsonc
 {
-  "code": 0,
+  "code": 0
 }
 ```
 
@@ -202,6 +202,429 @@ http协议全部采用POST请求，请求体和回包都采用json格式。
 {
   "name": "update_room_config_sc",
   "data": { // 和create_room结构一样
+  }
+}
+```
+
+</details>
+
+<details><summary>房间状态</summary>
+
+**加入房间**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "join_room",
+  "data": {
+    "rid": "test01" // 房间名
+  }
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0,
+  "data": {
+    "rid": "test01", // 房间名
+    "type": 1, // 1-标准赛，2-BP赛，3-link赛
+    "host": "test00", // 房主的名字
+    "names": ["test01", "test02"], // 玩家名字列表，一定有2个，没有人则对应位置为空
+    "change_card_count": [1, 2], // 换卡次数，一定有2个，和上面的names一一对应
+    "started": false, // 是否已经开始
+    "score": [1, 2], // 比分，一定有2个，和上面的names一一对应
+    "watchers": ["test03", "test04"] // 观众名字列表，有几个就是几个
+  }
+}
+```
+
+**离开房间**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "leave_room"
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**观战（站起）**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "stand_up"
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**作为选手（坐下）**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "sit_down"
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**获取房间**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "get_room"
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0,
+  "data": { // 和join_room结构一样
+  }
+}
+```
+
+**推送房间状态更新**
+
+*由于实时性要求非常高，考虑到websocket和http是两条信道，可能有并发问题，一律采用推送只推送发生了变化，客户端重新请求获取信息接口的方式*
+
+协议类型：websocket
+
+示例：
+
+```jsonc
+{
+  "name": "update_room_sc"
+}
+```
+
+</details>
+
+<details><summary>客户端透传协议</summary>
+
+协议类型：websocket
+
+请求：
+
+```json
+{
+  "name": "set_phase",
+  "data": {
+    "phase": 1
+  }
+}
+```
+
+返回：
+
+```json
+{
+  "code": 0
+}
+```
+
+请求：
+
+```json
+{
+  "name": "get_phase"
+}
+```
+
+返回：
+
+```json
+{
+  "code": 0,
+  "data": {
+    "phase": 1
+  }
+}
+```
+
+</details>
+
+<details><summary>游戏相关</summary>
+
+**游戏开始**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "start_game"
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**推送游戏开始**
+
+协议类型：websocket
+
+示例：
+
+```jsonc
+{
+  "name": "start_game_sc",
+  "data": { // 和create_room结构一样，也就是房间配置，以防同步失败
+  }
+}
+```
+
+**游戏结束**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "stop_game",
+  "data": {
+    "winner": -1 // -1表示平局，0表示左边，1表示右边
+  }
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**推送游戏结束**
+
+协议类型：websocket
+
+示例：
+
+```jsonc
+{
+  "name": "stop_game_sc",
+  "data": {
+    "winner": -1 // -1表示平局，0表示左边，1表示右边
+  }
+}
+```
+
+**警告玩家**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "gm_warn_player",
+  "data": {
+    "name": "test01" // 玩家名
+  }
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**推送警告玩家**
+
+协议类型：websocket
+
+示例：
+
+```jsonc
+{
+  "name": "gm_warn_player_sc",
+  "data": {
+    "name": "test01" // 玩家名
+  }
+}
+```
+
+**获取所有符卡**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "get_all_spells"
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0,
+  "data": {
+    "spells": [
+      {
+        "index": 1, // 符卡唯一ID
+        "game": "6", // 作品
+        "name": "", // 符卡名
+        "rank": "L", // 难度
+        "star": 3, // 星级
+        "desc": "", // 符卡描述
+        "id": 1, // 在对应作品里的id
+        "fastest": 1.0, // AI参数
+        "one": 1.0, // AI参数
+        "two": 1.0, // AI参数
+        "three": 1.0, // AI参数
+        "final": 1.0, // AI参数
+        "bonus_rate": 1.0 // AI参数
+      }, // 有25个符卡
+    ],
+    "left_time": 1, // 倒计时剩余时间，单位：毫秒
+    "status": 1, // 0-未开始，1-赛前倒计时中，2-开始，3-暂停中，4-结束
+    "left_cd_time": 1 // 选卡cd剩余时间，单位：毫秒
+  }
+}
+```
+
+**选卡**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "select_spell",
+  "data": {
+    "index": 1 // 第几张卡，0-24
+  }
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**收卡**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "finish_spell",
+  "data": {
+    "index": 1 // 第几张卡，0-24
+  }
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**房主修改卡**
+
+协议类型：http
+
+请求：
+
+```jsonc
+{
+  "name": "update_spell_status",
+  "data": {}
+}
+```
+
+返回：
+
+```jsonc
+{
+  "code": 0
+}
+```
+
+**推送符卡状态**
+
+*收到获取所有符卡协议之后一定会推送一个*
+
+协议类型：websocket
+
+示例：
+
+```jsonc
+{
+  "name": "update_spell_status_sc",
+  "data": {
+    "spells": [ // 有可能一次推送多个
+      {
+        "index": 1, // 第几张，0-24
+        "status": [1, 2] // 0-未选，1-已选，2-已收，分别左右两人
+      }
+    ],
+    "causer": "test01" // 造成这个状态变化的玩家（可能是房主）（如果是获取所有符卡后的全量推送，则这个字段为空）
   }
 }
 ```
