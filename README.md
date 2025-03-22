@@ -25,5 +25,18 @@
 如果gradle下载太慢，可以修改`gradle/wrapper/gradle-wrapper.properties`中的`distributionUrl`：
 
 ```diff
-- distributionUrl=https\://services.gradle.org/distributions/gradle-7.4.2-bin.zip
-+ distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-7.4.2-bin.zip
+- distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip
++ distributionUrl=https\://mirrors.cloud.tencent.com/gradle/gradle-8.13-bin.zip
+
+### maven镜像
+
+如果各种依赖下载太慢，可以修改`build.gradle.kts`，设置镜像。例如：
+
+```diff
+repositories {
++   maven("https://maven.aliyun.com/repository/public")
+    mavenCentral()
+}
+```
+
+比较推荐的镜像有 `https://maven.aliyun.com/repository/public` 和 `https://mirrors.cloud.tencent.com/nexus/repository/maven-public/` 等
