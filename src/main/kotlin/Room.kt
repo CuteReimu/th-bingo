@@ -1,49 +1,63 @@
 package org.tfcc.bingo
 
 import org.tfcc.bingo.message.HandlerException
+import org.tfcc.bingo.message.RoomConfig
 
 class Room(
     val roomId: String,
-    var roomType: Int,
-    val host: String
+    val host: Player?,
+    var roomConfig: RoomConfig,
 ) {
-    val players = arrayOf("", "")
+    val players = arrayOf<Player?>(null, null)
     var started = false
     var spells: Array<Spell>? = null
     var startMs: Long = 0
-    var gameTime: Int = 0 // 比赛时长，分
-    var countDown: Int = 0 // 倒计时，秒
-    var spellStatus: Array<SpellStatus>? = null // 每个格子的状态
-    val score = intArrayOf(0, 0) // 比分
-    var games: Array<String> = arrayOf("6", "7", "8", "10", "11", "12", "13", "14", "15", "16", "17", "18")
-    var ranks: Array<String>? = null
-    var locked = false // 连续多局就需要锁上
-    var needWin: Int = 0 // 需要赢几局才算赢
-    var cdTime = 30
+
+    /** 每个格子的状态 */
+    var spellStatus: Array<SpellStatus>? = null
+
+    /** 比分 */
+    val score = intArrayOf(0, 0)
+
+    /** 连续多局就需要锁上 */
+    var locked = false
     val changeCardCount = intArrayOf(0, 0)
-    val lastGetTime = longArrayOf(0, 0) // 从游戏开始到上次收卡经过的毫秒数，去掉暂停时间
-    var totalPauseMs: Long = 0 // 累计暂停时长，毫秒
-    var pauseBeginMs: Long = 0 // 开始暂停时刻，毫秒，0表示没暂停
-    var pauseEndMs: Long = 0 // 上一次结束暂停的时刻，毫秒，0表示从未暂停过
-    var lastWinner: Int = 0 // 上一场是谁赢，1或2
-    var bpData: BpData? = null
-    var linkData: LinkData? = null
-    var phase: Int = 0 // 纯客户端用，服务器只记录
-    val watchers = ArrayList<String>() // 观众
-    var difficulty: Int = 0
-    var lastOperateMs: Long = 0 // 最后一次操作的时间戳，毫秒
-    var banPick: BanPick? = null
+
+    /** 上次收卡时间戳 */
+    val lastGetTime = longArrayOf(0, 0)
+
+    /** 累计暂停时长，毫秒 */
+    var totalPauseMs: Long = 0
+
+    /** 开始暂停时刻，毫秒，0表示没暂停 */
+    var pauseBeginMs: Long = 0
+
+    /** 上一次结束暂停的时刻，毫秒，0表示从未暂停过 */
+    var pauseEndMs: Long = 0
+
+    /** 上一场是谁赢，1或2 */
+    var lastWinner: Int = 0
+//    var bpData: BpData? = null
+//    var linkData: LinkData? = null
+    /** 纯客户端用，服务器只记录 */
+    var phase: Int = 0
+
+    /** 观众 */
+    val watchers = ArrayList<Player>()
+
+    //    var banPick: BanPick? = null
     var debugSpells: IntArray? = null
-    var reservedType: Int? = null
+
+    /** 最后一次操作的时间戳，毫秒，业务逻辑中请勿修改此字段 */
+    var lastOperateMs: Long = 0
     val type
-        get() = when (roomType) {
+        get() = when (roomConfig.type) {
             1 -> RoomTypeNormal
-            2 -> RoomTypeBP
-            3 -> RoomTypeLink
+//            2 -> RoomTypeBP
+//            3 -> RoomTypeLink
             else -> throw HandlerException("不支持的游戏类型")
         }
 
-    fun isHost(token: String) =
-        if (host.isEmpty()) token in players
-        else token == host
+    fun isHost(player: Player) = if (host != null) host === player
+    else player in players
 }

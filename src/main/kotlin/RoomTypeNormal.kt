@@ -1,5 +1,7 @@
 package org.tfcc.bingo
 
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import org.tfcc.bingo.SpellStatus.*
 import org.tfcc.bingo.message.HandlerException
 import java.util.*
@@ -10,7 +12,7 @@ object RoomTypeNormal : RoomType {
     override val canPause = true
 
     @Throws(HandlerException::class)
-    override fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Int): Array<Spell> {
+    override fun randSpells(games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell> {
         return SpellFactory.randSpells(
             games, ranks, when (difficulty) {
                 1 -> Difficulty.E
@@ -21,117 +23,124 @@ object RoomTypeNormal : RoomType {
         )
     }
 
-    @Throws(HandlerException::class)
-    override fun handleUpdateSpell(
-        room: Room,
-        token: String,
-        idx: Int,
-        status: SpellStatus,
-        now: Long,
-        isReset: Boolean
-    ): SpellStatus {
-        val st = room.spellStatus!![idx]
-        if (status == BANNED)
-            throw HandlerException("不支持的操作")
-        if (room.pauseBeginMs != 0L && token != room.host)
-            throw HandlerException("暂停中，不能操作")
-        if (room.startMs <= now - room.gameTime.toLong() * 60000L - room.countDown.toLong() * 1000 - room.totalPauseMs &&
-            !room.isHost(token) && !room.scoreDraw())
+    override fun handleSelectSpell(room: Room, playerIndex: Int, spellIndex: Int) {
+        var st = room.spellStatus!![spellIndex]
+        if (playerIndex == 1) st = st.opposite()
+        room.pauseBeginMs == 0L || throw HandlerException("暂停中，不能操作")
+        var now = System.currentTimeMillis()
+        val gameTime = room.roomConfig.gameTime.toLong() * 60000L
+        val countdown = room.roomConfig.countdown.toLong() * 1000
+        if (room.startMs <= now - gameTime - countdown - room.totalPauseMs &&
+            !room.isHost(room.players[playerIndex]!!) && !room.scoreDraw()
+        )
             throw HandlerException("游戏时间到")
-        val isCountingDown = room.startMs > now - room.countDown.toLong() * 1000L
-        if (isCountingDown) {
-            if (!status.isSelectStatus() && !(status == NONE && st.isSelectStatus()))
-                throw HandlerException("倒计时还没结束")
+        if (now < room.startMs + countdown) {
+            if (st == RIGHT_SELECT) throw HandlerException("倒计时阶段不能抢卡")
         }
-        val result = when (token) {
-            room.host ->
-                status
-
-            room.players[0] -> {
-                if (room.host.isNotEmpty()) {
-                    if (status.isRightStatus() || st == LEFT_GET && status != LEFT_GET)
-                        throw HandlerException("权限不足")
-                    if (st == RIGHT_GET)
-                        throw HandlerException("对方已打完")
-                }
-                when (status) {
-                    LEFT_GET ->
-                        status
-
-                    LEFT_SELECT -> {
-                        val remainSelectTime =
-                            if (room.lastGetTime[0] == 0L) 0
-                            else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[0])
-                        if (remainSelectTime > 0)
-                            throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
-                        if (st == RIGHT_SELECT) {
-                            !isCountingDown || throw HandlerException("倒计时阶段不能抢卡")
-                            BOTH_SELECT
-                        } else status
-                    }
-
-                    NONE ->
-                        if (st == BOTH_SELECT) RIGHT_SELECT else status
-
-                    else ->
-                        throw HandlerException("status不合法")
-                }
-            }
-
-            room.players[1] -> {
-                if (room.host.isNotEmpty()) {
-                    if (status.isLeftStatus() || st == RIGHT_GET && status != RIGHT_GET)
-                        throw HandlerException("权限不足")
-                    if (st == LEFT_GET)
-                        throw HandlerException("对方已打完")
-                }
-                when (status) {
-                    RIGHT_GET ->
-                        status
-
-                    RIGHT_SELECT -> {
-                        val remainSelectTime =
-                            if (room.lastGetTime[1] == 0L) 0
-                            else ((room.cdTime - 1) * 1000 - now + room.startMs + room.totalPauseMs + room.lastGetTime[1])
-                        if (remainSelectTime > 0)
-                            throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
-                        if (st == LEFT_SELECT) {
-                            !isCountingDown || throw HandlerException("倒计时阶段不能抢卡")
-                            BOTH_SELECT
-                        } else status
-                    }
-
-                    NONE ->
-                        if (st == BOTH_SELECT) LEFT_SELECT else status
-
-                    else ->
-                        throw HandlerException("status不合法")
-                }
-            }
-
-            else ->
-                throw HandlerException("内部错误")
+        // 选卡CD
+        val cdTime = room.roomConfig.cdTime ?: 0
+        if (cdTime > 0) {
+            val lastGetTime = room.lastGetTime[playerIndex]
+            val nextCanSelectTime = lastGetTime + (cdTime - 1) * 1000L // 服务器扣一秒，以防网络延迟
+            val remainSelectTime = nextCanSelectTime - now
+            if (remainSelectTime > 0)
+                throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
         }
+
+        room.spellStatus!![spellIndex] = when (st) {
+            LEFT_GET -> throw HandlerException("你已打完")
+            RIGHT_GET -> throw HandlerException("对方已打完")
+            NONE -> LEFT_SELECT
+            LEFT_SELECT -> throw HandlerException("重复选卡")
+            BOTH_SELECT, RIGHT_SELECT -> BOTH_SELECT
+            else -> throw HandlerException("状态错误：$st")
+        }
+
         // 无导播模式不记录
-        if (room.host.isEmpty() || token == Store.robotPlayer.token) {
-            return result
-        }
+        room.host != null || return
         // 等操作结束后再记录
-        if (room.startMs > now - room.countDown.toLong() * 1000L) {
+        if (now < room.startMs + countdown) {
             // 倒计时没结束，需要按照倒计时已经结束的时间点计算开始收卡的时间
-            SpellLog.logSpellOperate(
-                status,
-                room.spells!![idx],
-                token,
-                room.startMs + room.countDown.toLong() * 1000L,
-                SpellLog.GameType.NORMAL
-            )
-        } else {
-            SpellLog.logSpellOperate(status, room.spells!![idx], token, gameType = SpellLog.GameType.NORMAL)
+            now = room.startMs + countdown
         }
-        return result
+        val playerName = room.players[playerIndex]!!.name
+        var status = LEFT_SELECT
+        if (playerIndex == 1) status = status.opposite()
+        SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
     }
 
+    override fun handleFinishSpell(room: Room, playerIndex: Int, spellIndex: Int) {
+        var st = room.spellStatus!![spellIndex]
+        if (playerIndex == 1) st = st.opposite()
+        room.pauseBeginMs == 0L || throw HandlerException("暂停中，不能操作")
+        var now = System.currentTimeMillis()
+        val gameTime = room.roomConfig.gameTime.toLong() * 60000L
+        val countdown = room.roomConfig.countdown.toLong() * 1000
+        if (room.startMs <= now - gameTime - countdown - room.totalPauseMs &&
+            !room.isHost(room.players[playerIndex]!!) && !room.scoreDraw()
+        )
+            throw HandlerException("游戏时间到")
+        if (now < room.startMs + countdown) {
+            throw HandlerException("倒计时还没结束")
+        }
+
+        room.spellStatus!![spellIndex] = when (st) {
+            LEFT_GET -> throw HandlerException("你已打完")
+            RIGHT_GET -> throw HandlerException("对方已打完")
+            NONE, RIGHT_SELECT -> throw HandlerException("你还未选卡")
+            BOTH_SELECT, LEFT_SELECT -> LEFT_GET
+            else -> throw HandlerException("状态错误：$st")
+        }
+
+        // 无导播模式不记录
+        room.host != null || return
+        // 等操作结束后再记录
+        if (now < room.startMs + countdown) {
+            // 倒计时没结束，需要按照倒计时已经结束的时间点计算开始收卡的时间
+            now = room.startMs + countdown
+        }
+        val playerName = room.players[playerIndex]!!.name
+        var status = LEFT_GET
+        if (playerIndex == 1) status = status.opposite()
+        SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
+    }
+
+    override fun pushSpells(room: Room, spellIndex: Int, causer: String) {
+        val status = room.spellStatus!![spellIndex]
+        val allStatus = JsonObject(
+            mapOf(
+                "index" to JsonPrimitive(spellIndex),
+                "status" to JsonPrimitive(status.value),
+                "causer" to JsonPrimitive(causer),
+            )
+        )
+        room.host?.push("push_update_spell_status", allStatus)
+        for (i in room.players.indices) {
+            var st = status
+            if (st.isSelectStatus()) {
+                // 对方收了五张卡之后，不再可以看到对方的选卡
+                if (i == 0 && room.spellStatus!!.count { it == RIGHT_GET } >= 5) {
+                    if (status == RIGHT_SELECT) st = NONE
+                    else if (status == BOTH_SELECT) st = LEFT_SELECT
+                } else if (i == 1 && room.spellStatus!!.count { it == LEFT_GET } >= 5) {
+                    if (status == LEFT_SELECT) st = NONE
+                    else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                }
+            }
+            room.host?.push(
+                "push_update_spell_status", JsonObject(
+                    mapOf(
+                        "index" to JsonPrimitive(spellIndex),
+                        "status" to JsonPrimitive(st.value),
+                        "causer" to JsonPrimitive(causer),
+                    )
+                )
+            )
+        }
+        room.watchers.forEach { it.push("push_update_spell_status", allStatus) }
+    }
+
+    /** 是否平局 */
     private fun Room.scoreDraw(): Boolean {
         var left = 0
         spellStatus!!.forEach {

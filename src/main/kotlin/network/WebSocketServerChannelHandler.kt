@@ -7,10 +7,8 @@ import io.netty.handler.codec.http.websocketx.WebSocketFrame
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
 import org.apache.logging.log4j.kotlin.logger
+import org.tfcc.bingo.Dispatcher
 import org.tfcc.bingo.Supervisor
-import org.tfcc.bingo.message.Dispatcher
-import org.tfcc.bingo.message.HandlerException
-import org.tfcc.bingo.message.LeaveRoomCs
 import java.net.SocketException
 
 class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame>() {
@@ -29,14 +27,7 @@ class WebSocketServerChannelHandler : SimpleChannelInboundHandler<WebSocketFrame
     override fun channelInactive(ctx: ChannelHandlerContext) {
         // 断开连接
         logger.debug("客户端断开连接：${ctx.channel()}")
-        val token = Supervisor.removeChannel(ctx.channel()) ?: return
-        Dispatcher.pool.submit {
-            try {
-                LeaveRoomCs().handle(ctx, token, "")
-            } catch (_: HandlerException) {
-                // Ignore
-            }
-        }
+        Supervisor.removeChannel(ctx.channel())
     }
 
     @Throws(Exception::class)

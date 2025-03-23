@@ -35,16 +35,16 @@ object SpellLog {
     fun logSpellOperate(
         status: SpellStatus,
         spell: Spell,
-        token: String,
+        name: String,
         time: Long = System.currentTimeMillis(),
         gameType: Int
     ) {
         try {
             if (status.isSelectStatus()) {
-                logSpell(LogType.SELECT, spell, token, time, gameType = gameType)
+                logSpell(LogType.SELECT, spell, name, time, gameType = gameType)
             }
             if (status.isGetStatus()) {
-                logSpell(LogType.GET, spell, token, gameType = gameType)
+                logSpell(LogType.GET, spell, name, gameType = gameType)
             }
         } catch (e: Exception) {
             logger.error("log spell operate failed: ", e)
@@ -87,7 +87,7 @@ object SpellLog {
     private fun logSpell(
         type: LogType,
         card: Spell,
-        token: String = "",
+        name: String = "",
         time: Long = System.currentTimeMillis(),
         gameType: Int = GameType.NORMAL
     ) {
@@ -100,15 +100,15 @@ object SpellLog {
 
             LogType.SELECT -> {
                 logList[gameType][card.name] = logList[gameType][card.name]!!.addSelect()
-                if (gameType == GameType.NORMAL) timeLogs[token] = SpellTimeStamp(time)
+                if (gameType == GameType.NORMAL) timeLogs[name] = SpellTimeStamp(time)
             }
 
             LogType.GET -> {
                 if (gameType == GameType.NORMAL) {
-                    timeLogs[token]?.let {
+                    timeLogs[name]?.let {
                         logList[gameType][card.name] = logList[gameType][card.name]!!.getCard(time - it.start)
                     }
-                    timeLogs.remove(token)
+                    timeLogs.remove(name)
                 } else {
                     logList[gameType][card.name] = logList[gameType][card.name]!!.getCard()
                 }
@@ -190,8 +190,8 @@ object SpellLog {
             fun getGameType(roomType: RoomType): Int {
                 return when (roomType) {
                     is RoomTypeNormal -> NORMAL
-                    is RoomTypeBP -> BP
-                    is RoomTypeLink -> LINK
+//                    is RoomTypeBP -> BP
+//                    is RoomTypeLink -> LINK
                 }
             }
         }

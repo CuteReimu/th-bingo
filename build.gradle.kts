@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     kotlin("jvm") version "2.1.20"
     application
+    kotlin("plugin.serialization") version "2.1.20"
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
 
@@ -15,13 +16,12 @@ repositories {
 
 dependencies {
     implementation("io.netty:netty-all:4.1.119.Final")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     implementation("org.apache.logging.log4j:log4j-api:2.24.3")
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.5.0")
     implementation("org.apache.logging.log4j:log4j-core:2.24.3")
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.20")
-    implementation("com.google.code.gson:gson:2.12.1")
     implementation("org.apache.poi:poi-ooxml:5.4.0")
-    implementation("com.jakewharton:disklrucache:2.0.2")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

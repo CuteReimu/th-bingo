@@ -35,11 +35,12 @@ enum class SpellStatus(val value: Int) {
         return this == LEFT_GET || this == RIGHT_GET || this == BOTH_GET
     }
 
-    fun isLeftStatus(): Boolean {
-        return this == LEFT_SELECT || this == LEFT_GET || this == BOTH_SELECT || this == BOTH_GET
-    }
-
-    fun isRightStatus(): Boolean {
-        return this == RIGHT_SELECT || this == RIGHT_GET || this == BOTH_SELECT || this == BOTH_GET
+    /** 左右颠倒，方便计算 */
+    fun opposite(): SpellStatus = when (this) {
+        LEFT_GET -> RIGHT_GET
+        RIGHT_GET -> LEFT_GET
+        LEFT_SELECT -> RIGHT_SELECT
+        RIGHT_SELECT -> LEFT_SELECT
+        else -> this
     }
 }

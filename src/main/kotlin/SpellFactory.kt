@@ -22,7 +22,7 @@ object SpellFactory {
         // 每行、每列都只有一个lv3
         val idx3 = arrayOf(idx[0], 5 + idx[1], 12, 15 + idx[2], 20 + idx[3])
         val stars = IntArray(25) { i -> if (i in idx3) 3 else star12[j++] }
-        return SpellConfig.get(SpellConfig.BPGame, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+        return SpellConfig.get(SpellConfig.BP_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     /**
@@ -50,7 +50,7 @@ object SpellFactory {
                 else -> star123[j++]
             }
         }
-        return SpellConfig.get(SpellConfig.NormalGame, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+        return SpellConfig.get(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     /**
@@ -73,7 +73,7 @@ object SpellFactory {
                 else -> star123[j++]
             }
         }
-        return SpellConfig.get(SpellConfig.NormalGame, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+        return SpellConfig.get(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     private fun ranksToExPos(ranks: Array<String>?, rand: Random): IntArray {

@@ -1,8 +1,10 @@
 package org.tfcc.bingo
 
-import java.io.Serializable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-data class Spell(
+@Serializable
+class Spell(
     val index: Int,
     val game: String,
     val name: String,
@@ -15,5 +17,6 @@ data class Spell(
     val two: Float,
     val three: Float,
     val final: Float,
+    @SerialName("bonus_rate")
     val bonusRate: Float,
-) : Serializable
+)

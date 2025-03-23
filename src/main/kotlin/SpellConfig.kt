@@ -3,7 +3,7 @@ package org.tfcc.bingo
 import org.apache.logging.log4j.kotlin.logger
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.openxml4j.opc.PackageAccess
-import org.apache.poi.ss.usermodel.CellType.*
+import org.apache.poi.ss.usermodel.CellType.STRING
 import org.apache.poi.xssf.usermodel.XSSFCell
 import org.apache.poi.xssf.usermodel.XSSFRow
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
@@ -17,19 +17,19 @@ import kotlin.random.Random
 
 object SpellConfig {
     /** 标准赛和Link赛用同一个配置 */
-    const val NormalGame = 1
+    const val NORMAL_GAME = 1
 
     /** BP赛的配置 */
-    const val BPGame = 2
+    const val BP_GAME = 2
 
     private val cache = mapOf(
-        NormalGame to Config(::buildNormalSpell),
-        BPGame to Config(::buildBPSpell),
+        NORMAL_GAME to Config(::buildNormalSpell),
+        BP_GAME to Config(::buildBPSpell),
     ) // 因为用的SingleThreadExecutor，因此无需考虑线程安全问题
 
     /**
      * 随符卡
-     * @param type 可以传入 [NormalGame] 或 [BPGame]
+     * @param type 可以传入 [NORMAL_GAME] 或 [BP_GAME]
      * @param exPos ex符卡的位置
      * @param stars 星级的分布
      */

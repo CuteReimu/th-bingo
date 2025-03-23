@@ -1,32 +1,31 @@
 package org.tfcc.bingo
 
 import io.netty.channel.Channel
-import io.netty.channel.ChannelId
 
 /** 用以记录channel和player的对应关系，非线程安全 */
 object Supervisor {
-    private val channelIdToPlayer = HashMap<ChannelId, String>()
-    private val playerTokenToChannel = HashMap<String, Channel>()
+    private val channelIdToPlayer = HashMap<String, String>()
+    private val playerNameToChannel = HashMap<String, Channel>()
 
-    fun put(channel: Channel, playerToken: String) {
-        channelIdToPlayer[channel.id()] = playerToken
-        playerTokenToChannel[playerToken] = channel
+    fun put(channel: Channel, playerName: String) {
+        channelIdToPlayer[channel.id().asLongText()] = playerName
+        playerNameToChannel[playerName] = channel
     }
 
     fun removeChannel(channel: Channel): String? {
-        val channelId = channel.id()
+        val channelId = channel.id().asLongText()
         val token = channelIdToPlayer[channelId]
-        if (playerTokenToChannel[token] !== channel) return null
-        playerTokenToChannel.remove(token)
+        if (playerNameToChannel[token] !== channel) return null
+        playerNameToChannel.remove(token)
         channelIdToPlayer.remove(channelId)
         return token
     }
 
-    fun getPlayerToken(channelId: ChannelId): String? {
-        return channelIdToPlayer[channelId]
+    fun getPlayerName(channel: Channel): String? {
+        return channelIdToPlayer[channel.id().asLongText()]
     }
 
-    fun getChannel(playerToken: String): Channel? {
-        return playerTokenToChannel[playerToken]
+    fun getChannel(playerName: String): Channel? {
+        return playerNameToChannel[playerName]
     }
 }

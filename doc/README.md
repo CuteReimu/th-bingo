@@ -95,19 +95,23 @@ action名：`create_room`
 请求参数：
 
 ```jsonc
-{ // 下文很多协议的结构都和这个一样
-  "rid": "test01", // 房间名
-  "type": 1, // 1-标准赛，2-BP赛，3-link赛
-  "solo": false, // 是否为null导播局
-  "add_robot": false, // 是否为打机器人局
-  "game_time": 30, // 游戏总时间（不含倒计时），单位：分
-  "countdown": 5, // 倒计时，单位：秒
-  "games": ["6", "7", "8"], // 含有哪些作品
-  "ranks": ["L", "EX"], // 含有哪些游戏难度，也就是L卡和EX卡
-  "need_win": 2, // 需要胜利的局数，例如2表示bo3
-  "difficulty": 1, // 难度（影响不同星级的卡的分布），1对应E，2对应N，3对应L，其它对应随机
-  "cd_time": 30, // 选卡cd，收卡后要多少秒才能选下一张卡
-  "reserved_type": 1 // 纯客户端用的一个类型字段，服务器只负责透传
+{
+  "room_config": { // 下文很多协议的结构都和这个一样
+    "rid": "test01", // 房间名
+    "type": 1, // 1-标准赛，2-BP赛，3-link赛
+    "solo": false, // 是否为无导播局
+    "add_robot": false, // 是否为打机器人局
+    "game_time": 30, // 游戏总时间（不含倒计时），单位：分
+    "countdown": 5, // 倒计时，单位：秒
+    "games": ["6", "7", "8"], // 含有哪些作品
+    "ranks": ["L", "EX"], // 含有哪些游戏难度，也就是L卡和EX卡
+    "need_win": 2, // 需要胜利的局数，例如2表示bo3
+    "difficulty": 1, // 难度（影响不同星级的卡的分布），1对应E，2对应N，3对应L，其它对应随机
+    "cd_time": 30, // 选卡cd，收卡后要多少秒才能选下一张卡
+    "reserved_type": 1 // 纯客户端用的一个类型字段，服务器只负责透传
+  },
+  "solo": true, // 是否为无房主模式
+  "add_robot": true // 是否为单人练习模式
 }
 ```
 
@@ -131,27 +135,21 @@ action名：`get_room_config`
 }
 ```
 
-返回参数：和`create_room`的请求参数一样
+返回参数：和`create_room`的请求参数中的`room_config`一样
 
 **修改房间配置**
 
 action名：`update_room_config`
 
-请求参数：和`create_room`的请求参数一样
+请求参数：和`create_room`的请求参数中的`room_config`一样
 
-返回参数：
-
-```jsonc
-{
-  "code": 0
-}
-```
+返回参数：`null`
 
 **推送房间配置更新**
 
 push_action名：`push_update_room_config`
 
-参数：和`create_room`的请求参数一样
+参数：和`create_room`的请求参数中的`room_config`一样
 
 </details>
 
@@ -180,7 +178,8 @@ action名：`join_room`
   "change_card_count": [1, 2], // 换卡次数，一定有2个，和上面的names一一对应
   "started": false, // 是否已经开始
   "score": [1, 2], // 比分，一定有2个，和上面的names一一对应
-  "watchers": ["test03", "test04"] // 观众名字列表，有几个就是几个
+  "watchers": ["test03", "test04"], // 观众名字列表，有几个就是几个
+  "last_winner": 1 // 上一场是谁赢，0或1，-1表示没有上一场
 }
 ```
 
@@ -237,7 +236,7 @@ push_action名：`push_leave_room`
 
 ```jsonc
 {
-  "name": "xxx" // 离开房间的玩家名
+  "name": "xxx" // 离开房间的玩家名，如果是自己，表示自己被踢出房间
 }
 ```
 
@@ -261,7 +260,8 @@ push_action名：`push_sit_down`
 
 ```jsonc
 {
-  "name": "xxx" // 坐下的玩家名
+  "name": "xxx", // 坐下的玩家名
+  "position": 1 // 位置，左0右1
 }
 ```
 
@@ -308,7 +308,7 @@ action名：`start_game`
 
 push_action名：`push_start_game`
 
-参数：和`create_room`结构一样，目的是同步一下房间配置，以防之前同步失败
+参数：和`create_room`的请求参数中的`room_config`一样，目的是同步一下房间配置，以防之前同步失败
 
 **请求结束游戏**
 
@@ -336,6 +336,20 @@ push_action名：`push_stop_game`
 }
 ```
 
+**重置房间**
+
+action名：`reset_room`
+
+请求参数：`null`
+
+返回参数：`null`
+
+**推送重置房间**
+
+push_action名：`push_reset_room`
+
+参数：`null`
+
 **警告玩家**
 
 action名：`gm_warn_player`
@@ -354,13 +368,7 @@ action名：`gm_warn_player`
 
 push_action名：`push_gm_warn_player`
 
-参数：
-
-```jsonc
-{
-  "name": "test01" // 玩家名
-}
-```
+参数：`null`
 
 **修改换卡次数**
 
@@ -425,6 +433,46 @@ action名：`get_all_spells`
 }
 ```
 
+**房主暂停**
+
+action名：`pause`
+
+请求参数：
+
+```jsonc
+{
+  "pause": true // true为暂停，false为取消暂停
+}
+```
+
+返回参数：`null`
+
+**推送暂停**
+
+push_action名：`push_pause`
+
+参数：
+
+```jsonc
+{
+  "pause": true // true为暂停，false为取消暂停
+}
+```
+
+**设置调试用符卡**
+
+action名：`set_debug_spells`
+
+请求参数：
+
+```jsonc
+{
+  "spells": [1, 2, 3] // 25张符卡的符卡唯一id，null为取消设置调试用符卡
+}
+```
+
+返回：`null`
+
 **选卡**
 
 action名：`select_spell`
@@ -456,7 +504,7 @@ action名：`finish_spell`
 
 返回参数：`null`（注意即使是发起这条协议的玩家，也还会额外收到一条下文中的 `push_update_spell_status` 协议）
 
-**房主修改卡**
+**房主修改卡（或者控制机器人修改卡）**
 
 action名：`update_spell_status`
 
