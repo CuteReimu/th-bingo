@@ -20,6 +20,8 @@
 
 ## 开发相关
 
+本项目的业务逻辑线程纯用单线程，因此在业务逻辑部分完全不用考虑任何并发问题。
+
 ### gradle镜像
 
 如果gradle下载太慢，可以修改`gradle/wrapper/gradle-wrapper.properties`中的`distributionUrl`：

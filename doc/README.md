@@ -362,6 +362,34 @@ push_action名：`push_gm_warn_player`
 }
 ```
 
+**修改换卡次数**
+
+action名：`update_change_card_count`
+
+请求参数：
+
+```jsonc
+{
+  "name": "test01", // 玩家名
+  "count": 2 // 新次数
+}
+```
+
+返回参数：`null`
+
+**推送修改换卡次数**
+
+push_action名：`push_update_change_card_count`
+
+参数：
+
+```jsonc
+{
+  "name": "test01", // 玩家名
+  "count": 2 // 新次数
+}
+```
+
 **获取所有符卡**
 
 action名：`get_all_spells`
