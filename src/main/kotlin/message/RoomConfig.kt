@@ -9,11 +9,6 @@ class RoomConfig(
     val rid: String,
     /** 1-标准赛，2-BP赛，3-link赛 */
     val type: Int,
-    /** 是否为无导播局 */
-    val solo: Boolean?,
-    /** 是否为打机器人局 */
-    @SerialName("add_robot")
-    val addRobot: Boolean?,
     /** 游戏总时间（不含倒计时），单位：分 */
     @SerialName("game_time")
     val gameTime: Int,

@@ -99,8 +99,6 @@ action名：`create_room`
   "room_config": { // 下文很多协议的结构都和这个一样
     "rid": "test01", // 房间名
     "type": 1, // 1-标准赛，2-BP赛，3-link赛
-    "solo": false, // 是否为无导播局
-    "add_robot": false, // 是否为打机器人局
     "game_time": 30, // 游戏总时间（不含倒计时），单位：分
     "countdown": 5, // 倒计时，单位：秒
     "games": ["6", "7", "8"], // 含有哪些作品
