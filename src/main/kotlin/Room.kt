@@ -45,7 +45,7 @@ class Room(
     /** 观众 */
     val watchers = ArrayList<Player>()
 
-    //    var banPick: BanPick? = null
+    var banPick: BanPick? = null
     var debugSpells: IntArray? = null
 
     /** 最后一次操作的时间戳，毫秒，业务逻辑中请勿修改此字段 */

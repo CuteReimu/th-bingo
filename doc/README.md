@@ -533,6 +533,57 @@ push_action名：`push_update_spell_status`
 
 </details>
 
+<details><summary>BP相关</summary>
+
+**开始BP**
+
+action名：`start_ban_pick`
+
+请求参数：
+
+```jsonc
+{
+  "who_first": 1 // 谁先开始，0-左边，1-右边
+}
+```
+
+返回参数：`null`
+
+**选手进行BP**
+
+action名：`ban_pick`
+
+请求参数：
+
+```jsonc
+{
+  "selection": "6" // 选择的作品
+}
+```
+
+返回参数：`null`
+
+**推送BP状态**
+
+push_action名：`push_ban_pick`
+
+参数：[其中“BP状态”枚举参考代码注释](src/main/kotlin/BanPick.kt)
+
+```jsonc
+{
+  "who_first": 1, // 谁是第一个操作的，0-左边，1-右边
+  "phase": 1, // BP状态
+  "a_pick": ["6", "7"], // 左玩家保了哪些作品
+  "a_ban": ["8", "9"], // 左玩家ban了哪些作品
+  "b_pick": ["10", "11"], // 右玩家保了哪些作品
+  "b_ban": ["12", "13"], // 右玩家ban了哪些作品
+  "a_open_ex": 1, // 左玩家是否选EX难度
+  "b_open_ex": 1 // 右玩家是否选EX难度
+}
+```
+
+</details>
+
 <details><summary>符卡状态枚举</summary>
 
 | 枚举值 |  含义   |

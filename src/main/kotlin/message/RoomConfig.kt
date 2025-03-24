@@ -15,9 +15,9 @@ class RoomConfig(
     /** 倒计时，单位：秒 */
     val countdown: Int,
     /** 含有哪些作品 */
-    val games: Array<String>,
+    var games: Array<String>,
     /** 含有哪些游戏难度，也就是L卡和EX卡 */
-    val ranks: Array<String>,
+    var ranks: Array<String>,
     /** 需要胜利的局数，例如2表示bo3，空表示1 */
     @SerialName("need_win")
     val needWin: Int?,

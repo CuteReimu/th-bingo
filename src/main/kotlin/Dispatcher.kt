@@ -56,6 +56,8 @@ private val handlers = mapOf(
     "select_spell" to SelectSpellHandler,
     "finish_spell" to FinishSpellHandler,
     "update_spell_status" to UpdateSpellStatusHandler,
+    "ban_pick" to BanPickHandler,
+    "start_ban_pick" to StartBanPickHandler,
 )
 
 inline fun <reified T> JsonElement.decode(): T = Dispatcher.json.decodeFromJsonElement(this)
