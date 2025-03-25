@@ -57,12 +57,14 @@ private val handlers = mapOf(
     "set_debug_spells" to SetDebugSpellsHandler,
     "get_all_spells" to GetAllSpellsHandler,
     "select_spell" to SelectSpellHandler,
+    "cancel_select_spell" to CancelSelectSpellHandler,
     "finish_spell" to FinishSpellHandler,
     "update_spell_status" to UpdateSpellStatusHandler,
     "ban_pick" to BanPickHandler,
     "start_ban_pick" to StartBanPickHandler,
     "bp_game_ban_pick" to BpGameBanPickHandler,
     "bp_game_next_round" to BpGameNextRoundHandler,
+    "link_time" to LinkTimeHandler,
 )
 
 inline fun <reified T> JsonElement.decode(): T = Dispatcher.json.decodeFromJsonElement(this)

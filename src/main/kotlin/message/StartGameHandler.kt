@@ -42,7 +42,7 @@ object StartGameHandler : RequestHandler {
         room.startMs = now
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
         room.locked = true
-//        room.banPick = null
+        room.banPick = null
         room.type.onStart(room)
         room.push("push_start_game", null)
         return null

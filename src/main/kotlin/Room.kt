@@ -2,6 +2,7 @@ package org.tfcc.bingo
 
 import org.tfcc.bingo.message.BpData
 import org.tfcc.bingo.message.HandlerException
+import org.tfcc.bingo.message.LinkData
 import org.tfcc.bingo.message.RoomConfig
 
 class Room(
@@ -39,7 +40,8 @@ class Room(
     /** 上一场是谁赢，1或2 */
     var lastWinner: Int = 0
     var bpData: BpData? = null
-//    var linkData: LinkData? = null
+    var linkData: LinkData? = null
+
     /** 纯客户端用，服务器只记录 */
     var phase: Int = 0
 
@@ -55,7 +57,7 @@ class Room(
         get() = when (roomConfig.type) {
             1 -> RoomTypeNormal
             2 -> RoomTypeBP
-//            3 -> RoomTypeLink
+            3 -> RoomTypeLink
             else -> throw HandlerException("不支持的游戏类型")
         }
 

@@ -33,7 +33,6 @@ class RoomConfig(
     @Throws(HandlerException::class)
     fun validate() {
         rid.isNotEmpty() || throw HandlerException("房间名不能为空")
-        rid.matches(Regex("""\d{1,16}""")) || throw HandlerException("房间ID不合法")
         type in 1..3 || throw HandlerException("不支持的游戏类型")
         gameTime in 1..1440 || throw HandlerException("游戏时间的数值不正确")
         countdown in 0..86400 || throw HandlerException("倒计时的数值不正确")

@@ -21,6 +21,11 @@ object UpdateSpellStatusHandler : RequestHandler {
             player in room.players && room.players.any { it!!.name == Store.robotName } ||
                 throw HandlerException("没有权限")
         }
+        if (room.host === player && room.linkData != null) {
+            if (!room.linkData!!.selectCompleteA() || room.linkData!!.selectCompleteB()) {
+                throw HandlerException("link赛符卡还未选完，暂不能操作")
+            }
+        }
         room.spellStatus!![idx] = spellStatus
         room.type.pushSpells(room, idx, player.name)
         return null

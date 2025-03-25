@@ -428,12 +428,14 @@ action名：`get_all_spells`
   "left_time": 1, // 倒计时剩余时间，单位：毫秒
   "status": 1, // 0-未开始，1-赛前倒计时中，2-开始，3-暂停中，4-结束
   "left_cd_time": 1, // 选卡cd剩余时间，单位：毫秒
+  "push_ban_pick": {}, // 赛前BP的相关数据，同push_ban_pick协议的参数，如果不是赛前BP则为null
   "bp_data": { // BP赛相关数据，如果不是BP赛则为null
     "whose_turn": 1, // 轮到谁了，0-左边，1-右边
     "ban_pick": 1, // 0-选，1-ban，2-轮到收卡了
     "spell_failed_count_a": [1, 2, 3], // 左边玩家25张符卡的失败次数
     "spell_failed_count_b": [1, 2, 3] // 右边玩家25张符卡的失败次数
-  }
+  },
+  "link_data": {} // BP赛相关数据，同push_link_data协议的参数，如果不是BP赛则为null
 }
 ```
 
@@ -502,7 +504,8 @@ action名：`finish_spell`
   "name": "finish_spell",
   "data": {
     "index": 1, // 第几张卡，0-24
-    "success": true // 是否成功，true为成功，false为失败，不填为成功，BP赛中必填此字段
+    "success": true, // 是否成功，true为成功，false为失败，不填为成功，BP赛中必填此字段
+    "player_index": 1 // 0-左边玩家，1-右边玩家，link赛中如果你是房主则必填此字段
   }
 }
 ```
@@ -568,7 +571,7 @@ action名：`bp_game_next_round`
 
 **推送BP赛进入下一回合**
 
-action名：`push_bp_game_next_round`
+push_action名：`push_bp_game_next_round`
 
 参数：
 
@@ -580,6 +583,58 @@ action名：`push_bp_game_next_round`
 ```
 
 返回参数：`null`
+
+</details>
+
+<details><summary>Link赛相关</summary>
+
+**选手取消选卡**
+
+action名：`cancel_select_spell`
+
+请求参数：
+
+```jsonc
+{
+  "index": 1 // 第几张卡，0-24
+}
+```
+
+返回参数：`null`
+
+**Link赛计时**
+
+action名：`link_time`
+
+请求参数：
+
+```jsonc
+{
+  "whose": 1,
+  "event": 1
+}
+```
+
+返回参数：`null`
+
+**推送Link赛信息**
+
+push_action名：`push_link_data`
+
+参数：
+
+```jsonc
+{
+  "link_idx_a": [1, 2, 3], // 左边玩家的连线
+  "link_idx_b": [1, 2, 3], // 右边玩家的连线
+  "start_ms_a": 1,
+  "end_ms_a": 2,
+  "event_a": 1,
+  "start_ms_b": 1,
+  "end_ms_b": 2,
+  "event_b": 1
+}
+```
 
 </details>
 
@@ -617,7 +672,7 @@ action名：`ban_pick`
 
 push_action名：`push_ban_pick`
 
-参数：[其中“BP状态”枚举参考代码注释](src/main/kotlin/BanPick.kt)
+参数：[其中“BP状态”枚举参考代码注释](../src/main/kotlin/BanPick.kt)
 
 ```jsonc
 {

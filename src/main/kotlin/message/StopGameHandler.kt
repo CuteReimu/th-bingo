@@ -24,14 +24,12 @@ object StopGameHandler : RequestHandler {
         room.spells = null
         room.lastGetTime.indices.forEach { room.lastGetTime[it] = 0 }
         room.startMs = 0
-        // room.roomConfig.gameTime = 0
-        // room.roomConfig.countDown = 0
         room.spellStatus = null
         room.totalPauseMs = 0
         room.pauseBeginMs = 0
         room.pauseEndMs = 0
-//        room.bpData = null
-//        room.linkData = null
+        room.bpData = null
+        room.linkData = null
         room.push("push_stop_game", JsonObject(mapOf("winner" to JsonPrimitive(winner))))
         SpellLog.saveFile()
         return null

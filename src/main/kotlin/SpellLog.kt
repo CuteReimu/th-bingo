@@ -191,7 +191,7 @@ object SpellLog {
                 return when (roomType) {
                     is RoomTypeNormal -> NORMAL
                     is RoomTypeBP -> BP
-//                    is RoomTypeLink -> LINK
+                    is RoomTypeLink -> LINK
                 }
             }
         }
