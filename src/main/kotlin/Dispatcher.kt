@@ -20,10 +20,14 @@ fun Player.push(pushAction: String, pushData: JsonElement?, mustOnline: Boolean 
         else return null
     }
     val channel = Supervisor.getChannel(name)
-    if (channel == null && mustOnline)
-        throw HandlerException("对方已离线")
+    if (channel == null) {
+        if (mustOnline) throw HandlerException("对方已离线")
+        Dispatcher.logger.warn("对方已离线：$name，推送失败")
+        return null
+    }
     val text = Dispatcher.json.encodeToString(PushMessage(pushAction, pushData))
-    return channel?.writeAndFlush(TextWebSocketFrame(text))
+    Dispatcher.logger.debug("返回${channel.id().asShortText()}：$text")
+    return channel.writeAndFlush(TextWebSocketFrame(text))
 }
 
 fun Room.push(pushAction: String, pushData: JsonElement?) {
@@ -34,7 +38,6 @@ fun Room.push(pushAction: String, pushData: JsonElement?) {
 
 private val handlers = mapOf(
     "login" to LoginHandler,
-    "heart" to HeartHandler,
     "create_room" to CreateRoomHandler,
     "get_room_config" to GetRoomConfigHandler,
     "update_room_config" to UpdateRoomConfigHandler,
@@ -89,23 +92,33 @@ object Dispatcher {
                 try {
                     val player: Player
                     val playerName = Supervisor.getPlayerName(ctx.channel())
-                    if (action == "login") {
-                        if (playerName != null) {
-                            ctx.writeMessage(ResponseMessage(-1, "You have already logged", null, echo))
+                    when (action) {
+                        "login" -> {
+                            if (playerName != null) {
+                                ctx.writeMessage(ResponseMessage(-1, "You have already logged", null, echo))
+                                return@submit
+                            }
+                            val dataObj = data!!.jsonObject
+                            val name = dataObj["name"]!!.jsonPrimitive.content
+                            name.toByteArray().size <= 48 || throw HandlerException("名字太长")
+                            val pwd = dataObj["pwd"]!!.jsonPrimitive.content
+                            player = Store.getPlayer(name, pwd)
+                            Supervisor.put(ctx.channel(), player.name)
+                        }
+
+                        "heart" -> {
+                            val response = JsonObject(mapOf("now" to JsonPrimitive(System.currentTimeMillis())))
+                            ctx.writeMessage(ResponseMessage(0, "ok", response, echo))
                             return@submit
                         }
-                        val dataObj = data!!.jsonObject
-                        val name = dataObj["name"]!!.jsonPrimitive.content
-                        name.toByteArray().size <= 48 || throw HandlerException("名字太长")
-                        val pwd = dataObj["pwd"]!!.jsonPrimitive.content
-                        player = Store.getPlayer(name, pwd)
-                        Supervisor.put(ctx.channel(), player.name)
-                    } else {
-                        if (playerName == null) {
-                            ctx.writeMessage(ResponseMessage(-1, "You haven't login", null, echo))
-                            return@submit
+
+                        else -> {
+                            if (playerName == null) {
+                                ctx.writeMessage(ResponseMessage(-1, "You haven't login", null, echo))
+                                return@submit
+                            }
+                            player = Store.getPlayer(playerName)
                         }
-                        player = Store.getPlayer(playerName)
                     }
                     val handler = handlers[action] ?: throw HandlerException("unknown action")
                     val now = System.currentTimeMillis()

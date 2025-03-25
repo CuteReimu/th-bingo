@@ -2,6 +2,7 @@ package org.tfcc.bingo
 
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import org.tfcc.bingo.SpellStatus.*
 import org.tfcc.bingo.message.BpData
 import org.tfcc.bingo.message.HandlerException
 import java.util.concurrent.ThreadLocalRandom
@@ -30,18 +31,27 @@ object RoomTypeBP : RoomType {
     override fun handleFinishSpell(room: Room, isHost: Boolean, playerIndex: Int, spellIndex: Int, success: Boolean) {
         isHost || throw HandlerException("权限不足")
         room.bpData!!.banPick == 2 || throw HandlerException("还没轮到收卡的时候")
-        val pidx = room.bpData!!.whoseTurn
-        val st = room.spellStatus!![spellIndex]
-        if (pidx == 0) st == SpellStatus.LEFT_SELECT || throw HandlerException("这个符卡不是你选的")
-        else if (pidx == 1) st == SpellStatus.RIGHT_SELECT || throw HandlerException("这个符卡不是你选的")
-        val status =
-            if (!success) SpellStatus.NONE
-            else if (pidx == 0) SpellStatus.LEFT_GET
-            else if (pidx == 1) SpellStatus.RIGHT_GET
-            else throw HandlerException("权限不足")
-        //        SpellLog.logSpellOperate(status, room.spells!![spellIndex], room.players[playerIndex]!!.name)
-        room.spellStatus!![spellIndex] = status
-        nextRound(room)
+        when (val st = room.spellStatus!![spellIndex]) {
+            LEFT_SELECT -> {
+                if (success) {
+                    room.spellStatus!![spellIndex] = LEFT_GET
+                } else {
+                    room.bpData!!.spellFailedCountA[spellIndex]++
+                    room.spellStatus!![spellIndex] = NONE
+                }
+            }
+
+            RIGHT_SELECT -> {
+                if (success) {
+                    room.spellStatus!![spellIndex] = LEFT_GET
+                } else {
+                    room.bpData!!.spellFailedCountA[spellIndex]++
+                    room.spellStatus!![spellIndex] = NONE
+                }
+            }
+
+            else -> throw HandlerException("符卡状态不正确：$st")
+        }
     }
 
     override fun pushSpells(room: Room, spellIndex: Int, causer: String) {
@@ -106,7 +116,7 @@ object RoomTypeBP : RoomType {
                 if (!bp.lessThan4 && bp.round % 5 == 1) {
                     var count = 0
                     for (status in room.spellStatus!!) {
-                        if (status == SpellStatus.NONE)
+                        if (status == NONE)
                             count++
                     }
                     if (count < 4)

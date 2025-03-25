@@ -13,7 +13,7 @@ object GmWarnPlayerHandler : RequestHandler {
         val m = data!!.jsonObject
         val name = m["name"]!!.jsonPrimitive.content
         val target = room.players.find { it?.name == name } ?: throw HandlerException("找不到目标玩家")
-        target.push("push_gm_warn_player", null)
+        target.push("push_gm_warn_player", null, true)
         return null
     }
 }
