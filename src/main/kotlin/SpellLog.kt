@@ -190,7 +190,7 @@ object SpellLog {
             fun getGameType(roomType: RoomType): Int {
                 return when (roomType) {
                     is RoomTypeNormal -> NORMAL
-//                    is RoomTypeBP -> BP
+                    is RoomTypeBP -> BP
 //                    is RoomTypeLink -> LINK
                 }
             }

@@ -58,6 +58,8 @@ private val handlers = mapOf(
     "update_spell_status" to UpdateSpellStatusHandler,
     "ban_pick" to BanPickHandler,
     "start_ban_pick" to StartBanPickHandler,
+    "bp_game_ban_pick" to BpGameBanPickHandler,
+    "bp_game_next_round" to BpGameNextRoundHandler,
 )
 
 inline fun <reified T> JsonElement.decode(): T = Dispatcher.json.decodeFromJsonElement(this)
@@ -105,7 +107,7 @@ object Dispatcher {
                         }
                         player = Store.getPlayer(playerName)
                     }
-                    val handler = handlers[action]!!
+                    val handler = handlers[action] ?: throw HandlerException("unknown action")
                     val now = System.currentTimeMillis()
                     player.lastOperateMs = now
                     player.room?.lastOperateMs = now // 对于离开房间类协议，在执行之前需要修改

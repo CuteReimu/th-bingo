@@ -11,6 +11,14 @@ object RoomTypeNormal : RoomType {
 
     override val canPause = true
 
+    override fun onStart(room: Room) {
+        // Do nothing
+    }
+
+    override fun handleNextRound(room: Room) {
+        throw HandlerException("不支持下一回合的游戏类型")
+    }
+
     @Throws(HandlerException::class)
     override fun randSpells(games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell> {
         return SpellFactory.randSpells(
@@ -69,7 +77,9 @@ object RoomTypeNormal : RoomType {
         SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
     }
 
-    override fun handleFinishSpell(room: Room, playerIndex: Int, spellIndex: Int) {
+    override fun handleFinishSpell(room: Room, isHost: Boolean, playerIndex: Int, spellIndex: Int, success: Boolean) {
+        success || throw HandlerException("标准赛不支持收卡失败的操作")
+        playerIndex >= 0 || throw HandlerException("只有玩家才能主动收卡")
         var st = room.spellStatus!![spellIndex]
         if (playerIndex == 1) st = st.opposite()
         room.pauseBeginMs == 0L || throw HandlerException("暂停中，不能操作")

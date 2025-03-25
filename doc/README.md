@@ -427,7 +427,13 @@ action名：`get_all_spells`
   "spell_status": [1, 0, 1], // 25张符卡的收取状态
   "left_time": 1, // 倒计时剩余时间，单位：毫秒
   "status": 1, // 0-未开始，1-赛前倒计时中，2-开始，3-暂停中，4-结束
-  "left_cd_time": 1 // 选卡cd剩余时间，单位：毫秒
+  "left_cd_time": 1, // 选卡cd剩余时间，单位：毫秒
+  "bp_data": { // BP赛相关数据，如果不是BP赛则为null
+    "whose_turn": 1, // 轮到谁了，0-左边，1-右边
+    "ban_pick": 1, // 0-选，1-ban，2-轮到收卡了
+    "spell_failed_count_a": [1, 2, 3], // 左边玩家25张符卡的失败次数
+    "spell_failed_count_b": [1, 2, 3] // 右边玩家25张符卡的失败次数
+  }
 }
 ```
 
@@ -495,7 +501,8 @@ action名：`finish_spell`
 {
   "name": "finish_spell",
   "data": {
-    "index": 1 // 第几张卡，0-24
+    "index": 1, // 第几张卡，0-24
+    "success": true // 是否成功，true为成功，false为失败，不填为成功，BP赛中必填此字段
   }
 }
 ```
@@ -527,13 +534,56 @@ push_action名：`push_update_spell_status`
 {
   "index": 1, // 第几张，0-24
   "status": 1, // 状态
-  "causer": "test01" // 造成这个状态变化的玩家
+  "causer": "test01", // 造成这个状态变化的玩家
+  "spell_failed_count_a": 1, // 左边玩家的失败次数，只有BP赛时才有此字段
+  "spell_failed_count_b": 1 // 右边玩家的失败次数，只有BP赛时才有次字段
 }
 ```
 
 </details>
 
-<details><summary>BP相关</summary>
+<details><summary>BP赛相关</summary>
+
+**选手进行BP**
+
+action名：`bp_game_ban_pick`
+
+请求参数：
+
+```jsonc
+{
+  "idx": 1 // 格子序号，0-24
+}
+```
+
+返回参数：`null`
+
+**房主操控BP赛进入下一回合**
+
+action名：`bp_game_next_round`
+
+请求参数：`null`
+
+返回参数：`null`
+
+**推送BP赛进入下一回合**
+
+action名：`push_bp_game_next_round`
+
+参数：
+
+```jsonc
+{
+  "whose_turn": 1, // 轮到谁了，0-左边，1-右边
+  "ban_pick": 1 // 0-选，1-ban，2-轮到收卡了
+}
+```
+
+返回参数：`null`
+
+</details>
+
+<details><summary>赛前BP相关</summary>
 
 **开始BP**
 
