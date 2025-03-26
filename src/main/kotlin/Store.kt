@@ -51,7 +51,7 @@ object Store {
         name != robotName || throw HandlerException("不能使用这个名字")
         var player = playerCache[name]
         if (player != null) {
-            pwd != null && player.pwd == pwd || throw HandlerException("密码错误")
+            pwd == null || player.pwd == pwd || throw HandlerException("密码错误")
             return player
         }
         player = Player(name, pwd!!)
