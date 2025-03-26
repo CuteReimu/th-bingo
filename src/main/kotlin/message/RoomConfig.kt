@@ -28,7 +28,7 @@ class RoomConfig(
     val cdTime: Int?,
     /** 纯客户端用的一个类型字段 */
     @SerialName("reserved_type")
-    val reservedType: Int?,
+    val reservedType: Int? = null,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
