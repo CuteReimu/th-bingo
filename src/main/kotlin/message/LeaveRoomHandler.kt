@@ -16,6 +16,7 @@ object LeaveRoomHandler : RequestHandler {
             !room.started || throw HandlerException("比赛已经开始了，不能退出")
             !room.locked || throw HandlerException("连续比赛没结束，不能退出")
         }
+        player.room = null
         if (room.host === player) { // 房主退出，踢出所有人，销毁房间
             for (p in room.players) {
                 if (p != null && p.name != Store.robotName) {
