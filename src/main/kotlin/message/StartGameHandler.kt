@@ -12,7 +12,7 @@ object StartGameHandler : RequestHandler {
         val room = player.room ?: throw HandlerException("不在房间里")
         room.isHost(player) || throw HandlerException("没有权限")
         !room.started || throw HandlerException("游戏已经开始")
-        room.players.any { it == null } || throw HandlerException("玩家没满")
+        room.players.all { it != null } || throw HandlerException("玩家没满")
         val start = System.currentTimeMillis()
         var retryCount = 0
         while (true) {
