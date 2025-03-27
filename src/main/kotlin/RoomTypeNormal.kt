@@ -128,13 +128,24 @@ object RoomTypeNormal : RoomType {
         for (i in room.players.indices) {
             var st = status
             if (st.isSelectStatus()) {
-                // 对方收了五张卡之后，不再可以看到对方的选卡
-                if (i == 0 && room.spellStatus!!.count { it == RIGHT_GET } >= 5) {
-                    if (status == RIGHT_SELECT) st = NONE
-                    else if (status == BOTH_SELECT) st = LEFT_SELECT
-                } else if (i == 1 && room.spellStatus!!.count { it == LEFT_GET } >= 5) {
-                    if (status == LEFT_SELECT) st = NONE
-                    else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                if ((room.roomConfig.reservedType ?: 0) == 0) {
+                    // 个人赛对方收了五张卡之后，不再可以看到对方的选卡
+                    if (i == 0 && room.spellStatus!!.count { it == RIGHT_GET } >= 5) {
+                        if (status == RIGHT_SELECT) st = NONE
+                        else if (status == BOTH_SELECT) st = LEFT_SELECT
+                    } else if (i == 1 && room.spellStatus!!.count { it == LEFT_GET } >= 5) {
+                        if (status == LEFT_SELECT) st = NONE
+                        else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                    }
+                } else if (room.spellStatus!!.count { it == LEFT_GET || it == RIGHT_GET } >= 5) {
+                    // 团体赛双方合计收了五张卡之后，不再可以看到对方的选卡
+                    if (i == 0) {
+                        if (status == RIGHT_SELECT) st = NONE
+                        else if (status == BOTH_SELECT) st = LEFT_SELECT
+                    } else if (i == 1) {
+                        if (status == LEFT_SELECT) st = NONE
+                        else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                    }
                 }
             }
             room.host?.push(

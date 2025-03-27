@@ -26,7 +26,7 @@ class RoomConfig(
     /** 选卡cd，收卡后要多少秒才能选下一张卡，空表示0 */
     @SerialName("cd_time")
     val cdTime: Int?,
-    /** 纯客户端用的一个类型字段 */
+    /** 是否为团体赛 */
     @SerialName("reserved_type")
     val reservedType: Int? = null,
 ) {
