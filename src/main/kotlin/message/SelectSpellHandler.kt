@@ -17,7 +17,6 @@ object SelectSpellHandler : RequestHandler {
         playerIndex >= 0 || throw HandlerException("没有权限")
         room.type.handleSelectSpell(room, playerIndex, idx)
         room.type.pushSpells(room, idx, player.name)
-        room.push("push_select_spell", JsonObject(mapOf("index" to JsonPrimitive(idx))))
         return null
     }
 }

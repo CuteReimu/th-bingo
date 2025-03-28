@@ -148,7 +148,7 @@ object RoomTypeNormal : RoomType {
                     }
                 }
             }
-            room.host?.push(
+            room.players[i]?.push(
                 "push_update_spell_status", JsonObject(
                     mapOf(
                         "index" to JsonPrimitive(spellIndex),

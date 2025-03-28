@@ -44,7 +44,7 @@ object StartGameHandler : RequestHandler {
         room.locked = true
         room.banPick = null
         room.type.onStart(room)
-        room.push("push_start_game", null)
+        room.push("push_start_game", room.roomConfig.encode())
         return null
     }
 }
