@@ -32,7 +32,7 @@ object GetAllSpellsHandler : RequestHandler {
                 }
                 leftTime = room.startMs + countdown + gameTime + room.totalPauseMs - now
                 if (playerIndex >= 0)
-                    leftCdTime = cdTime - (now - room.lastGetTime[playerIndex])
+                    leftCdTime = (cdTime - (now - room.lastGetTime[playerIndex])).coerceAtLeast(0L)
             } else {
                 status = 4 // 已结束
             }
