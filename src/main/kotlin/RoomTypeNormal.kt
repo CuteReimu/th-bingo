@@ -102,6 +102,8 @@ object RoomTypeNormal : RoomType {
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
 
+        room.lastGetTime[playerIndex] = now // 更新上次收卡时间
+
         // 无导播模式不记录
         room.host != null || return
         // 等操作结束后再记录
