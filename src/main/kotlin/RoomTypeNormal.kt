@@ -62,7 +62,7 @@ object RoomTypeNormal : RoomType {
             LEFT_SELECT -> throw HandlerException("重复选卡")
             BOTH_SELECT, RIGHT_SELECT -> BOTH_SELECT
             else -> throw HandlerException("状态错误：$st")
-        }
+        }.run { if (playerIndex == 1) opposite() else this }
 
         // 无导播模式不记录
         room.host != null || return
@@ -100,7 +100,7 @@ object RoomTypeNormal : RoomType {
             NONE, RIGHT_SELECT -> throw HandlerException("你还未选卡")
             BOTH_SELECT, LEFT_SELECT -> LEFT_GET
             else -> throw HandlerException("状态错误：$st")
-        }
+        }.run { if (playerIndex == 1) opposite() else this }
 
         // 无导播模式不记录
         room.host != null || return
