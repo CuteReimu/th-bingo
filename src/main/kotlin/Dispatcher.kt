@@ -11,6 +11,7 @@ import java.util.concurrent.Executors
 
 private fun ChannelHandlerContext.writeMessage(message: ResponseMessage): ChannelFuture {
     val text = Dispatcher.json.encodeToString(message)
+    Dispatcher.logger.debug("返回${channel().id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 
@@ -26,7 +27,7 @@ fun Player.push(pushAction: String, pushData: JsonElement?, mustOnline: Boolean 
         return null
     }
     val text = Dispatcher.json.encodeToString(PushMessage(pushAction, pushData))
-    Dispatcher.logger.debug("返回${channel.id().asShortText()}：$text")
+    Dispatcher.logger.debug("推送${channel.id().asShortText()}：$text")
     return channel.writeAndFlush(TextWebSocketFrame(text))
 }
 
@@ -75,10 +76,7 @@ object Dispatcher {
     val pool: ExecutorService = Executors.newSingleThreadExecutor()
 
     val json = Json {
-        prettyPrint = true
         ignoreUnknownKeys = true
-        isLenient = true
-        allowStructuredMapKeys = true
     }
 
     fun handle(ctx: ChannelHandlerContext, text: String) {
@@ -87,8 +85,7 @@ object Dispatcher {
             val m = json.parseToJsonElement(text).jsonObject
             echo = m["echo"]
             val action = m["action"]!!.jsonPrimitive.content
-            if (action != "heart")
-                logger.debug("收到${ctx.channel().id().asShortText()}：$text")
+            logger.debug("收到${ctx.channel().id().asShortText()}：$text")
             val data = m["data"]
             pool.submit {
                 try {
@@ -128,7 +125,6 @@ object Dispatcher {
                     player.room?.lastOperateMs = now // 对于离开房间类协议，在执行之前需要修改
                     val response = handler.handle(ctx, player, data)
                     player.room?.lastOperateMs = now // 对于加入房间类协议，在执行之后需要修改
-                    Dispatcher.logger.debug("返回${ctx.channel().id().asShortText()}：$text")
                     ctx.writeMessage(ResponseMessage(0, "ok", response, echo))
                 } catch (e: IllegalArgumentException) {
                     logger.error("illegal json", e)
