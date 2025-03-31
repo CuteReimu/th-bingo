@@ -6,6 +6,8 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.tfcc.bingo.Player
 import org.tfcc.bingo.RequestHandler
+import org.tfcc.bingo.encode
+import org.tfcc.bingo.push
 
 object BanPickHandler : RequestHandler {
     @Throws(HandlerException::class)
@@ -18,12 +20,13 @@ object BanPickHandler : RequestHandler {
         val bp = room.banPick
         if (bp == null || bp.phase == 9999) throw HandlerException("不是BP环节")
         val phase = bp.onChoose(index, selection)
+        bp.notifyAll(room)
         if (phase == 9999) {
             val (games, ranks) = bp.getGamesAndRanks()
             room.roomConfig.games = games
             room.roomConfig.ranks = ranks
+            room.push("push_update_room_config", room.roomConfig.encode())
         }
-        bp.notifyAll(room)
         return null
     }
 }

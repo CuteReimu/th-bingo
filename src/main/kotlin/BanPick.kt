@@ -28,8 +28,8 @@ import org.tfcc.bingo.message.HandlerException
 class BanPick(private val whoFirst: Int) {
     var phase = 1
         private set
-    private val pick = arrayOf(arrayOf<String>(), arrayOf())
-    private val ban = arrayOf(arrayOf<String>(), arrayOf())
+    private val pick = arrayOf(arrayListOf<String>(), arrayListOf())
+    private val ban = arrayOf(arrayListOf<String>(), arrayListOf())
     private var openEx = arrayOf(0, 0)
 
     /**
@@ -39,15 +39,15 @@ class BanPick(private val whoFirst: Int) {
         whoFirst,
         phase,
         if (phase > 4 || playerIndex != 1) pick[0]
-        else if (phase > 2) pick[0].filter { it == "EX" }.toTypedArray()
-        else emptyArray(),
+        else if (phase > 2) pick[0].filter { it == "EX" }
+        else emptyList(),
         ban[0],
         if (phase > 4 || playerIndex != 0) pick[1]
-        else if (phase > 2) pick[1].filter { it == "EX" }.toTypedArray()
-        else emptyArray(),
+        else if (phase > 2) pick[1].filter { it == "EX" }
+        else emptyList(),
         ban[1],
-        openEx[0],
-        openEx[1],
+        if (phase > 4) openEx[0] else 0,
+        if (phase > 4) openEx[1] else 0,
     )
 
     fun notifyAll(room: Room) {
@@ -80,12 +80,12 @@ class BanPick(private val whoFirst: Int) {
             if (selection !in games && selection != "EX") throw HandlerException("参数错误")
         }
         if (phase <= 4) {
-            pick[playerIndex] = arrayOf(*pick[playerIndex], selection)
+            pick[playerIndex].add(selection)
             if (selection == "EX") openEx = arrayOf(1, 1)
         } else {
             if (selection.isNotEmpty() && (selection in pick[0] || selection in pick[1]))
                 throw HandlerException("已经保了的作品，不能ban")
-            ban[playerIndex] = arrayOf(*ban[playerIndex], selection)
+            ban[playerIndex].add(selection)
         }
         phase = when (phase) {
             1 -> 2

@@ -9,13 +9,13 @@ class BanPickInfo(
     val whoFirst: Int,
     val phase: Int,
     @SerialName("a_pick")
-    val aPick: Array<String>,
+    val aPick: List<String>,
     @SerialName("a_ban")
-    val aBan: Array<String>,
+    val aBan: List<String>,
     @SerialName("b_pick")
-    val bPick: Array<String>,
+    val bPick: List<String>,
     @SerialName("b_ban")
-    val bBan: Array<String>,
+    val bBan: List<String>,
     @SerialName("a_open_ex")
     val aOpenEx: Int,
     @SerialName("b_open_ex")

@@ -19,6 +19,7 @@ object ResetRoomHandler : RequestHandler {
             room.changeCardCount[i] = 0
             room.lastGetTime[i] = 0
         }
+        room.banPick = null
         room.push("push_reset_room", null)
         return null
     }
