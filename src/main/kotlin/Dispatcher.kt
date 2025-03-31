@@ -23,7 +23,7 @@ private fun Channel.push(pushAction: String, pushData: JsonElement?): ChannelFut
 }
 
 fun Player.push(pushAction: String, pushData: JsonElement?, mustOnline: Boolean = false): ChannelFuture? {
-    if (name == Store.robotName) {
+    if (name == Store.ROBOT_NAME) {
         if (mustOnline) throw HandlerException("对方已离线")
         else return null
     }
@@ -97,11 +97,13 @@ object Dispatcher {
             val data = m["data"]
             pool.submit {
                 try {
-                    val player: Player
+                    var player: Player? = null
                     val playerName = Supervisor.getPlayerName(ctx.channel())
+                    if (playerName != null)
+                        player = Store.getPlayer(playerName)
                     when (action) {
                         "login" -> {
-                            if (playerName != null) {
+                            if (player != null) {
                                 ctx.writeMessage(ResponseMessage(-1, "You have already logged", null, echo))
                                 return@submit
                             }
@@ -121,11 +123,10 @@ object Dispatcher {
                         }
 
                         else -> {
-                            if (playerName == null) {
+                            if (player == null) {
                                 ctx.writeMessage(ResponseMessage(-1, "You haven't login", null, echo))
                                 return@submit
                             }
-                            player = Store.getPlayer(playerName)
                         }
                     }
                     val handler = handlers[action] ?: throw HandlerException("unknown action")

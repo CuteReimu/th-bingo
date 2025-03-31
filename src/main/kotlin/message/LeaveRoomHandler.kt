@@ -19,7 +19,7 @@ object LeaveRoomHandler : RequestHandler {
         player.room = null
         if (room.host === player) { // 房主退出，踢出所有人，销毁房间
             for (p in room.players) {
-                if (p != null && p.name != Store.robotName) {
+                if (p != null && p.name != Store.ROBOT_NAME) {
                     p.pushSelfKicked()
                 }
             }
@@ -32,7 +32,7 @@ object LeaveRoomHandler : RequestHandler {
             } else {
                 room.watchers.remove(player)
             }
-            if (room.host == null && room.players.all { it == null || it.name == Store.robotName }) {
+            if (room.host == null && room.players.all { it == null || it.name == Store.ROBOT_NAME }) {
                 // 无房主且所有玩家都退出，解散房间
                 room.watchers.forEach { it.pushSelfKicked() }
                 Store.removeRoom(room.roomId)

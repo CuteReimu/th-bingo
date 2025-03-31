@@ -16,7 +16,7 @@ object StandUpHandler : RequestHandler {
         !room.locked || throw HandlerException("连续比赛还未结束")
         val index = room.players.indexOf(player)
         index >= 0 || throw HandlerException("你不是选手")
-        if (room.host == null && room.players[1 - index].let { it == null || it.name == Store.robotName })
+        if (room.host == null && room.players[1 - index].let { it == null || it.name == Store.ROBOT_NAME })
             throw HandlerException("你是房间里的最后一位选手，不能成为观众")
         room.players[index] = null
         room.watchers.add(player)

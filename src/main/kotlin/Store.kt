@@ -6,10 +6,10 @@ import java.io.*
 import java.util.*
 
 object Store {
-    val robotName = "训练用毛玉"
+    const val ROBOT_NAME = "训练用毛玉"
     private val playerCache = HashMap<String, Player>()
     private val roomCache = HashMap<String, Room>()
-    fun newRobotPlayer() = Player(pwd = robotName, name = robotName)
+    fun newRobotPlayer() = Player(pwd = ROBOT_NAME, name = ROBOT_NAME)
 
     init {
         Timer().schedule(object : TimerTask() {
@@ -48,7 +48,7 @@ object Store {
 
     @Throws(HandlerException::class)
     fun getPlayer(name: String, pwd: String? = null): Player {
-        name != robotName || throw HandlerException("不能使用这个名字")
+        name != ROBOT_NAME || throw HandlerException("不能使用这个名字")
         var player = playerCache[name]
         if (player != null) {
             pwd == null || player.pwd == pwd || throw HandlerException("密码错误")
@@ -57,11 +57,6 @@ object Store {
         player = Player(name, pwd!!)
         playerCache[name] = player
         return player
-    }
-
-    private fun removePlayer(name: String) {
-        name != robotName || return
-        playerCache.remove(name)
     }
 
     fun putRoom(room: Room) {

@@ -85,7 +85,7 @@ object RoomTypeLink : RoomType {
         }
 
         val playerName = room.players[playerIndex]!!.name
-        if (room.host != null && playerName != Store.robotName) {
+        if (room.host != null && playerName != Store.ROBOT_NAME) {
             SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, gameType = SpellLog.GameType.LINK)
         }
     }
@@ -111,7 +111,7 @@ object RoomTypeLink : RoomType {
         }
 
         val playerName = room.players[playerIndex]!!.name
-        if (room.host != null && playerName != Store.robotName) {
+        if (room.host != null && playerName != Store.ROBOT_NAME) {
             SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, gameType = SpellLog.GameType.LINK)
         }
     }
