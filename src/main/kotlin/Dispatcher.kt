@@ -1,5 +1,6 @@
 package org.tfcc.bingo
 
+import io.netty.channel.Channel
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
@@ -12,6 +13,12 @@ import java.util.concurrent.Executors
 private fun ChannelHandlerContext.writeMessage(message: ResponseMessage): ChannelFuture {
     val text = Dispatcher.json.encodeToString(message)
     Dispatcher.logger.debug("返回${channel().id().asShortText()}：$text")
+    return writeAndFlush(TextWebSocketFrame(text))
+}
+
+private fun Channel.push(pushAction: String, pushData: JsonElement?): ChannelFuture {
+    val text = Dispatcher.json.encodeToString(PushMessage(pushAction, pushData))
+    Dispatcher.logger.debug("推送${id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 
@@ -102,7 +109,8 @@ object Dispatcher {
                             name.toByteArray().size <= 48 || throw HandlerException("名字太长")
                             val pwd = dataObj["pwd"]!!.jsonPrimitive.content
                             player = Store.getPlayer(name, pwd)
-                            Supervisor.put(ctx.channel(), player.name)
+                            val oldChannel = Supervisor.put(ctx.channel(), player.name)
+                            oldChannel?.push("push_kick", null)
                         }
 
                         "heart" -> {

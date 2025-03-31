@@ -7,9 +7,11 @@ object Supervisor {
     private val channelIdToPlayer = HashMap<String, String>()
     private val playerNameToChannel = HashMap<String, Channel>()
 
-    fun put(channel: Channel, playerName: String) {
+    fun put(channel: Channel, playerName: String): Channel? {
         channelIdToPlayer[channel.id().asLongText()] = playerName
-        playerNameToChannel[playerName] = channel
+        return playerNameToChannel.put(playerName, channel)?.apply {
+            channelIdToPlayer.remove(id().asLongText())
+        }
     }
 
     fun removeChannel(channel: Channel): String? {

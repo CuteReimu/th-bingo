@@ -84,6 +84,12 @@ action名：`login`
 }
 ```
 
+**推送被顶号**
+
+push_action名：`push_kick`
+
+参数：`null`
+
 </details> 
 
 <details><summary>房间配置</summary>
