@@ -17,17 +17,22 @@ class RoomInfo(
     val watchers: List<String>,
     @SerialName("last_winner")
     val lastWinner: Int,
+    @SerialName("ban_pick")
+    val banPick: BanPickInfo? = null,
 )
 
-val Room.roomInfo: RoomInfo
-    get() = RoomInfo(
-        rid = roomId,
-        type = roomConfig.type,
-        host = host?.name,
-        names = players.map { it?.name },
-        changeCardCount = changeCardCount,
-        started = started,
-        score = score,
-        watchers = watchers.map { it.name },
-        lastWinner = lastWinner,
-    )
+/**
+ * @param playerIndex 左边玩家0，右边玩家1，不是玩家-1
+ */
+fun Room.roomInfo(playerIndex: Int) = RoomInfo(
+    rid = roomId,
+    type = roomConfig.type,
+    host = host?.name,
+    names = players.map { it?.name },
+    changeCardCount = changeCardCount,
+    started = started,
+    score = score,
+    watchers = watchers.map { it.name },
+    lastWinner = lastWinner,
+    banPick = banPick?.toPb(playerIndex),
+)

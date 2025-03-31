@@ -177,7 +177,8 @@ action名：`join_room`
   "started": false, // 是否已经开始
   "score": [1, 2], // 比分，一定有2个，和上面的names一一对应
   "watchers": ["test03", "test04"], // 观众名字列表，有几个就是几个
-  "last_winner": 1 // 上一场是谁赢，0或1，-1表示没有上一场
+  "last_winner": 1, // 上一场是谁赢，0或1，-1表示没有上一场
+  "ban_pick": {} // 赛前BP的相关数据，同push_ban_pick协议的参数，如果不是赛前BP则为null
 }
 ```
 
@@ -428,7 +429,6 @@ action名：`get_all_spells`
   "left_time": 1, // 倒计时剩余时间，单位：毫秒
   "status": 1, // 0-未开始，1-赛前倒计时中，2-开始，3-暂停中，4-结束
   "left_cd_time": 1, // 选卡cd剩余时间，单位：毫秒
-  "push_ban_pick": {}, // 赛前BP的相关数据，同push_ban_pick协议的参数，如果不是赛前BP则为null
   "bp_data": { // BP赛相关数据，如果不是BP赛则为null
     "whose_turn": 1, // 轮到谁了，0-左边，1-右边
     "ban_pick": 1, // 0-选，1-ban，2-轮到收卡了

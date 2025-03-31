@@ -25,6 +25,6 @@ object JoinRoomHandler : RequestHandler {
             room.players[index] = player
         else
             room.watchers.add(player)
-        return room.roomInfo.encode()
+        return room.roomInfo(index).encode()
     }
 }

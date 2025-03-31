@@ -43,6 +43,8 @@ object GetAllSpellsHandler : RequestHandler {
             leftTime = leftTime,
             status = status,
             leftCdTime = leftCdTime,
+            bpData = room.bpData,
+            linkData = room.linkData,
         ).encode()
     }
 }
@@ -62,4 +64,10 @@ class AllSpellsResponse(
     /** 选卡cd剩余时间，单位：毫秒 */
     @SerialName("left_cd_time")
     val leftCdTime: Long,
+    /** bp赛的相关数据 */
+    @SerialName("bp_data")
+    val bpData: BpData?,
+    /** link赛的相关数据 */
+    @SerialName("link_data")
+    val linkData: LinkData?,
 )

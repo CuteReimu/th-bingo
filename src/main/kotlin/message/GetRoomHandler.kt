@@ -8,6 +8,8 @@ import org.tfcc.bingo.encode
 
 object GetRoomHandler : RequestHandler {
     override fun handle(ctx: ChannelHandlerContext, player: Player, data: JsonElement?): JsonElement? {
-        return player.room?.roomInfo?.encode()
+        val room = player.room ?: return null
+        val index = room.players.indexOf(player)
+        return room.roomInfo(index).encode()
     }
 }
