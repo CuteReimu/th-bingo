@@ -10,9 +10,9 @@ import org.tfcc.bingo.message.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-private fun ChannelHandlerContext.writeMessage(message: ResponseMessage): ChannelFuture {
+private fun ChannelHandlerContext.writeMessage(message: ResponseMessage, writeLog: Boolean = true): ChannelFuture {
     val text = Dispatcher.json.encodeToString(message)
-    Dispatcher.logger.debug("返回${channel().id().asShortText()}：$text")
+    if (writeLog) Dispatcher.logger.debug("返回${channel().id().asShortText()}：$text")
     return writeAndFlush(TextWebSocketFrame(text))
 }
 
@@ -92,7 +92,8 @@ object Dispatcher {
             val m = json.parseToJsonElement(text).jsonObject
             echo = m["echo"]
             val action = m["action"]!!.jsonPrimitive.content
-            logger.debug("收到${ctx.channel().id().asShortText()}：$text")
+            if (action != "heart")
+                logger.debug("收到${ctx.channel().id().asShortText()}：$text")
             val data = m["data"]
             pool.submit {
                 try {
@@ -115,7 +116,7 @@ object Dispatcher {
 
                         "heart" -> {
                             val response = JsonObject(mapOf("now" to JsonPrimitive(System.currentTimeMillis())))
-                            ctx.writeMessage(ResponseMessage(0, "ok", response, echo))
+                            ctx.writeMessage(ResponseMessage(0, "ok", response, echo), false)
                             return@submit
                         }
 
