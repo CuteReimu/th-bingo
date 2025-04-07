@@ -43,9 +43,9 @@ object RoomTypeBP : RoomType {
 
             RIGHT_SELECT -> {
                 if (success) {
-                    room.spellStatus!![spellIndex] = LEFT_GET
+                    room.spellStatus!![spellIndex] = RIGHT_GET
                 } else {
-                    room.bpData!!.spellFailedCountA[spellIndex]++
+                    room.bpData!!.spellFailedCountB[spellIndex]++
                     room.spellStatus!![spellIndex] = NONE
                 }
             }
