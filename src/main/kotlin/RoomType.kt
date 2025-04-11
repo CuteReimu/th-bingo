@@ -26,4 +26,13 @@ sealed interface RoomType {
 
     /** 向房间内所有玩家推送符卡状态 */
     fun pushSpells(room: Room, spellIndex: Int, causer: String)
+
+    /**
+     * 获取所有符卡状态
+     *
+     * @param playerIndex 0:左侧玩家，1:右侧玩家，-1:不是玩家
+     */
+    fun getAllSpellStatus(room: Room, playerIndex: Int): List<Int> {
+        return room.spellStatus!!.map { it.value }
+    }
 }

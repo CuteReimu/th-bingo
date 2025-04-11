@@ -22,10 +22,10 @@ object Network {
                 .option(ChannelOption.SO_BACKLOG, 128)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childHandler(WebSocketServerInitializer())
-            val channelFuture = bootstrap.bind(9999).sync()
+            val channelFuture = bootstrap.bind(9998).sync()
             channelFuture.addListener(object : ChannelFutureListener {
                 override fun operationComplete(future: ChannelFuture) {
-                    logger.debug(if (channelFuture.isSuccess) "监听端口 9999 成功" else "监听端口 9999 失败")
+                    logger.debug(if (channelFuture.isSuccess) "监听端口 9998 成功" else "监听端口 9998 失败")
                 }
             })
             channelFuture.channel().closeFuture().sync()

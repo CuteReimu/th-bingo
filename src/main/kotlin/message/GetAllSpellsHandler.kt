@@ -39,7 +39,7 @@ object GetAllSpellsHandler : RequestHandler {
         }
         return AllSpellsResponse(
             spells = room.spells!!,
-            spellStatus = room.spellStatus!!.map { it.value },
+            spellStatus = room.type.getAllSpellStatus(room, playerIndex),
             leftTime = leftTime,
             status = status,
             leftCdTime = leftCdTime,

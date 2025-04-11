@@ -117,6 +117,35 @@ object RoomTypeNormal : RoomType {
         SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
     }
 
+    /**
+     * 收了一定数量的卡之后，隐藏对方的选卡
+     */
+    private fun formatSpellStatus(room: Room, status: SpellStatus, playerIndex: Int): Int {
+        var st = status
+        if (st.isSelectStatus()) {
+            if ((room.roomConfig.reservedType ?: 0) == 0) {
+                // 个人赛对方收了五张卡之后，不再可以看到对方的选卡
+                if (playerIndex == 0 && room.spellStatus!!.count { it == RIGHT_GET } >= 5) {
+                    if (status == RIGHT_SELECT) st = NONE
+                    else if (status == BOTH_SELECT) st = LEFT_SELECT
+                } else if (playerIndex == 1 && room.spellStatus!!.count { it == LEFT_GET } >= 5) {
+                    if (status == LEFT_SELECT) st = NONE
+                    else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                }
+            } else if (room.spellStatus!!.count { it == LEFT_GET || it == RIGHT_GET } >= 5) {
+                // 团体赛双方合计收了五张卡之后，不再可以看到对方的选卡
+                if (playerIndex == 0) {
+                    if (status == RIGHT_SELECT) st = NONE
+                    else if (status == BOTH_SELECT) st = LEFT_SELECT
+                } else if (playerIndex == 1) {
+                    if (status == LEFT_SELECT) st = NONE
+                    else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                }
+            }
+        }
+        return st.value
+    }
+
     override fun pushSpells(room: Room, spellIndex: Int, causer: String) {
         val status = room.spellStatus!![spellIndex]
         val allStatus = JsonObject(
@@ -128,39 +157,23 @@ object RoomTypeNormal : RoomType {
         )
         room.host?.push("push_update_spell_status", allStatus)
         for (i in room.players.indices) {
-            var st = status
-            if (st.isSelectStatus()) {
-                if ((room.roomConfig.reservedType ?: 0) == 0) {
-                    // 个人赛对方收了五张卡之后，不再可以看到对方的选卡
-                    if (i == 0 && room.spellStatus!!.count { it == RIGHT_GET } >= 5) {
-                        if (status == RIGHT_SELECT) st = NONE
-                        else if (status == BOTH_SELECT) st = LEFT_SELECT
-                    } else if (i == 1 && room.spellStatus!!.count { it == LEFT_GET } >= 5) {
-                        if (status == LEFT_SELECT) st = NONE
-                        else if (status == BOTH_SELECT) st = RIGHT_SELECT
-                    }
-                } else if (room.spellStatus!!.count { it == LEFT_GET || it == RIGHT_GET } >= 5) {
-                    // 团体赛双方合计收了五张卡之后，不再可以看到对方的选卡
-                    if (i == 0) {
-                        if (status == RIGHT_SELECT) st = NONE
-                        else if (status == BOTH_SELECT) st = LEFT_SELECT
-                    } else if (i == 1) {
-                        if (status == LEFT_SELECT) st = NONE
-                        else if (status == BOTH_SELECT) st = RIGHT_SELECT
-                    }
-                }
-            }
             room.players[i]?.push(
                 "push_update_spell_status", JsonObject(
                     mapOf(
                         "index" to JsonPrimitive(spellIndex),
-                        "status" to JsonPrimitive(st.value),
+                        "status" to JsonPrimitive(formatSpellStatus(room, status, i)),
                         "causer" to JsonPrimitive(causer),
                     )
                 )
             )
         }
         room.watchers.forEach { it.push("push_update_spell_status", allStatus) }
+    }
+
+    override fun getAllSpellStatus(room: Room, playerIndex: Int): List<Int> {
+        if (playerIndex == -1)
+            return super.getAllSpellStatus(room, playerIndex)
+        return room.spellStatus!!.map { formatSpellStatus(room, it, playerIndex) }
     }
 
     /** 是否平局 */
