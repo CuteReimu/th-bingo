@@ -650,13 +650,7 @@ push_action名：`push_link_data`
 
 action名：`start_ban_pick`
 
-请求参数：
-
-```jsonc
-{
-  "who_first": 1 // 谁先开始，0-左边，1-右边
-}
-```
+请求参数：`null`
 
 返回参数：`null`
 

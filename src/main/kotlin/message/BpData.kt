@@ -4,6 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
+/**
+ * @param banPick 0-选，1-ban
+ */
 @Serializable
 class BpData(
     @SerialName("whose_turn")
