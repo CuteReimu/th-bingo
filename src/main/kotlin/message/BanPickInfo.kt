@@ -21,6 +21,8 @@ class BanPickInfo(
     @SerialName("b_open_ex")
     val bOpenEx: Int,
 ) {
+    // 服务器中，A固定是先手玩家，B固定是后手玩家，方便计算。
+    // 发给客户端时，A固定是左边玩家，B固定是右边玩家，会根据whoFirst值决定是否需要颠倒AB
     operator fun not(): BanPickInfo {
         return BanPickInfo(
             whoFirst,
