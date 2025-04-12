@@ -48,7 +48,7 @@ class BanPick(private val whoFirst: Int) {
         ban[1],
         if (phase > 4) openEx[0] else 0,
         if (phase > 4) openEx[1] else 0,
-    )
+    ).let { if (whoFirst == 0) it else !it }
 
     fun notifyAll(room: Room) {
         room.host?.push("push_ban_pick", toPb(-1).encode())

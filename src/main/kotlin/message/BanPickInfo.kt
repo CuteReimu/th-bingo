@@ -20,4 +20,17 @@ class BanPickInfo(
     val aOpenEx: Int,
     @SerialName("b_open_ex")
     val bOpenEx: Int,
-)
+) {
+    operator fun not(): BanPickInfo {
+        return BanPickInfo(
+            whoFirst,
+            phase,
+            bPick,
+            bBan,
+            aPick,
+            aBan,
+            bOpenEx,
+            aOpenEx
+        )
+    }
+}
