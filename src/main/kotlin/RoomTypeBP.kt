@@ -5,7 +5,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import org.tfcc.bingo.SpellStatus.*
 import org.tfcc.bingo.message.BpData
 import org.tfcc.bingo.message.HandlerException
-import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.Random
 
 object RoomTypeBP : RoomType {
     override val name = "BP赛"
@@ -14,7 +14,7 @@ object RoomTypeBP : RoomType {
 
     override fun onStart(room: Room) {
         room.bpData = BpData(
-            whoseTurn = if (room.lastWinner > 0) room.lastWinner - 1 else ThreadLocalRandom.current().nextInt(2),
+            whoseTurn = if (room.lastWinner > 0) 2 - room.lastWinner else Random.nextInt(2),
             banPick = 1,
         )
     }

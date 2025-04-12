@@ -147,6 +147,8 @@ action名：`update_room_config`
 
 请求参数：和`create_room`的请求参数中的`room_config`一样
 
+**请求参数中，`rid`字段必须有，其它每个字段都允许是空值。如果为空，意思是这个字段不修改**
+
 返回参数：`null`
 
 **推送房间配置更新**
