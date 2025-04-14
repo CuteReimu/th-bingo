@@ -63,24 +63,24 @@ class RoomConfigNullable(
     /** 房间名 */
     val rid: String,
     /** 1-标准赛，2-BP赛，3-link赛 */
-    val type: Int?,
+    val type: Int? = null,
     /** 游戏总时间（不含倒计时），单位：分 */
     @SerialName("game_time")
-    val gameTime: Int?,
+    val gameTime: Int? = null,
     /** 倒计时，单位：秒 */
-    val countdown: Int?,
+    val countdown: Int? = null,
     /** 含有哪些作品 */
-    val games: Array<String>?,
+    val games: Array<String>? = null,
     /** 含有哪些游戏难度，也就是L卡和EX卡 */
-    val ranks: Array<String>?,
+    val ranks: Array<String>? = null,
     /** 需要胜利的局数，例如2表示bo3，空表示1 */
     @SerialName("need_win")
-    val needWin: Int?,
+    val needWin: Int? = null,
     /** 难度（影响不同星级的卡的分布），1对应E，2对应N，3对应L，其它对应随机 */
-    val difficulty: Int?,
+    val difficulty: Int? = null,
     /** 选卡cd，收卡后要多少秒才能选下一张卡，空表示0 */
     @SerialName("cd_time")
-    val cdTime: Int?,
+    val cdTime: Int? = null,
     /** 是否为团体赛 */
     @SerialName("reserved_type")
     val reservedType: Int? = null,
