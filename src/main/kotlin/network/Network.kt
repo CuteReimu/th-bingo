@@ -25,7 +25,7 @@ object Network {
             val channelFuture = bootstrap.bind(9999).sync()
             channelFuture.addListener(object : ChannelFutureListener {
                 override fun operationComplete(future: ChannelFuture) {
-                    logger.debug(if (channelFuture.isSuccess) "监听端口 9999 成功" else "监听端口 9998 失败")
+                    logger.debug(if (channelFuture.isSuccess) "监听端口 9999 成功" else "监听端口 9999 失败")
                 }
             })
             channelFuture.channel().closeFuture().sync()
