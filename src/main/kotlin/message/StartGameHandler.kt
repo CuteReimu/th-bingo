@@ -41,6 +41,7 @@ object StartGameHandler : RequestHandler {
         room.started = true
         room.startMs = now
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
+        room.spellStatusInPlayerClient = Array(room.players.size) { room.spellStatus!!.map { it.value }.toIntArray() }
         room.locked = true
         room.banPick = null
         room.type.onStart(room)

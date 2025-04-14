@@ -157,15 +157,20 @@ object RoomTypeNormal : RoomType {
         )
         room.host?.push("push_update_spell_status", allStatus)
         for (i in room.players.indices) {
-            room.players[i]?.push(
-                "push_update_spell_status", JsonObject(
-                    mapOf(
-                        "index" to JsonPrimitive(spellIndex),
-                        "status" to JsonPrimitive(formatSpellStatus(room, status, i)),
-                        "causer" to JsonPrimitive(causer),
+            val oldStatus = room.spellStatusInPlayerClient!![i][spellIndex]
+            val newStatus = formatSpellStatus(room, status, i)
+            if (oldStatus != newStatus) {
+                room.players[i]?.push(
+                    "push_update_spell_status", JsonObject(
+                        mapOf(
+                            "index" to JsonPrimitive(spellIndex),
+                            "status" to JsonPrimitive(newStatus),
+                            "causer" to JsonPrimitive(causer),
+                        )
                     )
                 )
-            )
+                room.spellStatusInPlayerClient!![i][spellIndex] = newStatus
+            }
         }
         room.watchers.forEach { it.push("push_update_spell_status", allStatus) }
     }

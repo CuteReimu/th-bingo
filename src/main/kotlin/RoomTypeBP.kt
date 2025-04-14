@@ -67,6 +67,11 @@ object RoomTypeBP : RoomType {
                 )
             )
         )
+        with(room.spellStatusInPlayerClient!!) {
+            indices.forEach {
+                this[it][spellIndex] = status.value
+            }
+        }
     }
 
     @Throws(HandlerException::class)

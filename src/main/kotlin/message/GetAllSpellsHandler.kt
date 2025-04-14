@@ -37,9 +37,13 @@ object GetAllSpellsHandler : RequestHandler {
                 status = 4 // 已结束
             }
         }
+        val spellStatus = room.type.getAllSpellStatus(room, playerIndex)
+        if (playerIndex >= 0) {
+            room.spellStatusInPlayerClient!![playerIndex] = spellStatus.toIntArray()
+        }
         return AllSpellsResponse(
             spells = room.spells!!,
-            spellStatus = room.type.getAllSpellStatus(room, playerIndex),
+            spellStatus = spellStatus,
             leftTime = leftTime,
             status = status,
             leftCdTime = leftCdTime,

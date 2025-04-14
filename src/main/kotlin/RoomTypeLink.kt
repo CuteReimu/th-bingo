@@ -127,6 +127,11 @@ object RoomTypeLink : RoomType {
                 )
             )
         )
+        with(room.spellStatusInPlayerClient!!) {
+            indices.forEach {
+                this[it][spellIndex] = status.value
+            }
+        }
     }
 
     private infix fun Int.near(other: Int): Boolean {

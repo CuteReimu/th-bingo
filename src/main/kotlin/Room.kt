@@ -18,6 +18,11 @@ class Room(
     /** 每个格子的状态 */
     var spellStatus: Array<SpellStatus>? = null
 
+    /**
+     * 双方选手客户端目前显示的符卡状态（业务逻辑不要乱改这个字段）
+     */
+    var spellStatusInPlayerClient: Array<IntArray>? = null
+
     /** 比分 */
     val score = intArrayOf(0, 0)
 

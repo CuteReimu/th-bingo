@@ -25,6 +25,7 @@ object StopGameHandler : RequestHandler {
         room.lastGetTime.indices.forEach { room.lastGetTime[it] = 0 }
         room.startMs = 0
         room.spellStatus = null
+        room.spellStatusInPlayerClient = null
         room.totalPauseMs = 0
         room.pauseBeginMs = 0
         room.pauseEndMs = 0
