@@ -18,7 +18,7 @@ object UpdateSpellStatusHandler : RequestHandler {
         if (room.host != null) { // 自己是房主则有权限
             room.host === player || throw HandlerException("没有权限")
         } else { // 无房主模式，只要是选手就有权限
-            player in room.players
+            player in room.players || throw HandlerException("没有权限")
         }
         if (room.host === player && room.linkData != null) {
             if (!room.linkData!!.selectCompleteA() || room.linkData!!.selectCompleteB()) {
