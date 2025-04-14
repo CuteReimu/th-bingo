@@ -18,8 +18,20 @@ object UpdateSpellStatusHandler : RequestHandler {
         if (room.host != null) { // 自己是房主则有权限
             room.host === player || throw HandlerException("没有权限")
         } else { // 无房主模式，自己是选手并且另一个选手是机器人才有权限
-            player in room.players && room.players.any { it!!.name == Store.ROBOT_NAME } ||
-                throw HandlerException("没有权限")
+            val oldStatus = room.spellStatus!![idx]
+            player in room.players && room.players.any { it!!.name == Store.ROBOT_NAME } || run {
+                // 或者自己可以取消选卡
+                val index = room.players.indexOf(player)
+                when (index) {
+                    0 -> oldStatus == LEFT_SELECT && spellStatus == NONE ||
+                        oldStatus == BOTH_SELECT && spellStatus == RIGHT_SELECT
+
+                    1 -> oldStatus == RIGHT_SELECT && spellStatus == NONE ||
+                        oldStatus == BOTH_SELECT && spellStatus == LEFT_SELECT
+
+                    else -> false
+                }
+            } || throw HandlerException("没有权限")
         }
         if (room.host === player && room.linkData != null) {
             if (!room.linkData!!.selectCompleteA() || room.linkData!!.selectCompleteB()) {
