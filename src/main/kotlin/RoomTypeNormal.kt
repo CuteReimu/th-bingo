@@ -5,14 +5,35 @@ import kotlinx.serialization.json.JsonPrimitive
 import org.tfcc.bingo.SpellStatus.*
 import org.tfcc.bingo.message.HandlerException
 import java.util.*
+import java.util.concurrent.ThreadLocalRandom
+import kotlin.random.asKotlinRandom
 
 object RoomTypeNormal : RoomType {
     override val name = "标准赛"
 
     override val canPause = true
 
+    //val leftReveal = Array<Boolean>(25) { false }
+    //val rightReveal = Array<Boolean>(25) { false }
+
     override fun onStart(room: Room) {
-        // Do nothing
+        if (room.roomConfig.isBlind == false) return
+
+        // 初始状态下，所有符卡设为隐藏。
+        room.spellStatus = Array(room.spells!!.size) { SpellStatus.BOTH_HIDDEN }
+        // 不揭示中间的格子
+        val indexArr = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)
+        val rand = ThreadLocalRandom.current().asKotlinRandom()
+        indexArr.shuffle(rand)
+        // 双方每人揭示五张仅自己可见的符卡，不会重复
+        for (i in 0 until 5) {
+            room.spellStatus!![indexArr[i]] = LEFT_SEE_ONLY
+            //leftReveal[indexArr[i]] = true
+        }
+        for (i in 5 until 10) {
+            room.spellStatus!![indexArr[i]] = RIGHT_SEE_ONLY
+            //rightReveal[indexArr[i]] = true
+        }
     }
 
     override fun handleNextRound(room: Room) {
@@ -61,8 +82,12 @@ object RoomTypeNormal : RoomType {
             NONE -> LEFT_SELECT
             LEFT_SELECT -> throw HandlerException("重复选卡")
             BOTH_SELECT, RIGHT_SELECT -> BOTH_SELECT
+            BOTH_HIDDEN, LEFT_SEE_ONLY, RIGHT_SEE_ONLY -> LEFT_SELECT
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
+
+        // 选过卡后，该卡对自己可见，无论后续操作
+        //if (playerIndex == 1) rightReveal[spellIndex] = true else leftReveal[spellIndex] = true
 
         // 无导播模式不记录
         room.host != null || return
@@ -99,10 +124,14 @@ object RoomTypeNormal : RoomType {
             RIGHT_GET -> throw HandlerException("对方已打完")
             NONE, RIGHT_SELECT -> throw HandlerException("你还未选卡")
             BOTH_SELECT, LEFT_SELECT -> LEFT_GET
+            BOTH_HIDDEN, LEFT_SEE_ONLY, RIGHT_SEE_ONLY -> throw HandlerException("你还未选卡")
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
 
         room.lastGetTime[playerIndex] = now // 更新上次收卡时间
+
+        // 收卡后，该卡对自己可见，无论后续操作 （以防跳过选卡的情况）
+        //if (playerIndex == 1) rightReveal[spellIndex] = true else leftReveal[spellIndex] = true
 
         // 无导播模式不记录
         room.host != null || return
@@ -146,6 +175,49 @@ object RoomTypeNormal : RoomType {
         return st.value
     }
 
+    /**
+     * 仅对选手生效
+     * 收了一定数量的卡之后，隐藏对方的选卡
+     * 前五张对方的选卡不是HIDDEN状态，只要选择就是双方可见状态
+     * 而五张之后对方选卡不可见，若处于自己视野之外则为HIDDEN，否则为NONE。
+     */
+    private fun formatSpellStatus2(room: Room, status: SpellStatus, playerIndex: Int): Int {
+        var st = status
+        // 如果是对称的可见情况，隐藏选卡
+        if (st.isSelectStatus()) {
+            if ((room.roomConfig.reservedType ?: 0) == 0) {
+                // 个人赛对方收了五张卡之后，不再可以看到对方的选卡
+                if (playerIndex == 0 && room.spellStatus!!.count { it == RIGHT_GET } >= 5) {
+                    if (status == RIGHT_SELECT)
+                        st = BOTH_HIDDEN
+                    else if (status == BOTH_SELECT) st = LEFT_SELECT
+                } else if (playerIndex == 1 && room.spellStatus!!.count { it == LEFT_GET } >= 5) {
+                    if (status == LEFT_SELECT)
+                        st = BOTH_HIDDEN
+                    else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                }
+            } else if (room.spellStatus!!.count { it == LEFT_GET || it == RIGHT_GET } >= 5) {
+                // 团体赛双方合计收了五张卡之后，不再可以看到对方的选卡
+                if (playerIndex == 0) {
+                    if (status == RIGHT_SELECT)
+                        st = BOTH_HIDDEN
+                    else if (status == BOTH_SELECT) st = LEFT_SELECT
+                } else if (playerIndex == 1) {
+                    if (status == LEFT_SELECT)
+                        st = BOTH_HIDDEN
+                    else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                }
+            }
+        }
+        // 如果是不对称的可见情况，将当前能看到的改为NONE，否则为HIDDEN
+        if (st == LEFT_SEE_ONLY) {
+            st = if (playerIndex == 0) NONE else BOTH_HIDDEN
+        } else if (st == RIGHT_SEE_ONLY) {
+            st = if (playerIndex == 1) NONE else BOTH_HIDDEN
+        }
+        return st.value
+    }
+
     override fun pushSpells(room: Room, spellIndex: Int, causer: String) {
         val status = room.spellStatus!![spellIndex]
         val allStatus = JsonObject(
@@ -158,7 +230,8 @@ object RoomTypeNormal : RoomType {
         room.host?.push("push_update_spell_status", allStatus)
         for (i in room.players.indices) {
             val oldStatus = room.spellStatusInPlayerClient!![i][spellIndex]
-            val newStatus = formatSpellStatus(room, status, i)
+            val newStatus = if (room.roomConfig.isBlind == false) formatSpellStatus(room, status, i)
+            else formatSpellStatus2(room, status, i)
             if (oldStatus != newStatus) {
                 room.players[i]?.push(
                     "push_update_spell_status", JsonObject(
@@ -178,7 +251,9 @@ object RoomTypeNormal : RoomType {
     override fun getAllSpellStatus(room: Room, playerIndex: Int): List<Int> {
         if (playerIndex == -1)
             return super.getAllSpellStatus(room, playerIndex)
-        return room.spellStatus!!.map { formatSpellStatus(room, it, playerIndex) }
+        return if (room.roomConfig.isBlind == false)
+            room.spellStatus!!.map { formatSpellStatus(room, it, playerIndex) }
+        else room.spellStatus!!.map { formatSpellStatus2(room, it, playerIndex) }
     }
 
     /** 是否平局 */

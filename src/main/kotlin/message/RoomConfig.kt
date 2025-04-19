@@ -29,6 +29,9 @@ class RoomConfig(
     /** 是否为团体赛 */
     @SerialName("reserved_type")
     val reservedType: Int? = null,
+    /** 是否盲盒（暂时只对标准生效） */
+    @SerialName("is_blind")
+    var isBlind: Boolean? = false,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
@@ -53,7 +56,8 @@ class RoomConfig(
             needWin = config.needWin ?: needWin,
             difficulty = config.difficulty ?: difficulty,
             cdTime = config.cdTime ?: cdTime,
-            reservedType = config.reservedType ?: reservedType
+            reservedType = config.reservedType ?: reservedType,
+            isBlind = config.isBlind ?: isBlind
         )
     }
 }
@@ -84,6 +88,9 @@ class RoomConfigNullable(
     /** 是否为团体赛 */
     @SerialName("reserved_type")
     val reservedType: Int? = null,
+    /** 是否盲盒（暂时只对标准生效） */
+    @SerialName("is_blind")
+    var isBlind: Boolean = false,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
