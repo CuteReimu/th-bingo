@@ -13,8 +13,8 @@ object RoomTypeNormal : RoomType {
 
     override val canPause = true
 
-    //val leftReveal = Array<Boolean>(25) { false }
-    //val rightReveal = Array<Boolean>(25) { false }
+    // val leftReveal = Array<Boolean>(25) { false }
+    // val rightReveal = Array<Boolean>(25) { false }
 
     override fun onStart(room: Room) {
         if (room.roomConfig.isBlind == false) return
@@ -28,11 +28,11 @@ object RoomTypeNormal : RoomType {
         // 双方每人揭示五张仅自己可见的符卡，不会重复
         for (i in 0 until 5) {
             room.spellStatus!![indexArr[i]] = LEFT_SEE_ONLY
-            //leftReveal[indexArr[i]] = true
+            // leftReveal[indexArr[i]] = true
         }
         for (i in 5 until 10) {
             room.spellStatus!![indexArr[i]] = RIGHT_SEE_ONLY
-            //rightReveal[indexArr[i]] = true
+            // rightReveal[indexArr[i]] = true
         }
     }
 
@@ -42,6 +42,10 @@ object RoomTypeNormal : RoomType {
 
     @Throws(HandlerException::class)
     override fun randSpells(games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell> {
+        if (difficulty == 4)
+            return SpellFactory.randSpellsOD(
+                games, ranks
+            )
         return SpellFactory.randSpells(
             games, ranks, when (difficulty) {
                 1 -> Difficulty.E
@@ -87,7 +91,7 @@ object RoomTypeNormal : RoomType {
         }.run { if (playerIndex == 1) opposite() else this }
 
         // 选过卡后，该卡对自己可见，无论后续操作
-        //if (playerIndex == 1) rightReveal[spellIndex] = true else leftReveal[spellIndex] = true
+        // if (playerIndex == 1) rightReveal[spellIndex] = true else leftReveal[spellIndex] = true
 
         // 无导播模式不记录
         room.host != null || return
@@ -131,7 +135,7 @@ object RoomTypeNormal : RoomType {
         room.lastGetTime[playerIndex] = now // 更新上次收卡时间
 
         // 收卡后，该卡对自己可见，无论后续操作 （以防跳过选卡的情况）
-        //if (playerIndex == 1) rightReveal[spellIndex] = true else leftReveal[spellIndex] = true
+        // if (playerIndex == 1) rightReveal[spellIndex] = true else leftReveal[spellIndex] = true
 
         // 无导播模式不记录
         room.host != null || return
