@@ -25,8 +25,41 @@ object UpdateSpellStatusHandler : RequestHandler {
                 throw HandlerException("link赛符卡还未选完，暂不能操作")
             }
         }
-        room.spellStatus!![idx] = spellStatus
+        //room.spellStatus!![idx] = spellStatus
+        cardStateTransform(room, player, idx, spellStatus)
         room.type.pushSpells(room, idx, player.name)
         return null
+    }
+
+    private fun cardStateTransform(room: Room, player: Player, spellIdx: Int, stat: SpellStatus){
+        //有导播，直接覆盖
+        if(room.host != null){
+            room.spellStatus!![spellIdx] = stat
+        }
+        //判断玩家是左还是右
+        val isLeftPlayer = (player === room.players[0])
+        var st = room.spellStatus!![spellIdx]
+        if (!isLeftPlayer) st = st.opposite()
+        when (stat) {
+            //如果操作是置空，则只置空己方选择状态，其余状态不受影响
+            NONE -> {
+                room.spellStatus!![spellIdx] = when(st){
+                    LEFT_SELECT -> NONE
+                    BOTH_SELECT -> RIGHT_SELECT
+                    else -> stat
+                }.run { if (!isLeftPlayer) opposite() else this }
+            }
+            //如果操作是选择，则将对方选择状态提升为双选
+            LEFT_SELECT, RIGHT_SELECT -> {
+                room.spellStatus!![spellIdx] = when(st){
+                    RIGHT_SELECT -> BOTH_SELECT
+                    else -> stat
+                }.run { if (!isLeftPlayer) opposite() else this }
+            }
+            //其余情况，直接覆盖即可
+            else -> {
+                room.spellStatus!![spellIdx] = stat
+            }
+        }
     }
 }
