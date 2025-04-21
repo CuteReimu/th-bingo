@@ -13,9 +13,6 @@ object RoomTypeNormal : RoomType {
 
     override val canPause = true
 
-    // val leftReveal = Array<Boolean>(25) { false }
-    // val rightReveal = Array<Boolean>(25) { false }
-
     override fun onStart(room: Room) {
         if (room.roomConfig.isBlind == false) return
 
@@ -25,14 +22,16 @@ object RoomTypeNormal : RoomType {
         val indexArr = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)
         val rand = ThreadLocalRandom.current().asKotlinRandom()
         indexArr.shuffle(rand)
-        // 双方每人揭示五张仅自己可见的符卡，不会重复
-        for (i in 0 until 5) {
+        // 双方每人揭示4张仅自己可见的符卡，不会重复
+        for (i in 0 until 4) {
             room.spellStatus!![indexArr[i]] = LEFT_SEE_ONLY
-            // leftReveal[indexArr[i]] = true
         }
-        for (i in 5 until 10) {
+        for (i in 4 until 8) {
             room.spellStatus!![indexArr[i]] = RIGHT_SEE_ONLY
-            // rightReveal[indexArr[i]] = true
+        }
+        // 双方揭示3张双方均可见，但彼此不知道对方可见的符卡。
+        for (i in 8 until 11) {
+            room.spellStatus!![indexArr[i]] = BOTH_SEE_ONLY
         }
     }
 
@@ -86,12 +85,9 @@ object RoomTypeNormal : RoomType {
             NONE -> LEFT_SELECT
             LEFT_SELECT -> throw HandlerException("重复选卡")
             BOTH_SELECT, RIGHT_SELECT -> BOTH_SELECT
-            BOTH_HIDDEN, LEFT_SEE_ONLY, RIGHT_SEE_ONLY -> LEFT_SELECT
+            BOTH_HIDDEN, LEFT_SEE_ONLY, RIGHT_SEE_ONLY, BOTH_SEE_ONLY -> LEFT_SELECT
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
-
-        // 选过卡后，该卡对自己可见，无论后续操作
-        // if (playerIndex == 1) rightReveal[spellIndex] = true else leftReveal[spellIndex] = true
 
         // 无导播模式不记录
         room.host != null || return
@@ -128,14 +124,11 @@ object RoomTypeNormal : RoomType {
             RIGHT_GET -> throw HandlerException("对方已打完")
             NONE, RIGHT_SELECT -> throw HandlerException("你还未选卡")
             BOTH_SELECT, LEFT_SELECT -> LEFT_GET
-            BOTH_HIDDEN, LEFT_SEE_ONLY, RIGHT_SEE_ONLY -> throw HandlerException("你还未选卡")
+            BOTH_HIDDEN, LEFT_SEE_ONLY, RIGHT_SEE_ONLY, BOTH_SEE_ONLY -> throw HandlerException("你还未选卡")
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
 
         room.lastGetTime[playerIndex] = now // 更新上次收卡时间
-
-        // 收卡后，该卡对自己可见，无论后续操作 （以防跳过选卡的情况）
-        // if (playerIndex == 1) rightReveal[spellIndex] = true else leftReveal[spellIndex] = true
 
         // 无导播模式不记录
         room.host != null || return
@@ -218,6 +211,8 @@ object RoomTypeNormal : RoomType {
             st = if (playerIndex == 0) NONE else BOTH_HIDDEN
         } else if (st == RIGHT_SEE_ONLY) {
             st = if (playerIndex == 1) NONE else BOTH_HIDDEN
+        } else if (st == BOTH_SEE_ONLY) {
+            st = NONE
         }
         return st.value
     }
