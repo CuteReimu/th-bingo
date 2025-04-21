@@ -35,6 +35,7 @@ object UpdateSpellStatusHandler : RequestHandler {
         // 有导播，直接覆盖
         if (room.host != null) {
             room.spellStatus!![spellIdx] = stat
+            return
         }
         // 判断玩家是左还是右
         val isLeftPlayer = (player === room.players[0])
@@ -49,12 +50,12 @@ object UpdateSpellStatusHandler : RequestHandler {
                     else -> stat
                 }.run { if (!isLeftPlayer) opposite() else this }
             }
-            // 如果操作是选择，则将对方选择状态提升为双选
+            // 如果操作是选择，则将对方选择状态提升为双选。由于需要保留原始结果，故不反转
             LEFT_SELECT, RIGHT_SELECT -> {
                 room.spellStatus!![spellIdx] = when (st) {
                     RIGHT_SELECT -> BOTH_SELECT
                     else -> stat
-                }.run { if (!isLeftPlayer) opposite() else this }
+                }
             }
             // 其余情况，直接覆盖即可
             else -> {
