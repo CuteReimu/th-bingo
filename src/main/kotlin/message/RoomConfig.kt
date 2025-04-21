@@ -31,7 +31,7 @@ class RoomConfig(
     val reservedType: Int? = null,
     /** 是否盲盒（暂时只对标准生效） */
     @SerialName("is_blind")
-    var isBlind: Boolean? = false,
+    var isBlind: Boolean?,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
@@ -90,7 +90,7 @@ class RoomConfigNullable(
     val reservedType: Int? = null,
     /** 是否盲盒（暂时只对标准生效） */
     @SerialName("is_blind")
-    var isBlind: Boolean = false,
+    var isBlind: Boolean? = null,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
