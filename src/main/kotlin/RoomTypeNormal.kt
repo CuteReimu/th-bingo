@@ -17,22 +17,25 @@ object RoomTypeNormal : RoomType {
         if (room.roomConfig.isBlind == false) return
 
         // 初始状态下，所有符卡设为隐藏。
-        room.spellStatus = Array(room.spells!!.size) { SpellStatus.BOTH_HIDDEN }
+        room.spellStatus = Array(room.spells!!.size) { BOTH_HIDDEN }
         // 不揭示中间的格子
-        val indexArr = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24)
+        val outerRingIndex = arrayOf(0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24)
+        val innerRingIndex = arrayOf(6, 7, 8, 11, 13, 16, 17, 18)
         val rand = ThreadLocalRandom.current().asKotlinRandom()
-        indexArr.shuffle(rand)
-        // 双方每人揭示4张仅自己可见的符卡，不会重复
-        for (i in 0 until 4) {
-            room.spellStatus!![indexArr[i]] = LEFT_SEE_ONLY
+        outerRingIndex.shuffle(rand)
+        innerRingIndex.shuffle(rand)
+        // 外环 (3, 3, 1)
+        for (i in 0 until 3) {
+            room.spellStatus!![outerRingIndex[i]] = LEFT_SEE_ONLY
         }
-        for (i in 4 until 8) {
-            room.spellStatus!![indexArr[i]] = RIGHT_SEE_ONLY
+        for (i in 3 until 6) {
+            room.spellStatus!![outerRingIndex[i]] = RIGHT_SEE_ONLY
         }
-        // 双方揭示3张双方均可见，但彼此不知道对方可见的符卡。
-        for (i in 8 until 11) {
-            room.spellStatus!![indexArr[i]] = BOTH_SEE_ONLY
-        }
+        room.spellStatus!![outerRingIndex[6]] = BOTH_SEE_ONLY
+        // 内环 (1, 1, 1)
+        room.spellStatus!![innerRingIndex[0]] = LEFT_SEE_ONLY
+        room.spellStatus!![innerRingIndex[1]] = RIGHT_SEE_ONLY
+        room.spellStatus!![innerRingIndex[2]] = BOTH_SEE_ONLY
     }
 
     override fun handleNextRound(room: Room) {
