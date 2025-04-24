@@ -25,8 +25,9 @@ object UpdateSpellStatusHandler : RequestHandler {
                 throw HandlerException("link赛符卡还未选完，暂不能操作")
             }
         }
-        // room.spellStatus!![idx] = spellStatus
+        val formerStatus = room.spellStatus!![idx]
         cardStateTransform(room, player, idx, spellStatus)
+        room.type.updateSpellStatusPostProcesser(room, player, idx, formerStatus, spellStatus)
         room.type.pushSpells(room, idx, player.name)
         return null
     }

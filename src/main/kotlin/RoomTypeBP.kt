@@ -74,6 +74,15 @@ object RoomTypeBP : RoomType {
         }
     }
 
+    override fun updateSpellStatusPostProcesser(
+        room: Room,
+        player: Player,
+        spellIndex: Int,
+        prevStatus: SpellStatus,
+        status: SpellStatus
+    ) {
+    }
+
     @Throws(HandlerException::class)
     override fun handleNextRound(room: Room) {
         if (room.bpData?.banPick != 2) {

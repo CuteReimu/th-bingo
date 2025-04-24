@@ -29,9 +29,9 @@ class RoomConfig(
     /** 是否为团体赛 */
     @SerialName("reserved_type")
     val reservedType: Int? = null,
-    /** 是否盲盒（暂时只对标准生效） */
-    @SerialName("is_blind")
-    var isBlind: Boolean?,
+    /** 盲盒设置（暂时只对标准生效） */
+    @SerialName("blind_setting")
+    var blindSetting: Int,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
@@ -43,6 +43,7 @@ class RoomConfig(
         ranks.size <= 6 || throw HandlerException("选择的难度数太多")
         needWin == null || needWin in 1..99 || throw HandlerException("需要胜场的数值不正确")
         cdTime == null || cdTime in 0..1440 || throw HandlerException("选卡cd的数值不正确")
+        blindSetting in 1..3 || throw HandlerException("盲盒模式设置不正确")
     }
 
     operator fun plus(config: RoomConfigNullable): RoomConfig {
@@ -57,7 +58,7 @@ class RoomConfig(
             difficulty = config.difficulty ?: difficulty,
             cdTime = config.cdTime ?: cdTime,
             reservedType = config.reservedType ?: reservedType,
-            isBlind = config.isBlind ?: isBlind
+            blindSetting = config.blindSetting ?: blindSetting,
         )
     }
 }
@@ -88,9 +89,9 @@ class RoomConfigNullable(
     /** 是否为团体赛 */
     @SerialName("reserved_type")
     val reservedType: Int? = null,
-    /** 是否盲盒（暂时只对标准生效） */
-    @SerialName("is_blind")
-    var isBlind: Boolean? = null,
+    /** 盲盒设置（暂时只对标准生效） */
+    @SerialName("blind_setting")
+    var blindSetting: Int? = null,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
@@ -102,5 +103,6 @@ class RoomConfigNullable(
         ranks == null || ranks.size <= 6 || throw HandlerException("选择的难度数太多")
         needWin == null || needWin in 1..99 || throw HandlerException("需要胜场的数值不正确")
         cdTime == null || cdTime in 0..1440 || throw HandlerException("选卡cd的数值不正确")
+        blindSetting == null || blindSetting in 1..3 || throw HandlerException("盲盒模式设置不正确")
     }
 }

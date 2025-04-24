@@ -35,4 +35,13 @@ sealed interface RoomType {
     fun getAllSpellStatus(room: Room, playerIndex: Int): List<Int> {
         return room.spellStatus!!.map { it.value }
     }
+
+    /** 有符卡的状态被直接设定时，应如何进行后处理 */
+    fun updateSpellStatusPostProcesser(
+        room: Room,
+        player: Player,
+        spellIndex: Int,
+        prevStatus: SpellStatus,
+        status: SpellStatus
+    )
 }

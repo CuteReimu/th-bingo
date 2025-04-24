@@ -16,7 +16,9 @@ fun Int.toSpellStatus(): SpellStatus {
         0x1000 -> SpellStatus.BOTH_HIDDEN
         0x1001 -> SpellStatus.LEFT_SEE_ONLY
         0x1002 -> SpellStatus.RIGHT_SEE_ONLY
-        0x1003 -> SpellStatus.BOTH_SEE_ONLY
+        0x1010 -> SpellStatus.ONLY_REVEAL_GAME
+        0x1011 -> SpellStatus.ONLY_REVEAL_GAME_STAGE
+        0x1012 -> SpellStatus.ONLY_REVEAL_STAR
         else -> throw HandlerException("status不合法")
     }
 }
@@ -33,7 +35,9 @@ enum class SpellStatus(val value: Int) {
     BOTH_HIDDEN(0x1000),
     LEFT_SEE_ONLY(0x1001),
     RIGHT_SEE_ONLY(0x1002),
-    BOTH_SEE_ONLY(0x1003); // 双方不对称视角
+    ONLY_REVEAL_GAME(0x1010),
+    ONLY_REVEAL_GAME_STAGE(0x1011),
+    ONLY_REVEAL_STAR(0x1012);
 
     fun isSelectStatus(): Boolean {
         return this == LEFT_SELECT || this == RIGHT_SELECT || this == BOTH_SELECT
@@ -41,6 +45,11 @@ enum class SpellStatus(val value: Int) {
 
     fun isGetStatus(): Boolean {
         return this == LEFT_GET || this == RIGHT_GET || this == BOTH_GET
+    }
+
+    fun isEmptyStatus(): Boolean {
+        return this == NONE || this == BOTH_HIDDEN || this == LEFT_SEE_ONLY || this == RIGHT_SEE_ONLY ||
+            this == ONLY_REVEAL_GAME || this == ONLY_REVEAL_GAME_STAGE || this == ONLY_REVEAL_STAR
     }
 
     /** 左右颠倒，方便计算 */
