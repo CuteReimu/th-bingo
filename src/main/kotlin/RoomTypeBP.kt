@@ -19,16 +19,16 @@ object RoomTypeBP : RoomType {
             whoseTurn = if (room.lastWinner > 0) 2 - room.lastWinner else Random.nextInt(2),
             banPick = 1,
         )
-        if(room.roomConfig.blindSetting == 1) return
+        if (room.roomConfig.blindSetting == 1) return
 
-        if(room.roomConfig.blindSetting == 2){
+        if (room.roomConfig.blindSetting == 2) {
             room.spellStatus = Array(room.spells!!.size) { BOTH_HIDDEN }
             val outerRingIndex = arrayOf(0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24)
             val innerRingIndex = arrayOf(6, 7, 8, 11, 13, 16, 17, 18)
             val rand = ThreadLocalRandom.current().asKotlinRandom()
             outerRingIndex.shuffle(rand)
             innerRingIndex.shuffle(rand)
-            //外环 (4, 4, 4, 4)
+            // 外环 (4, 4, 4, 4)
             for (i in 0 until 4) {
                 room.spellStatus!![outerRingIndex[i]] = LEFT_SEE_ONLY
             }
@@ -38,14 +38,14 @@ object RoomTypeBP : RoomType {
             for (i in 8 until 12) {
                 room.spellStatus!![outerRingIndex[i]] = NONE
             }
-            //内环 (2, 2, 0, 4)
+            // 内环 (2, 2, 0, 4)
             for (i in 0 until 2) {
                 room.spellStatus!![innerRingIndex[i]] = LEFT_SEE_ONLY
             }
             for (i in 2 until 4) {
                 room.spellStatus!![innerRingIndex[i]] = RIGHT_SEE_ONLY
             }
-        }else if(room.roomConfig.blindSetting == 3){
+        } else if (room.roomConfig.blindSetting == 3) {
             room.spellStatus = Array(room.spells!!.size) { ONLY_REVEAL_STAR }
         }
     }

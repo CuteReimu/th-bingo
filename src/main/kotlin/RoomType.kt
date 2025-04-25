@@ -43,7 +43,6 @@ sealed interface RoomType {
         spellIndex: Int,
         prevStatus: SpellStatus,
         status: SpellStatus
-    ){
-
+    ) {
     }
 }
