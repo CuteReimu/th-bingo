@@ -28,22 +28,25 @@ object RoomTypeBP : RoomType {
             val rand = ThreadLocalRandom.current().asKotlinRandom()
             outerRingIndex.shuffle(rand)
             innerRingIndex.shuffle(rand)
-            // 外环 (4, 4, 4, 4)
+            // 外环 (4, 4, 2, 6)
             for (i in 0 until 4) {
                 room.spellStatus!![outerRingIndex[i]] = LEFT_SEE_ONLY
             }
             for (i in 4 until 8) {
                 room.spellStatus!![outerRingIndex[i]] = RIGHT_SEE_ONLY
             }
-            for (i in 8 until 12) {
+            for (i in 8 until 10) {
                 room.spellStatus!![outerRingIndex[i]] = NONE
             }
-            // 内环 (2, 2, 0, 4)
-            for (i in 0 until 2) {
+            // 内环 (1, 1, 2, 4)
+            for (i in 0 until 1) {
                 room.spellStatus!![innerRingIndex[i]] = LEFT_SEE_ONLY
             }
-            for (i in 2 until 4) {
+            for (i in 1 until 2) {
                 room.spellStatus!![innerRingIndex[i]] = RIGHT_SEE_ONLY
+            }
+            for (i in 2 until 4) {
+                room.spellStatus!![innerRingIndex[i]] = NONE
             }
         } else if (room.roomConfig.blindSetting == 3) {
             room.spellStatus = Array(room.spells!!.size) { ONLY_REVEAL_STAR }
