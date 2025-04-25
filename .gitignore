@@ -3,6 +3,8 @@ application.properties
 /cache/
 *.xlsx
 /.gradle/
+/.kotlin/
+/log/
 
 # Compiled class file
 /build/

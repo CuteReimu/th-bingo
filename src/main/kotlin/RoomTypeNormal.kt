@@ -202,33 +202,30 @@ object RoomTypeNormal : RoomType {
      * 前五张对方的选卡不是HIDDEN状态，只要选择就是双方可见状态
      * 而五张之后对方选卡不可见，若处于自己视野之外则为HIDDEN，否则为NONE。
      */
-    private fun formatSpellStatus2(room: Room, status: SpellStatus, playerIndex: Int, spellIdx: Int): Int {
+    private fun formatSpellStatus2(room: Room, status: SpellStatus, playerIndex: Int, spellIndex: Int): Int {
         var st = status
-        var targetHiddenSt = NONE
-        if (room.roomConfig.blindSetting == 2) targetHiddenSt = BOTH_HIDDEN
-        else if (room.roomConfig.blindSetting == 3) targetHiddenSt = spellStatusBackup[spellIdx]
         // 如果是对称的可见情况，隐藏选卡
         if (st.isSelectStatus()) {
             if ((room.roomConfig.reservedType ?: 0) == 0) {
                 // 个人赛对方收了五张卡之后，不再可以看到对方的选卡
                 if (playerIndex == 0 && room.spellStatus!!.count { it == RIGHT_GET } >= 5) {
                     if (status == RIGHT_SELECT)
-                        st = targetHiddenSt
+                        st = decideStatus(room, spellIndex, false)
                     else if (status == BOTH_SELECT) st = LEFT_SELECT
                 } else if (playerIndex == 1 && room.spellStatus!!.count { it == LEFT_GET } >= 5) {
                     if (status == LEFT_SELECT)
-                        st = targetHiddenSt
+                        st = decideStatus(room, spellIndex, true)
                     else if (status == BOTH_SELECT) st = RIGHT_SELECT
                 }
             } else if (room.spellStatus!!.count { it == LEFT_GET || it == RIGHT_GET } >= 5) {
                 // 团体赛双方合计收了五张卡之后，不再可以看到对方的选卡
                 if (playerIndex == 0) {
                     if (status == RIGHT_SELECT)
-                        st = targetHiddenSt
+                        st = decideStatus(room, spellIndex, false)
                     else if (status == BOTH_SELECT) st = LEFT_SELECT
                 } else if (playerIndex == 1) {
                     if (status == LEFT_SELECT)
-                        st = targetHiddenSt
+                        st = decideStatus(room, spellIndex, true)
                     else if (status == BOTH_SELECT) st = RIGHT_SELECT
                 }
             }
@@ -240,6 +237,19 @@ object RoomTypeNormal : RoomType {
             st = if (playerIndex == 1) NONE else BOTH_HIDDEN
         }
         return st.value
+    }
+
+    private fun decideStatus(room: Room, spellIndex: Int, isLeftSelect: Boolean): SpellStatus {
+        if (room.roomConfig.blindSetting == 2) {
+            if (spellStatusBackup[spellIndex] == NONE ||
+                (spellStatusBackup[spellIndex] == LEFT_SEE_ONLY && !isLeftSelect) ||
+                (spellStatusBackup[spellIndex] == RIGHT_SEE_ONLY && isLeftSelect))
+                return NONE
+            else return BOTH_HIDDEN
+        } else if (room.roomConfig.blindSetting == 3) {
+            return spellStatusBackup[spellIndex]
+        }
+        return NONE
     }
 
     override fun pushSpells(room: Room, spellIndex: Int, causer: String) {
@@ -287,9 +297,15 @@ object RoomTypeNormal : RoomType {
         prevStatus: SpellStatus,
         status: SpellStatus
     ) {
+        // 盲盒模式1中，单方面选择并取消选卡会使符卡回归初始状态
+        if (room.roomConfig.blindSetting == 2) {
+            if (status == NONE && prevStatus.isOneSelectStatus()) {
+                room.spellStatus!![spellIndex] = spellStatusBackup[spellIndex]
+            }
+        }
         // 盲盒模式2中，不允许出现NONE状态。翻回去的牌返回初始状态（如果不是BOTH_SELECT）
         if (room.roomConfig.blindSetting == 3) {
-            if (status == NONE && prevStatus.isSelectStatus() && prevStatus != BOTH_SELECT) {
+            if (status == NONE && prevStatus.isOneSelectStatus()) {
                 room.spellStatus!![spellIndex] = spellStatusBackup[spellIndex]
             }
         }

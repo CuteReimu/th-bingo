@@ -52,6 +52,10 @@ enum class SpellStatus(val value: Int) {
             this == ONLY_REVEAL_GAME || this == ONLY_REVEAL_GAME_STAGE || this == ONLY_REVEAL_STAR
     }
 
+    fun isOneSelectStatus(): Boolean {
+        return this == LEFT_SELECT || this == RIGHT_SELECT
+    }
+
     /** 左右颠倒，方便计算 */
     fun opposite(): SpellStatus = when (this) {
         LEFT_GET -> RIGHT_GET
