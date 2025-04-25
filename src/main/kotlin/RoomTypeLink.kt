@@ -134,15 +134,6 @@ object RoomTypeLink : RoomType {
         }
     }
 
-    override fun updateSpellStatusPostProcesser(
-        room: Room,
-        player: Player,
-        spellIndex: Int,
-        prevStatus: SpellStatus,
-        status: SpellStatus
-    ) {
-    }
-
     private infix fun Int.near(other: Int): Boolean {
         when (this % 5) {
             0 -> if (other == this - 1) return false

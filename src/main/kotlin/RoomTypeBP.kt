@@ -5,7 +5,9 @@ import kotlinx.serialization.json.JsonPrimitive
 import org.tfcc.bingo.SpellStatus.*
 import org.tfcc.bingo.message.BpData
 import org.tfcc.bingo.message.HandlerException
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.Random
+import kotlin.random.asKotlinRandom
 
 object RoomTypeBP : RoomType {
     override val name = "BP赛"
@@ -17,6 +19,35 @@ object RoomTypeBP : RoomType {
             whoseTurn = if (room.lastWinner > 0) 2 - room.lastWinner else Random.nextInt(2),
             banPick = 1,
         )
+        if(room.roomConfig.blindSetting == 1) return
+
+        if(room.roomConfig.blindSetting == 2){
+            room.spellStatus = Array(room.spells!!.size) { BOTH_HIDDEN }
+            val outerRingIndex = arrayOf(0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24)
+            val innerRingIndex = arrayOf(6, 7, 8, 11, 13, 16, 17, 18)
+            val rand = ThreadLocalRandom.current().asKotlinRandom()
+            outerRingIndex.shuffle(rand)
+            innerRingIndex.shuffle(rand)
+            //外环 (4, 4, 4, 4)
+            for (i in 0 until 4) {
+                room.spellStatus!![outerRingIndex[i]] = LEFT_SEE_ONLY
+            }
+            for (i in 4 until 8) {
+                room.spellStatus!![outerRingIndex[i]] = RIGHT_SEE_ONLY
+            }
+            for (i in 8 until 12) {
+                room.spellStatus!![outerRingIndex[i]] = NONE
+            }
+            //内环 (2, 2, 0, 4)
+            for (i in 0 until 2) {
+                room.spellStatus!![innerRingIndex[i]] = LEFT_SEE_ONLY
+            }
+            for (i in 2 until 4) {
+                room.spellStatus!![innerRingIndex[i]] = RIGHT_SEE_ONLY
+            }
+        }else if(room.roomConfig.blindSetting == 3){
+            room.spellStatus = Array(room.spells!!.size) { ONLY_REVEAL_STAR }
+        }
     }
 
     @Throws(HandlerException::class)
@@ -56,31 +87,54 @@ object RoomTypeBP : RoomType {
 
     override fun pushSpells(room: Room, spellIndex: Int, causer: String) {
         val status = room.spellStatus!![spellIndex]
-        room.push(
-            "push_update_spell_status", JsonObject(
-                mapOf(
-                    "index" to JsonPrimitive(spellIndex),
-                    "status" to JsonPrimitive(status.value),
-                    "causer" to JsonPrimitive(causer),
-                    "spell_failed_count_a" to JsonPrimitive(room.bpData!!.spellFailedCountA[spellIndex]),
-                    "spell_failed_count_b" to JsonPrimitive(room.bpData!!.spellFailedCountB[spellIndex]),
-                )
+        val allStatus = JsonObject(
+            mapOf(
+                "index" to JsonPrimitive(spellIndex),
+                "status" to JsonPrimitive(status.value),
+                "causer" to JsonPrimitive(causer),
+                "spell_failed_count_a" to JsonPrimitive(room.bpData!!.spellFailedCountA[spellIndex]),
+                "spell_failed_count_b" to JsonPrimitive(room.bpData!!.spellFailedCountB[spellIndex]),
             )
         )
-        with(room.spellStatusInPlayerClient!!) {
-            indices.forEach {
-                this[it][spellIndex] = status.value
+        room.host?.push("push_update_spell_status", allStatus)
+        room.watchers.forEach { it.push("push_update_spell_status", allStatus) }
+        for (i in room.players.indices) {
+            val oldStatus = room.spellStatusInPlayerClient!![i][spellIndex]
+            val newStatus = formatSpellStatus(room, status, i, spellIndex)
+            if (oldStatus != newStatus) {
+                room.players[i]?.push(
+                    "push_update_spell_status", JsonObject(
+                        mapOf(
+                            "index" to JsonPrimitive(spellIndex),
+                            "status" to JsonPrimitive(status.value),
+                            "causer" to JsonPrimitive(causer),
+                            "spell_failed_count_a" to JsonPrimitive(room.bpData!!.spellFailedCountA[spellIndex]),
+                            "spell_failed_count_b" to JsonPrimitive(room.bpData!!.spellFailedCountB[spellIndex]),
+                        )
+                    )
+                )
+                room.spellStatusInPlayerClient!![i][spellIndex] = newStatus
             }
         }
     }
 
-    override fun updateSpellStatusPostProcesser(
-        room: Room,
-        player: Player,
-        spellIndex: Int,
-        prevStatus: SpellStatus,
-        status: SpellStatus
-    ) {
+    override fun getAllSpellStatus(room: Room, playerIndex: Int): List<Int> {
+        if (playerIndex == -1)
+            return super.getAllSpellStatus(room, playerIndex)
+        return if (room.roomConfig.blindSetting == 1)
+            super.getAllSpellStatus(room, playerIndex)
+        else room.spellStatus!!.mapIndexed { index, status -> formatSpellStatus(room, status, playerIndex, index) }
+    }
+
+    private fun formatSpellStatus(room: Room, status: SpellStatus, playerIndex: Int, spellIndex: Int): Int {
+        var st = status
+        // 如果是不对称的可见情况，将当前能看到的改为NONE，否则为HIDDEN
+        if (st == LEFT_SEE_ONLY) {
+            st = if (playerIndex == 0) NONE else BOTH_HIDDEN
+        } else if (st == RIGHT_SEE_ONLY) {
+            st = if (playerIndex == 1) NONE else BOTH_HIDDEN
+        }
+        return st.value
     }
 
     @Throws(HandlerException::class)

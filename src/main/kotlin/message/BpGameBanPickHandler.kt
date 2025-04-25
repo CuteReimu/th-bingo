@@ -20,7 +20,7 @@ object BpGameBanPickHandler : RequestHandler {
         val playerIndex = room.players.indexOf(player)
         playerIndex >= 0 || throw HandlerException("你不是玩家")
         room.bpData!!.whoseTurn == playerIndex || throw HandlerException("不是你的回合")
-        room.spellStatus!![idx] == NONE || throw HandlerException("这个符卡已经被选择了")
+        room.spellStatus!![idx].isEmptyStatus() || throw HandlerException("这个符卡已经被选择了")
         when (room.bpData!!.banPick) {
             0 -> { // 选
                 room.spellStatus!![idx] = if (playerIndex == 0) LEFT_SELECT else RIGHT_SELECT
