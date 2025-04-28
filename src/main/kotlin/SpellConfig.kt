@@ -259,6 +259,135 @@ object SpellConfig {
         return result.filterNotNull().toTypedArray()
     }
 
+    /**
+     * 随符卡
+     * @param type 可以传入 [BP_GAME]
+     * @param exPos ex符卡的位置
+     * @param stars 星级的分布
+     */
+    fun getBPOD(
+        type: Int,
+        games: Array<String>,
+        ranks: Array<String>?,
+        exPos: IntArray,
+        stars: IntArray,
+        rand: Random
+    ): Array<Spell> {
+        val map = HashMap<Int, HashMap<Boolean, HashMap<String, LinkedList<Spell>>>>()
+        for ((star, isExMap) in get(type)) {
+            val isExMap2 = HashMap<Boolean, HashMap<String, LinkedList<Spell>>>()
+            for ((isEx, gameMap) in isExMap) {
+                for ((game, spellList) in gameMap) {
+                    if (game !in games) continue
+                    val spellList2 = spellList.filter { ranks == null || it.rank in ranks }
+                    if (spellList2.isNotEmpty()) {
+                        val gameMap2 = isExMap2.getOrPut(isEx) { HashMap<String, LinkedList<Spell>>() }
+                        gameMap2[game] = LinkedList(spellList2.shuffled(rand))
+                    }
+                }
+            }
+            if (isExMap2.isNotEmpty()) map[star] = isExMap2
+        }
+        val spellIds = HashSet<String>()
+        val result = arrayOfNulls<Spell>(stars.size)
+
+        // 原有的3星卡抽取逻辑保留，保证基础的分布
+        for (i in stars.indices) {
+            val requireStar = stars[i]
+            if (requireStar != 3) continue
+
+            val isExMap = map[requireStar] ?: throw HandlerException("${requireStar}星符卡不足")
+            val gameMap = isExMap[false] ?: throw HandlerException("${requireStar}星符卡不足")
+
+            var spell: Spell
+            do {
+                val game = gameMap.keys.randomOrNull(rand) ?: throw HandlerException("${requireStar}星符卡不足")
+                val spellList = gameMap[game]!!
+                spell = spellList.removeFirst()
+                if (spellList.isEmpty()) gameMap.remove(game)
+            } while (!spellIds.add("${spell.game}-${spell.id}"))
+
+            result[i] = spell
+        }
+
+        // 3星卡替换
+        val star13Indices = stars.indices.filter { stars[it] == 13 }.toMutableList()
+        star13Indices.shuffle(rand) // 替换项洗牌，保证卡不足时分布均匀
+        for (i in star13Indices) {
+            try {
+                val isExMap = map[3] ?: continue
+                val gameMap = isExMap[false] ?: continue
+
+                var spell: Spell? = null
+                retry@ while (true) {
+                    val game = gameMap.keys.randomOrNull(rand) ?: break@retry
+                    val spellList = gameMap[game] ?: continue
+                    if (spellList.isEmpty()) {
+                        gameMap.remove(game)
+                        continue
+                    }
+                    spell = spellList.removeFirst()
+                    if (spellList.isEmpty()) gameMap.remove(game)
+                    if (spellIds.add("${spell.game}-${spell.id}")) break@retry
+                }
+
+                spell?.let {
+                    result[i] = it
+                } ?: run {
+                    stars[i] = 2 // 降级处理
+                }
+            } catch (e: Exception) {
+                stars[i] = 2
+            }
+        }
+
+        // 1-2星卡生成
+        for (i in stars.indices) {
+            if (result[i] != null) continue
+
+            val requireStar = stars[i]
+            val isExMap = map[requireStar] ?: throw HandlerException("${requireStar}星符卡不足")
+            val gameMap = isExMap[false] ?: throw HandlerException("${requireStar}星符卡不足")
+
+            var spell: Spell
+            do {
+                val game = gameMap.keys.randomOrNull(rand) ?: throw HandlerException("${requireStar}星符卡不足")
+                val spellList = gameMap[game]!!
+                spell = spellList.removeFirst()
+                if (spellList.isEmpty()) gameMap.remove(game)
+            } while (!spellIds.add("${spell.game}-${spell.id}"))
+
+            result[i] = spell
+        }
+
+        for (i in exPos.indices) {
+            var index = exPos[i]
+            var firstTry = true
+            tryOnce@ while (true) {
+                if (firstTry) {
+                    firstTry = false
+                } else {
+                    index = (index + 1) % result.size
+                    if (index == exPos[i]) throw HandlerException("EX符卡数量不足")
+                    if (index in exPos) continue
+                }
+                val isExMap = map[stars[index]] ?: continue
+                val gameMap = isExMap[true] ?: continue
+                var spell: Spell
+                do {
+                    val game = gameMap.keys.randomOrNull(rand) ?: continue@tryOnce
+                    val spellList = gameMap[game]!!
+                    spell = spellList.removeFirst()
+                    if (spellList.isEmpty()) gameMap.remove(game)
+                } while (!spellIds.add("${spell.game}-${spell.id}"))
+                exPos[i] = index
+                result[index] = spell
+                break
+            }
+        }
+        return result.filterNotNull().toTypedArray()
+    }
+
     private fun get(type: Int): Map<Int, Map<Boolean, Map<String, List<Spell>>>> {
         val config = cache[type] ?: throw IllegalArgumentException("不支持的比赛类型")
         val files = File(".").listFiles()?.filter { file ->

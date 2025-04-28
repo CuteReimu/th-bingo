@@ -26,6 +26,24 @@ object SpellFactory {
     }
 
     /**
+     * 随符卡，用于BP赛OD
+     */
+    @Throws(HandlerException::class)
+    fun randSpellsBPOD(games: Array<String>, ranks: Array<String>?, lv1Count: Int): Array<Spell> {
+        val lv2Count = 15 - lv1Count
+        val rand = ThreadLocalRandom.current().asKotlinRandom()
+        val idx = intArrayOf(0, 1, 3, 4)
+        val star12 = IntArray(lv1Count) { 1 } + IntArray(lv2Count) { 2 } + IntArray(5) { 13 }
+        idx.shuffle(rand)
+        star12.shuffle(rand)
+        var j = 0
+        // 每行、每列都只有一个lv3
+        val idx3 = arrayOf(idx[0], 5 + idx[1], 12, 15 + idx[2], 20 + idx[3])
+        val stars = IntArray(25) { i -> if (i in idx3) 3 else star12[j++] }
+        return SpellConfig.getBPOD(SpellConfig.BP_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+    }
+
+    /**
      * 随符卡，用于标准模式
      * difficulty：123级卡数量 int[]
      * games：开启的游戏 string[]
