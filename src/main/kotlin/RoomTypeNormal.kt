@@ -62,13 +62,13 @@ object RoomTypeNormal : RoomType {
     }
 
     @Throws(HandlerException::class)
-    override fun randSpells(games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell> {
+    override fun randSpells(spellCardVersion: Int, games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell> {
         if (difficulty == 4)
             return SpellFactory.randSpellsOD(
-                games, ranks
+                spellCardVersion, games, ranks
             )
         return SpellFactory.randSpells(
-            games, ranks, when (difficulty) {
+            spellCardVersion, games, ranks, when (difficulty) {
                 1 -> Difficulty.E
                 2 -> Difficulty.N
                 3 -> Difficulty.L
@@ -112,6 +112,8 @@ object RoomTypeNormal : RoomType {
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
 
+        return
+        /*
         // 无导播模式不记录
         room.host != null || return
         // 等操作结束后再记录
@@ -123,6 +125,7 @@ object RoomTypeNormal : RoomType {
         var status = LEFT_SELECT
         if (playerIndex == 1) status = status.opposite()
         SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
+         */
     }
 
     override fun handleFinishSpell(room: Room, isHost: Boolean, playerIndex: Int, spellIndex: Int, success: Boolean) {
@@ -154,6 +157,8 @@ object RoomTypeNormal : RoomType {
 
         room.lastGetTime[playerIndex] = now // 更新上次收卡时间
 
+        return
+        /*
         // 无导播模式不记录
         room.host != null || return
         // 等操作结束后再记录
@@ -165,6 +170,7 @@ object RoomTypeNormal : RoomType {
         var status = LEFT_GET
         if (playerIndex == 1) status = status.opposite()
         SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
+         */
     }
 
     /**

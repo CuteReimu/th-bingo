@@ -11,7 +11,7 @@ object SpellFactory {
      * 随符卡，用于BP赛
      */
     @Throws(HandlerException::class)
-    fun randSpellsBP(games: Array<String>, ranks: Array<String>?, lv1Count: Int): Array<Spell> {
+    fun randSpellsBP(spellCardVersion: Int, games: Array<String>, ranks: Array<String>?, lv1Count: Int): Array<Spell> {
         val lv2Count = 20 - lv1Count
         val rand = ThreadLocalRandom.current().asKotlinRandom()
         val idx = intArrayOf(0, 1, 3, 4)
@@ -22,14 +22,14 @@ object SpellFactory {
         // 每行、每列都只有一个lv3
         val idx3 = arrayOf(idx[0], 5 + idx[1], 12, 15 + idx[2], 20 + idx[3])
         val stars = IntArray(25) { i -> if (i in idx3) 3 else star12[j++] }
-        return SpellConfig.get(SpellConfig.BP_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+        return SpellConfig.get(SpellConfig.BP_GAME, spellCardVersion, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     /**
      * 随符卡，用于BP赛OD
      */
     @Throws(HandlerException::class)
-    fun randSpellsBPOD(games: Array<String>, ranks: Array<String>?, lv1Count: Int): Array<Spell> {
+    fun randSpellsBPOD(spellCardVersion: Int, games: Array<String>, ranks: Array<String>?, lv1Count: Int): Array<Spell> {
         val lv2Count = 15 - lv1Count
         val rand = ThreadLocalRandom.current().asKotlinRandom()
         val idx = intArrayOf(0, 1, 3, 4)
@@ -40,7 +40,7 @@ object SpellFactory {
         // 每行、每列都只有一个lv3
         val idx3 = arrayOf(idx[0], 5 + idx[1], 12, 15 + idx[2], 20 + idx[3])
         val stars = IntArray(25) { i -> if (i in idx3) 3 else star12[j++] }
-        return SpellConfig.getBPOD(SpellConfig.BP_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+        return SpellConfig.getBPOD(SpellConfig.BP_GAME, spellCardVersion, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     /**
@@ -50,7 +50,7 @@ object SpellFactory {
      *
      */
     @Throws(HandlerException::class)
-    fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
+    fun randSpells(spellCardVersion: Int, games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
         val lvCount = difficulty.value
         val rand = ThreadLocalRandom.current().asKotlinRandom()
         val idx = intArrayOf(0, 1, 3, 4)
@@ -71,7 +71,7 @@ object SpellFactory {
                 else -> star123[j++]
             }
         }
-        return SpellConfig.get(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+        return SpellConfig.get(SpellConfig.NORMAL_GAME, spellCardVersion, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     /**
@@ -81,7 +81,7 @@ object SpellFactory {
      *
      */
     @Throws(HandlerException::class)
-    fun randSpellsOD(games: Array<String>, ranks: Array<String>?): Array<Spell> {
+    fun randSpellsOD(spellCardVersion: Int, games: Array<String>, ranks: Array<String>?): Array<Spell> {
         // 14=四级替换 15=五级替换
         // (1,4,8,9,3)
         val lvCount = arrayOf(1, 4, 8, 5, 2)
@@ -105,14 +105,20 @@ object SpellFactory {
                 else -> star12367[j++]
             }
         }
-        return SpellConfig.getOD(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+        return SpellConfig.getOD(SpellConfig.NORMAL_GAME, spellCardVersion,
+            games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     /**
      * 随符卡，用于link赛
      */
     @Throws(HandlerException::class)
-    fun randSpellsLink(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
+    fun randSpellsLink(
+        spellCardVersion: Int,
+        games: Array<String>,
+        ranks: Array<String>?,
+        difficulty: Difficulty
+    ): Array<Spell> {
         val lvCount = difficulty.value
         val rand = ThreadLocalRandom.current().asKotlinRandom()
         val idx = intArrayOf(0, 1, 3, 4)
@@ -128,7 +134,7 @@ object SpellFactory {
                 else -> star123[j++]
             }
         }
-        return SpellConfig.get(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+        return SpellConfig.get(SpellConfig.NORMAL_GAME, spellCardVersion, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
     private fun ranksToExPos(ranks: Array<String>?, rand: Random): IntArray {

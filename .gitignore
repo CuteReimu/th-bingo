@@ -6,6 +6,8 @@ application.properties
 /.kotlin/
 /log/
 
+spellcard_version.txt
+
 # Compiled class file
 /build/
 *.class

@@ -22,11 +22,6 @@ object SpellConfig {
     /** BP赛的配置 */
     const val BP_GAME = 2
 
-    private val cache = mapOf(
-        NORMAL_GAME to Config(::buildNormalSpell),
-        BP_GAME to Config(::buildBPSpell),
-    ) // 因为用的SingleThreadExecutor，因此无需考虑线程安全问题
-
     /**
      * 随符卡
      * @param type 可以传入 [NORMAL_GAME] 或 [BP_GAME]
@@ -37,6 +32,7 @@ object SpellConfig {
      */
     fun get(
         type: Int,
+        fileId: Int,
         games: Array<String>,
         ranks: Array<String>?,
         exPos: IntArray,
@@ -44,7 +40,7 @@ object SpellConfig {
         rand: Random
     ): Array<Spell> {
         val map = HashMap<Int, HashMap<Boolean, HashMap<String, LinkedList<Spell>>>>()
-        for ((star, isExMap) in get(type)) {
+        for ((star, isExMap) in get(type, fileId)) {
             val isExMap2 = HashMap<Boolean, HashMap<String, LinkedList<Spell>>>()
             for ((isEx, gameMap) in isExMap) {
                 for ((game, spellList) in gameMap) {
@@ -107,6 +103,7 @@ object SpellConfig {
      */
     fun getOD(
         type: Int,
+        fileId: Int,
         games: Array<String>,
         ranks: Array<String>?,
         exPos: IntArray,
@@ -114,7 +111,7 @@ object SpellConfig {
         rand: Random
     ): Array<Spell> {
         val map = HashMap<Int, HashMap<Boolean, HashMap<String, LinkedList<Spell>>>>()
-        for ((star, isExMap) in get(type)) {
+        for ((star, isExMap) in get(type, fileId)) {
             val isExMap2 = HashMap<Boolean, HashMap<String, LinkedList<Spell>>>()
             for ((isEx, gameMap) in isExMap) {
                 for ((game, spellList) in gameMap) {
@@ -267,6 +264,7 @@ object SpellConfig {
      */
     fun getBPOD(
         type: Int,
+        fileId: Int,
         games: Array<String>,
         ranks: Array<String>?,
         exPos: IntArray,
@@ -274,7 +272,7 @@ object SpellConfig {
         rand: Random
     ): Array<Spell> {
         val map = HashMap<Int, HashMap<Boolean, HashMap<String, LinkedList<Spell>>>>()
-        for ((star, isExMap) in get(type)) {
+        for ((star, isExMap) in get(type, fileId)) {
             val isExMap2 = HashMap<Boolean, HashMap<String, LinkedList<Spell>>>()
             for ((isEx, gameMap) in isExMap) {
                 for ((game, spellList) in gameMap) {
@@ -388,48 +386,7 @@ object SpellConfig {
         return result.filterNotNull().toTypedArray()
     }
 
-    private fun get(type: Int): Map<Int, Map<Boolean, Map<String, List<Spell>>>> {
-        val config = cache[type] ?: throw IllegalArgumentException("不支持的比赛类型")
-        val files = File(".").listFiles()?.filter { file ->
-            file.extension == "xlsx" && !file.name.startsWith("log")
-        }?.ifEmpty { null } ?: throw HandlerException("找不到符卡文件")
-        var md5sum: HashSet<String>? = hashSetOf()
-        files.all { file ->
-            val m = md5sum(file.path)
-            if (m == null) {
-                md5sum = null
-                false
-            } else {
-                md5sum!!.add(m)
-                true
-            }
-        }
-        if (md5sum != null && config.md5sum != null && md5sum == config.md5sum)
-            return config.allSpells
-        val allSpells = HashMap<Int, HashMap<Boolean, HashMap<String, ArrayList<Spell>>>>()
-        val spellsByIndex = HashMap<Int, Spell>()
-        for (file in files) {
-            XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
-                val sheet = wb.getSheetAt(0)
-                for (i in 1..sheet.lastRowNum) {
-                    val row = sheet.getRow(i)
-                    val spell = config.spellBuilder(row) ?: continue
-                    allSpells.getOrPut(spell.star) { hashMapOf() }
-                        .getOrPut(spell.rank != "L") { hashMapOf() }
-                        .getOrPut(spell.game) { arrayListOf() }
-                        .add(spell)
-                    spellsByIndex[spell.index] = spell
-                }
-            }
-        }
-        config.md5sum = md5sum
-        config.allSpells = allSpells
-        config.spellsByIndex = spellsByIndex
-        SpellLog.createLogFile() // 重读时重新载入log
-        return allSpells
-    }
-
-    fun getSpellById(type: Int, id: Int): Spell? = cache[type]?.spellsByIndex?.get(id)
+    fun getSpellById(type: Int, fileId: Int, id: Int): Spell? = cache.get(type)?.get(fileId)?.spellsByIndex?.get(id)
 
     private fun XSSFCell?.getFloatValue(): Float {
         if (this == null) return 0f
@@ -504,4 +461,99 @@ object SpellConfig {
     }
 
     private val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+
+    private fun get(type: Int, fileCode: Int): Map<Int, Map<Boolean, Map<String, List<Spell>>>> {
+        // 读取控制文件获取文件名和更新标记
+        val (fileName, needUpdate) = parseControlFile(fileCode)
+
+        // 获取对应类型和文件代码的配置
+        val (config, typeCache) = getConfig(type, fileCode)
+
+        // 创建文件对象并验证
+        val file = File(fileName).apply {
+            if (!exists() || extension != "xlsx" || name.startsWith("log")) {
+                throw HandlerException("无效符卡文件: $fileName")
+            }
+        }
+
+        // 计算当前文件MD5
+        val currentMd5 = md5sum(file.path)?.let { hashSetOf(it) }
+
+        // 校验缓存是否需要更新
+        if (!needUpdate && currentMd5 != null && config.md5sum == currentMd5) {
+            return config.allSpells
+        }
+
+        // 重新加载文件数据
+        XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
+            val sheet = wb.getSheetAt(0)
+            val tempSpells = HashMap<Int, HashMap<Boolean, HashMap<String, ArrayList<Spell>>>>()
+            val tempIndices = HashMap<Int, Spell>()
+
+            for (i in 1..sheet.lastRowNum) {
+                val row = sheet.getRow(i)
+                config.spellBuilder(row)?.let { spell ->
+                    tempSpells.getOrPut(spell.star) { hashMapOf() }
+                        .getOrPut(spell.rank != "L") { hashMapOf() }
+                        .getOrPut(spell.game) { arrayListOf() }
+                        .add(spell)
+                    tempIndices[spell.index] = spell
+                }
+            }
+
+            // 更新缓存
+            config.md5sum = currentMd5
+            config.allSpells = tempSpells
+            config.spellsByIndex = tempIndices
+        }
+
+        // 处理更新标记
+        if (needUpdate) updateControlFile(fileCode)
+
+        return config.allSpells
+    }
+
+    private fun parseControlFile(fileCode: Int): Pair<String, Boolean> {
+        val controlFile = File("spellcard_version.txt").takeIf { it.exists() }
+            ?: throw HandlerException("控制文件不存在")
+
+        return controlFile.readLines().asSequence()
+            .map { it.split(",").map { s -> s.trim() } }
+            .find { it.first().toIntOrNull() == fileCode }
+            ?.let {
+                val filename = it[1]
+                val updateFlag = it.getOrNull(2)?.equals("update", true) ?: false
+                filename to updateFlag
+            } ?: throw HandlerException("未找到文件配置项: $fileCode")
+    }
+
+    private fun getConfig(type: Int, fileCode: Int): Pair<Config, MutableMap<Int, Config>> {
+        val spellBuilder = when (type) {
+            NORMAL_GAME -> ::buildNormalSpell
+            BP_GAME -> ::buildBPSpell
+            else -> throw IllegalArgumentException("不支持的比赛类型")
+        }
+
+        val typeCache = cache.getOrPut(type) { mutableMapOf() }
+        return typeCache.getOrPut(fileCode) { Config(spellBuilder) } to typeCache
+    }
+
+    // 每一行：spellcard_version(int), filename(String), (Nullable)update
+    private fun updateControlFile(fileCode: Int) {
+        File("spellcard_version.txt").let { controlFile ->
+            val updatedLines = controlFile.readLines().map { line ->
+                line.split(",").map { it.trim() }.let { parts ->
+                    when {
+                        parts.first().toIntOrNull() == fileCode && parts.size > 2 ->
+                            parts.take(2).joinToString(", ")
+                        else -> line
+                    }
+                }
+            }
+            controlFile.writeText(updatedLines.joinToString("\n"))
+        }
+    }
+
+    // 修改后的缓存结构
+    private val cache = mutableMapOf<Int, MutableMap<Int, Config>>()
 }

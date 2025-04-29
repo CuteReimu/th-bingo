@@ -13,7 +13,7 @@ sealed interface RoomType {
     val canPause: Boolean
 
     @Throws(HandlerException::class)
-    fun randSpells(games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell>
+    fun randSpells(spellCardVersion: Int, games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell>
 
     /**
      * @param banSelect true-ban操作，false-选卡操作

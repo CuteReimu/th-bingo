@@ -17,7 +17,9 @@ object StartGameHandler : RequestHandler {
         var retryCount = 0
         while (true) {
             try {
-                room.spells = room.type.randSpells(room.roomConfig.games, room.roomConfig.ranks, room.roomConfig.difficulty)
+                room.spells = room.type.randSpells(
+                    room.roomConfig.spellCardVersion, room.roomConfig.games,
+                    room.roomConfig.ranks, room.roomConfig.difficulty)
                 break
             } catch (e: HandlerException) {
                 if (++retryCount >= 10 || e.message != "符卡数量不足") {
@@ -33,11 +35,12 @@ object StartGameHandler : RequestHandler {
             val roomType = SpellConfig.NORMAL_GAME
             room.spells!!.forEachIndexed { i, _ ->
                 if (debugSpells[i] != 0) {
-                    SpellConfig.getSpellById(roomType, debugSpells[i])?.also { room.spells!![i] = it }
+                    SpellConfig.getSpellById(
+                        roomType, room.roomConfig.spellCardVersion, debugSpells[i])?.also { room.spells!![i] = it }
                 }
             }
         }
-        SpellLog.logRandSpells(room.spells!!, room.type)
+        // SpellLog.logRandSpells(room.spells!!, room.type)
         room.started = true
         room.startMs = now
         room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
