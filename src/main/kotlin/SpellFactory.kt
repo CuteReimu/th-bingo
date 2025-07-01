@@ -51,6 +51,12 @@ object SpellFactory {
      */
     @Throws(HandlerException::class)
     fun randSpells(spellCardVersion: Int, games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
+        val starArray = randSpellsStarArray(difficulty)
+        return randSpellsWithStar(spellCardVersion, games, ranks, starArray)
+    }
+
+    @Throws(HandlerException::class)
+    fun randSpellsStarArray(difficulty: Difficulty): IntArray {
         val lvCount = difficulty.value
         val rand = ThreadLocalRandom.current().asKotlinRandom()
         val idx = intArrayOf(0, 1, 3, 4)
@@ -71,6 +77,12 @@ object SpellFactory {
                 else -> star123[j++]
             }
         }
+        return stars
+    }
+
+    @Throws(HandlerException::class)
+    fun randSpellsWithStar(spellCardVersion: Int, games: Array<String>, ranks: Array<String>?, stars: IntArray): Array<Spell> {
+        val rand = ThreadLocalRandom.current().asKotlinRandom()
         return SpellConfig.get(SpellConfig.NORMAL_GAME, spellCardVersion, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 
@@ -82,13 +94,19 @@ object SpellFactory {
      */
     @Throws(HandlerException::class)
     fun randSpellsOD(spellCardVersion: Int, games: Array<String>, ranks: Array<String>?): Array<Spell> {
-        // 14=四级替换 15=五级替换
+        val starArray = randSpellsODStarArray()
+        return randSpellsODWithStar(spellCardVersion, games, ranks, starArray)
+    }
+
+    @Throws(HandlerException::class)
+    fun randSpellsODStarArray(): IntArray {
+        // 6=四级替换 7=五级替换
         // (1,4,8,9,3)
         val lvCount = arrayOf(1, 4, 8, 5, 2)
         val rand = ThreadLocalRandom.current().asKotlinRandom()
         val idx = intArrayOf(0, 1, 3, 4)
         val star12367 = IntArray(lvCount[0]) { 1 } + IntArray(lvCount[1]) { 2 } + IntArray(lvCount[2]) { 3 } +
-            IntArray(lvCount[3]) { 14 } + IntArray(lvCount[4]) { 15 }
+            IntArray(lvCount[3]) { 6 } + IntArray(lvCount[4]) { 7 }
         val star45 = arrayOf(4, 4, 4, 4, 5)
         idx.shuffle(rand)
         star45.shuffle(rand)
@@ -105,6 +123,17 @@ object SpellFactory {
                 else -> star12367[j++]
             }
         }
+        return stars
+    }
+
+    @Throws(HandlerException::class)
+    fun randSpellsODWithStar(
+        spellCardVersion: Int,
+        games: Array<String>,
+        ranks: Array<String>?,
+        stars: IntArray
+    ): Array<Spell> {
+        val rand = ThreadLocalRandom.current().asKotlinRandom()
         return SpellConfig.getOD(SpellConfig.NORMAL_GAME, spellCardVersion,
             games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }

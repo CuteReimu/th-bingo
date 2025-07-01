@@ -148,7 +148,7 @@ object SpellConfig {
         }
 
         // 5级卡替换，若5级卡数量不足，将其替换为待替换的4级。
-        val star15Indices = stars.indices.filter { stars[it] == 15 }.toMutableList()
+        val star15Indices = stars.indices.filter { stars[it] == 7 }.toMutableList()
         star15Indices.shuffle(rand) // 替换项洗牌，保证卡不足时分布均匀
         for (i in star15Indices) {
             try {
@@ -171,15 +171,15 @@ object SpellConfig {
                 spell?.let {
                     result[i] = it
                 } ?: run {
-                    stars[i] = 14 // 降级处理
+                    stars[i] = 6 // 降级处理
                 }
             } catch (e: Exception) {
-                stars[i] = 14
+                stars[i] = 6
             }
         }
 
         // 4级卡替换。不足则改为生成3级。
-        val star14Indices = stars.indices.filter { stars[it] == 14 }.toMutableList()
+        val star14Indices = stars.indices.filter { stars[it] == 6 }.toMutableList()
         star14Indices.shuffle(rand)
         for (i in star14Indices) {
             try {

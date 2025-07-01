@@ -35,6 +35,18 @@ class RoomConfig(
     /** 题库版本 */
     @SerialName("spell_version")
     var spellCardVersion: Int,
+    /** 特殊模式：双重盘面 */
+    @SerialName("dual_board")
+    var dualBoard: Int,
+    /** 双重盘面设定 */
+    @SerialName("portal_count")
+    var portalCount: Int,
+    /** 盲盒揭示等级 */
+    @SerialName("blind_reveal_level")
+    var blindRevealLevel: Int,
+    /** 双重盘面差异度 */
+    @SerialName("diff_level")
+    var diffLevel: Int,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
@@ -48,6 +60,10 @@ class RoomConfig(
         cdTime == null || cdTime in 0..1440 || throw HandlerException("选卡cd的数值不正确")
         blindSetting in 1..3 || throw HandlerException("盲盒模式设置不正确")
         spellCardVersion in 1..10 || throw HandlerException("题库版本选择不正确")
+        dualBoard in 0..1 || throw HandlerException("双重模式设置不正确")
+        portalCount in 1..25 || throw HandlerException("传送门数量应在1~25之间")
+        blindRevealLevel in 0..4 || throw HandlerException("盲盒揭示等级应在0~4之间")
+        diffLevel in 0..5 || throw HandlerException("盘面差异度等级应在0~5之间")
     }
 
     operator fun plus(config: RoomConfigNullable): RoomConfig {
@@ -64,6 +80,10 @@ class RoomConfig(
             reservedType = config.reservedType ?: reservedType,
             blindSetting = config.blindSetting ?: blindSetting,
             spellCardVersion = config.spellCardVersion ?: spellCardVersion,
+            dualBoard = config.dualBoard ?: dualBoard,
+            portalCount = config.portalCount ?: portalCount,
+            blindRevealLevel = config.blindRevealLevel ?: blindRevealLevel,
+            diffLevel = config.diffLevel ?: diffLevel,
         )
     }
 }
@@ -100,6 +120,18 @@ class RoomConfigNullable(
     /** 题库版本 */
     @SerialName("spell_version")
     var spellCardVersion: Int? = null,
+    /** 特殊模式：双重盘面 */
+    @SerialName("dual_board")
+    var dualBoard: Int? = null,
+    /** 双重盘面设定 */
+    @SerialName("portal_count")
+    var portalCount: Int? = null,
+    /** 盲盒揭示等级 */
+    @SerialName("blind_reveal_level")
+    var blindRevealLevel: Int? = null,
+    /** 双重盘面差异度 */
+    @SerialName("diff_level")
+    var diffLevel: Int? = null,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
@@ -113,5 +145,9 @@ class RoomConfigNullable(
         cdTime == null || cdTime in 0..1440 || throw HandlerException("选卡cd的数值不正确")
         blindSetting == null || blindSetting in 1..3 || throw HandlerException("盲盒模式设置不正确")
         spellCardVersion == null || spellCardVersion in 1..10 || throw HandlerException("题库版本选择不正确")
+        dualBoard == null || dualBoard in 0..1 || throw HandlerException("双重模式设置不正确")
+        portalCount == null || portalCount in 1..25 || throw HandlerException("传送门数量应在1~25之间")
+        blindRevealLevel == null || blindRevealLevel in 0..4 || throw HandlerException("盲盒揭示等级应在0~4之间")
+        diffLevel == null || diffLevel in 0..5 || throw HandlerException("盘面差异度等级应在0~5之间")
     }
 }

@@ -20,7 +20,12 @@ object RoomTypeBP : RoomType {
             banPick = 1,
         )
         if (room.roomConfig.blindSetting == 1) return
+        if (room.roomConfig.blindSetting > 1) {
+            handleBlindSettings(room)
+        }
+    }
 
+    private fun handleBlindSettings(room: Room) {
         if (room.roomConfig.blindSetting == 2) {
             room.spellStatus = Array(room.spells!!.size) { BOTH_HIDDEN }
             val outerRingIndex = arrayOf(0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24)
@@ -28,24 +33,38 @@ object RoomTypeBP : RoomType {
             val rand = ThreadLocalRandom.current().asKotlinRandom()
             outerRingIndex.shuffle(rand)
             innerRingIndex.shuffle(rand)
-            // 外环 (4, 4, 2, 6)
-            for (i in 0 until 4) {
+            val reveal = Array(5) { IntArray(4) }
+            // 外环单独，外环共有，内环单独，内环共有
+            reveal[0] = intArrayOf(0, 0, 0, 0)
+            reveal[1] = intArrayOf(2, 1, 1, 1)
+            reveal[2] = intArrayOf(3, 2, 1, 1)
+            reveal[3] = intArrayOf(5, 2, 2, 2)
+            reveal[4] = intArrayOf(6, 4, 3, 2)
+            val level = room.roomConfig.blindRevealLevel
+            var index = 0
+            // 外环
+            for (i in 0 until reveal[level][0]) {
                 room.spellStatus!![outerRingIndex[i]] = LEFT_SEE_ONLY
             }
-            for (i in 4 until 8) {
+            index += reveal[level][0]
+            for (i in index until index + reveal[level][0]) {
                 room.spellStatus!![outerRingIndex[i]] = RIGHT_SEE_ONLY
             }
-            for (i in 8 until 10) {
+            index += reveal[level][0]
+            for (i in index until index + reveal[level][1]) {
                 room.spellStatus!![outerRingIndex[i]] = NONE
             }
-            // 内环 (1, 1, 2, 4)
-            for (i in 0 until 1) {
+            // 内环
+            index = 0
+            for (i in 0 until reveal[level][2]) {
                 room.spellStatus!![innerRingIndex[i]] = LEFT_SEE_ONLY
             }
-            for (i in 1 until 2) {
+            index += reveal[level][2]
+            for (i in index until index + reveal[level][2]) {
                 room.spellStatus!![innerRingIndex[i]] = RIGHT_SEE_ONLY
             }
-            for (i in 2 until 4) {
+            index += reveal[level][2]
+            for (i in index until index + reveal[level][3]) {
                 room.spellStatus!![innerRingIndex[i]] = NONE
             }
         } else if (room.roomConfig.blindSetting == 3) {
@@ -58,10 +77,12 @@ object RoomTypeBP : RoomType {
         if (difficulty == 4) {
             return SpellFactory.randSpellsBPOD(spellCardVersion, games, ranks, 3)
         }
-        return SpellFactory.randSpellsBP(spellCardVersion, games, ranks, when (difficulty) {
-            1, 2 -> 10
-            else -> 5
-        })
+        return SpellFactory.randSpellsBP(
+            spellCardVersion, games, ranks, when (difficulty) {
+                1, 2 -> 10
+                else -> 5
+            }
+        )
     }
 
     override fun handleSelectSpell(room: Room, playerIndex: Int, spellIndex: Int) {
@@ -223,9 +244,13 @@ object RoomTypeBP : RoomType {
                 }
             }
         }
-        room.push("push_bp_game_next_round", JsonObject(mapOf(
-            "whose_turn" to JsonPrimitive(room.bpData!!.whoseTurn),
-            "ban_pick" to JsonPrimitive(room.bpData!!.banPick),
-        )))
+        room.push(
+            "push_bp_game_next_round", JsonObject(
+                mapOf(
+                    "whose_turn" to JsonPrimitive(room.bpData!!.whoseTurn),
+                    "ban_pick" to JsonPrimitive(room.bpData!!.banPick),
+                )
+            )
+        )
     }
 }

@@ -49,6 +49,8 @@ object GetAllSpellsHandler : RequestHandler {
             leftCdTime = leftCdTime,
             bpData = room.bpData,
             linkData = room.linkData,
+            normalData = room.normalData,
+            spells2 = room.spells2
         ).encode()
     }
 }
@@ -74,4 +76,9 @@ class AllSpellsResponse(
     /** link赛的相关数据 */
     @SerialName("link_data")
     val linkData: LinkData?,
+    /** 标准赛的相关数据 */
+    @SerialName("normal_data")
+    val normalData: NormalData?,
+    /** 25张符卡 (B Side) */
+    val spells2: Array<Spell>?,
 )
