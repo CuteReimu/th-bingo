@@ -13,6 +13,7 @@ import java.io.File
 import java.io.InputStreamReader
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
 import kotlin.random.Random
 
 object SpellConfig {
@@ -21,6 +22,35 @@ object SpellConfig {
 
     /** BP赛的配置 */
     const val BP_GAME = 2
+
+    private var rollSpellLeftCache = HashMap<Boolean, HashMap<Int, LinkedList<Spell>>>()
+
+    fun getSpellLeftCache(): HashMap<Boolean, HashMap<Int, LinkedList<Spell>>> {
+        return rollSpellLeftCache
+    }
+
+    private fun constructRollCache(map: HashMap<Int, HashMap<Boolean, HashMap<String, LinkedList<Spell>>>>) {
+        // 4. 存储抽取结束后剩余的符卡 (新增逻辑)
+        val remainingSpellsTemp = HashMap<Boolean, HashMap<Int, LinkedList<Spell>>>()
+
+        // 遍历在抽取过程中被修改的 map 变量
+        for ((star, isExMap) in map) {
+            for ((isEx, gameMap) in isExMap) {
+                val spellsForStarAndEx = LinkedList<Spell>()
+                // 将该 isEx 和 star 下所有作品中剩余的符卡收集起来
+                for ((game, spellList) in gameMap) {
+                    spellsForStarAndEx.addAll(spellList)
+                }
+                // 如果有剩余符卡，则按 isEx -> star 的结构存储
+                if (spellsForStarAndEx.isNotEmpty()) {
+                    val starMap = remainingSpellsTemp.getOrPut(isEx) { HashMap() }
+                    starMap[star] = spellsForStarAndEx
+                }
+            }
+        }
+        // 将整理好的剩余符卡赋值给 SpellConfig 的成员变量
+        rollSpellLeftCache = remainingSpellsTemp
+    }
 
     /**
      * 随符卡
@@ -92,6 +122,7 @@ object SpellConfig {
                 break
             }
         }
+        constructRollCache(map)
         return result
     }
 
@@ -253,6 +284,7 @@ object SpellConfig {
                 break
             }
         }
+        constructRollCache(map)
         return result.filterNotNull().toTypedArray()
     }
 
@@ -383,6 +415,7 @@ object SpellConfig {
                 break
             }
         }
+        constructRollCache(map)
         return result.filterNotNull().toTypedArray()
     }
 
@@ -546,6 +579,7 @@ object SpellConfig {
                     when {
                         parts.first().toIntOrNull() == fileCode && parts.size > 2 ->
                             parts.take(2).joinToString(", ")
+
                         else -> line
                     }
                 }

@@ -5,6 +5,7 @@ import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
 import kotlinx.serialization.json.*
+import message.RefreshSpellHandler
 import org.apache.logging.log4j.kotlin.logger
 import org.tfcc.bingo.message.*
 import java.util.concurrent.ExecutorService
@@ -74,6 +75,7 @@ private val handlers = mapOf(
     "bp_game_next_round" to BpGameNextRoundHandler,
     "link_time" to LinkTimeHandler,
     "normal_dual_board_change" to NormalDualBoardChangeHandler,
+    "refresh_one_spell" to RefreshSpellHandler,
 )
 
 inline fun <reified T> JsonElement.decode(): T = Dispatcher.json.decodeFromJsonElement(this)

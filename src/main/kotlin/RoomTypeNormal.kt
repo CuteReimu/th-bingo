@@ -1,5 +1,6 @@
 package org.tfcc.bingo
 
+import RefreshSpellManager
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import org.tfcc.bingo.SpellStatus.*
@@ -41,9 +42,9 @@ object RoomTypeNormal : RoomType {
             // 外环单独，外环共有，内环单独，内环共有
             reveal[0] = intArrayOf(0, 0, 0, 0)
             reveal[1] = intArrayOf(2, 1, 1, 0)
-            reveal[2] = intArrayOf(3, 1, 1, 1)
-            reveal[3] = intArrayOf(4, 2, 2, 1)
-            reveal[4] = intArrayOf(5, 4, 2, 2)
+            reveal[2] = intArrayOf(3, 2, 2, 1)
+            reveal[3] = intArrayOf(4, 4, 2, 2)
+            reveal[4] = intArrayOf(5, 4, 3, 2)
             val level = room.roomConfig.blindRevealLevel
             var index = 0
             // 外环
@@ -128,6 +129,8 @@ object RoomTypeNormal : RoomType {
         val spell2RankArray = SimilarBoardGenerator.findMatrixB(starArray, (targetDiff * room.roomConfig.diffLevel + 2) / 5)
         // reassign room.spells
         rollSpellCard(room, spell2RankArray)
+        room.refreshManager2 = RefreshSpellManager()
+        room.refreshManager2!!.init(SpellConfig.getSpellLeftCache())
 
         // 转换格设定
         val outerRingIndex = arrayOf(0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24)

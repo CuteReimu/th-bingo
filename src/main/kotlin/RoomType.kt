@@ -1,5 +1,6 @@
 package org.tfcc.bingo
 
+import RefreshSpellManager
 import org.apache.logging.log4j.kotlin.logger
 import org.tfcc.bingo.message.HandlerException
 
@@ -55,6 +56,8 @@ sealed interface RoomType {
         room.spellStatusInPlayerClient = Array(room.players.size) { room.spellStatus!!.map { it.value }.toIntArray() }
         room.locked = true
         room.banPick = null
+        room.refreshManager1 = RefreshSpellManager()
+        room.refreshManager1!!.init(SpellConfig.getSpellLeftCache())
     }
 
     fun resetData(room: Room) {

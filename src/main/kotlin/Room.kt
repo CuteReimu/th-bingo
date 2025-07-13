@@ -1,6 +1,9 @@
 package org.tfcc.bingo
 
+import RefreshSpellManager
 import org.tfcc.bingo.message.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Room(
     val roomId: String,
@@ -67,4 +70,7 @@ class Room(
 
     fun isHost(player: Player) = if (host != null) host === player
     else player in players
+
+    var refreshManager1: RefreshSpellManager? = null
+    var refreshManager2: RefreshSpellManager? = null
 }
