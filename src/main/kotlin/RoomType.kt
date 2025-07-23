@@ -15,9 +15,6 @@ sealed interface RoomType {
     @Throws(HandlerException::class)
     fun randSpells(games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell>
 
-    /**
-     * @param banSelect true-ban操作，false-选卡操作
-     */
     @Throws(HandlerException::class)
     fun handleSelectSpell(room: Room, playerIndex: Int, spellIndex: Int)
 
