@@ -63,6 +63,8 @@ action名：`heart`
 }
 ```
 
+---
+
 **登录**
 
 action名：`login`
@@ -83,6 +85,8 @@ action名：`login`
   "rid": "test01" // 房间号，如果为null则表示没有房间
 }
 ```
+
+---
 
 **推送被顶号**
 
@@ -127,6 +131,8 @@ action名：`create_room`
 }
 ```
 
+---
+
 **获取房间配置**
 
 action名：`get_room_config`
@@ -141,6 +147,8 @@ action名：`get_room_config`
 
 返回参数：和`create_room`的请求参数中的`room_config`一样
 
+---
+
 **修改房间配置**
 
 action名：`update_room_config`
@@ -150,6 +158,8 @@ action名：`update_room_config`
 **请求参数中，`rid`字段必须有，其它每个字段都允许是空值。如果为空，意思是这个字段不修改**
 
 返回参数：`null`
+
+---
 
 **推送房间配置更新**
 
@@ -190,6 +200,8 @@ action名：`join_room`
 }
 ```
 
+---
+
 **获取房间**
 
 action名：`get_room`
@@ -197,6 +209,8 @@ action名：`get_room`
 请求参数：`null`
 
 返回参数：和`join_room`的返回参数结构一样
+
+---
 
 **离开房间**
 
@@ -206,6 +220,8 @@ action名：`leave_room`
 
 返回参数：`null`
 
+---
+
 **观战（站起）**
 
 action名：`stand_up`
@@ -214,6 +230,8 @@ action名：`stand_up`
 
 返回参数：`null`
 
+---
+
 **作为选手（坐下）**
 
 action名：`sit_down`
@@ -221,6 +239,8 @@ action名：`sit_down`
 请求参数：`null`
 
 返回参数：`null`
+
+---
 
 **推送加入房间**
 
@@ -235,6 +255,8 @@ push_action名：`push_join_room`
 }
 ```
 
+---
+
 **推送离开房间**
 
 push_action名：`push_leave_room`
@@ -247,6 +269,8 @@ push_action名：`push_leave_room`
 }
 ```
 
+---
+
 **推送观战（站起）**
 
 push_action名：`push_stand_up`
@@ -258,6 +282,8 @@ push_action名：`push_stand_up`
   "name": "xxx" // 站起的玩家名
 }
 ```
+
+---
 
 **推送作为选手（坐下）**
 
@@ -288,6 +314,8 @@ action名：`set_phase`
 
 返回参数：`null`
 
+---
+
 action名：`get_phase`
 
 请求参数：`null`
@@ -311,11 +339,15 @@ action名：`start_game`
 
 返回参数：`null`
 
+---
+
 **推送游戏开始**
 
 push_action名：`push_start_game`
 
 参数：和`create_room`的请求参数中的`room_config`一样，目的是同步一下房间配置，以防之前同步失败
+
+---
 
 **请求结束游戏**
 
@@ -331,6 +363,8 @@ action名：`stop_game`
 
 返回参数：`null`
 
+---
+
 **推送游戏结束**
 
 push_action名：`push_stop_game`
@@ -343,6 +377,8 @@ push_action名：`push_stop_game`
 }
 ```
 
+---
+
 **重置房间**
 
 action名：`reset_room`
@@ -351,11 +387,15 @@ action名：`reset_room`
 
 返回参数：`null`
 
+---
+
 **推送重置房间**
 
 push_action名：`push_reset_room`
 
 参数：`null`
+
+---
 
 **警告玩家**
 
@@ -371,11 +411,15 @@ action名：`gm_warn_player`
 
 返回参数：`null`
 
+---
+
 **推送警告玩家**
 
 push_action名：`push_gm_warn_player`
 
 参数：`null`
+
+---
 
 **修改换卡次数**
 
@@ -392,6 +436,8 @@ action名：`update_change_card_count`
 
 返回参数：`null`
 
+---
+
 **推送修改换卡次数**
 
 push_action名：`push_update_change_card_count`
@@ -404,6 +450,8 @@ push_action名：`push_update_change_card_count`
   "count": 2 // 新次数
 }
 ```
+
+---
 
 **获取所有符卡**
 
@@ -447,6 +495,8 @@ action名：`get_all_spells`
 }
 ```
 
+---
+
 **房主暂停**
 
 action名：`pause`
@@ -461,6 +511,8 @@ action名：`pause`
 
 返回参数：`null`
 
+---
+
 **推送暂停**
 
 push_action名：`push_pause`
@@ -472,6 +524,8 @@ push_action名：`push_pause`
   "pause": true // true为暂停，false为取消暂停
 }
 ```
+
+---
 
 **设置调试用符卡**
 
@@ -487,6 +541,8 @@ action名：`set_debug_spells`
 
 返回：`null`
 
+---
+
 **选卡**
 
 action名：`select_spell`
@@ -500,6 +556,8 @@ action名：`select_spell`
 ```
 
 返回参数：`null`
+
+---
 
 **收卡**
 
@@ -520,6 +578,8 @@ action名：`finish_spell`
 
 返回参数：`null`（注意即使是发起这条协议的玩家，也还会额外收到一条下文中的 `push_update_spell_status` 协议）
 
+---
+
 **房主修改卡（或者控制机器人修改卡）**
 
 action名：`update_spell_status`
@@ -534,6 +594,8 @@ action名：`update_spell_status`
 ```
 
 参数：`null`
+
+---
 
 **推送符卡状态**
 
@@ -569,6 +631,8 @@ action名：`bp_game_ban_pick`
 
 返回参数：`null`
 
+---
+
 **房主操控BP赛进入下一回合**
 
 action名：`bp_game_next_round`
@@ -576,6 +640,8 @@ action名：`bp_game_next_round`
 请求参数：`null`
 
 返回参数：`null`
+
+---
 
 **推送BP赛进入下一回合**
 
@@ -610,6 +676,8 @@ action名：`cancel_select_spell`
 
 返回参数：`null`
 
+---
+
 **Link赛计时**
 
 action名：`link_time`
@@ -624,6 +692,8 @@ action名：`link_time`
 ```
 
 返回参数：`null`
+
+---
 
 **推送Link赛信息**
 
@@ -656,6 +726,8 @@ action名：`start_ban_pick`
 
 返回参数：`null`
 
+---
+
 **选手进行BP**
 
 action名：`ban_pick`
@@ -669,6 +741,8 @@ action名：`ban_pick`
 ```
 
 返回参数：`null`
+
+---
 
 **推送BP状态**
 
