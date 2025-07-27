@@ -27,6 +27,14 @@ object RoomTypeNormal : RoomType {
         if (room.roomConfig.blindSetting > 1) {
             handleBlindSettings(room)
         }
+
+        if (room.roomConfig.useAI) {
+            if (room.roomConfig.blindSetting > 1 || room.roomConfig.dualBoard > 0) {
+                throw HandlerException("AI陪练模式不支持盲盒或双重盘面")
+            }
+            room.aiAgent = AIAgent(room)
+            room.aiAgent?.start()
+        }
     }
 
     private fun handleBlindSettings(room: Room) {
@@ -244,6 +252,10 @@ object RoomTypeNormal : RoomType {
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
 
+        if (room.roomConfig.useAI) {
+            if (playerIndex == 0) room.aiAgent?.onOpponentSelectedCell(spellIndex)
+        }
+
         return
         /*
         // 无导播模式不记录
@@ -313,6 +325,10 @@ object RoomTypeNormal : RoomType {
                 room.normalData!!.whichBoardB = 0
         }
         // Finish Spell 会调用pushSpell推送盘面更改结果，视觉改变交由前端处理
+
+        if (room.roomConfig.useAI) {
+            if (playerIndex == 0) room.aiAgent?.onOpponentFinishedCell(spellIndex)
+        }
 
         return
         /*

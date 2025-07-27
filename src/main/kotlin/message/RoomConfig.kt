@@ -47,6 +47,21 @@ class RoomConfig(
     /** 双重盘面差异度 */
     @SerialName("diff_level")
     var diffLevel: Int,
+    /** 是否启用AI陪练 */
+    @SerialName("use_ai")
+    val useAI: Boolean,
+    /** AI策略难度 */
+    @SerialName("ai_strategy_level")
+    val aiStrategyLevel: Int, // 1:初级, 2:中级, 3:高级
+    /** AI决策风格 */
+    @SerialName("ai_style")
+    val aiStyle: Int, // 0:默认, 1:进攻型, 2:防守型
+    /** AI底力 */
+    @SerialName("ai_base_power")
+    val aiBasePower: Int,
+    /** AI熟练度 */
+    @SerialName("ai_experience")
+    val aiExperience: Int,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
@@ -64,6 +79,10 @@ class RoomConfig(
         portalCount in 1..25 || throw HandlerException("传送门数量应在1~25之间")
         blindRevealLevel in 0..4 || throw HandlerException("盲盒揭示等级应在0~4之间")
         diffLevel in 0..5 || throw HandlerException("盘面差异度等级应在0~5之间")
+        aiStrategyLevel in 1..3 || throw HandlerException("AI策略难度设置范围应为1~3")
+        aiStyle in 0..2 || throw HandlerException("AI决策风格设置范围应为0~2")
+        aiBasePower in 1..10 || throw HandlerException("AI底力设置范围应为1~10")
+        aiExperience in 1..10 || throw HandlerException("AI熟练度设置范围应为1~10")
     }
 
     operator fun plus(config: RoomConfigNullable): RoomConfig {
@@ -84,6 +103,11 @@ class RoomConfig(
             portalCount = config.portalCount ?: portalCount,
             blindRevealLevel = config.blindRevealLevel ?: blindRevealLevel,
             diffLevel = config.diffLevel ?: diffLevel,
+            useAI = config.useAI ?: useAI,
+            aiStrategyLevel = config.aiStrategyLevel ?: aiStrategyLevel,
+            aiStyle = config.aiStyle ?: aiStyle,
+            aiBasePower = config.aiBasePower ?: aiBasePower,
+            aiExperience = config.aiExperience ?: aiExperience,
         )
     }
 }
@@ -132,6 +156,21 @@ class RoomConfigNullable(
     /** 双重盘面差异度 */
     @SerialName("diff_level")
     var diffLevel: Int? = null,
+    /** 是否启用AI陪练 */
+    @SerialName("use_ai")
+    val useAI: Boolean? = null, // 0/1
+    /** AI策略难度 */
+    @SerialName("ai_strategy_level")
+    val aiStrategyLevel: Int? = null, // 1:初级, 2:中级, 3:高级
+    /** AI决策风格 */
+    @SerialName("ai_style")
+    val aiStyle: Int? = null, // 0:默认, 1:进攻型, 2:防守型
+    /** AI底力 */
+    @SerialName("ai_base_power")
+    val aiBasePower: Int? = null,
+    /** AI熟练度 */
+    @SerialName("ai_experience")
+    val aiExperience: Int? = null,
 ) {
     @Throws(HandlerException::class)
     fun validate() {
@@ -149,5 +188,9 @@ class RoomConfigNullable(
         portalCount == null || portalCount in 1..25 || throw HandlerException("传送门数量应在1~25之间")
         blindRevealLevel == null || blindRevealLevel in 0..4 || throw HandlerException("盲盒揭示等级应在0~4之间")
         diffLevel == null || diffLevel in 0..5 || throw HandlerException("盘面差异度等级应在0~5之间")
+        aiStrategyLevel == null || aiStrategyLevel in 1..3 || throw HandlerException("AI策略难度设置范围应为1~3")
+        aiStyle == null || aiStyle in 0..2 || throw HandlerException("AI决策风格设置范围应为0~2")
+        aiBasePower == null || aiBasePower in 1..10 || throw HandlerException("AI底力设置范围应为1~10")
+        aiExperience == null || aiExperience in 1..10 || throw HandlerException("AI熟练度设置范围应为1~10")
     }
 }

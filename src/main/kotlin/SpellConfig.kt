@@ -439,11 +439,11 @@ object SpellConfig {
             desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
             id = row.getCell(8)?.numericCellValue?.toInt() ?: 0,
             fastest = row.getCell(9).getFloatValue(),
-            one = row.getCell(10).getFloatValue(),
-            two = row.getCell(11).getFloatValue(),
-            three = row.getCell(12).getFloatValue(),
-            final = row.getCell(13).getFloatValue(),
-            bonusRate = row.getCell(14).getFloatValue(),
+            missTime = row.getCell(10).getFloatValue(),
+            powerWeight = row.getCell(11).getFloatValue(),
+            difficulty = row.getCell(12).getFloatValue(),
+            changeRate = row.getCell(13).getFloatValue(),
+            maxCapRate = row.getCell(14).getFloatValue(),
         )
     }
 
@@ -458,11 +458,11 @@ object SpellConfig {
             desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
             id = row.getCell(8).numericCellValue.toInt(),
             fastest = row.getCell(9).getFloatValue(),
-            one = row.getCell(10).getFloatValue(),
-            two = row.getCell(11).getFloatValue(),
-            three = row.getCell(12).getFloatValue(),
-            final = row.getCell(13).getFloatValue(),
-            bonusRate = row.getCell(14).getFloatValue(),
+            missTime = row.getCell(10).getFloatValue(),
+            powerWeight = row.getCell(11).getFloatValue(),
+            difficulty = row.getCell(12).getFloatValue(),
+            changeRate = row.getCell(13).getFloatValue(),
+            maxCapRate = row.getCell(14).getFloatValue(),
         )
     }
 

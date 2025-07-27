@@ -26,6 +26,7 @@ object PauseHandler : RequestHandler {
         if (pause) {
             if (room.pauseBeginMs == 0L)
                 room.pauseBeginMs = now
+            room.aiAgent?.onGamePaused()
         } else {
             if (room.pauseBeginMs != 0L) {
                 val delta = now - room.pauseBeginMs
@@ -36,6 +37,7 @@ object PauseHandler : RequestHandler {
                 for (i in room.lastGetTime.indices)
                     room.lastGetTime[i] += delta
             }
+            room.aiAgent?.onGameResumed()
         }
         room.push("push_pause", JsonObject(mapOf("pause" to JsonPrimitive(pause))))
         return null

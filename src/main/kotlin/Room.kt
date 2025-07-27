@@ -73,4 +73,6 @@ class Room(
 
     var refreshManager1: RefreshSpellManager? = null
     var refreshManager2: RefreshSpellManager? = null
+
+    var aiAgent: AIAgent? = null
 }

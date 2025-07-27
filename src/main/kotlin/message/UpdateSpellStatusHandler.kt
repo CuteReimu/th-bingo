@@ -29,6 +29,7 @@ object UpdateSpellStatusHandler : RequestHandler {
         cardStateTransform(room, player, idx, spellStatus)
         room.type.updateSpellStatusPostProcesser(room, player, idx, formerStatus, spellStatus)
         room.type.pushSpells(room, idx, player.name)
+        room.aiAgent?.onCellStatusChanged(idx, formerStatus, spellStatus)
         return null
     }
 
