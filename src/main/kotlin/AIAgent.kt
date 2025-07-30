@@ -349,36 +349,36 @@ class AIAgent(private val room: Room) {
         gridModels = room.spells?.mapIndexed { boardIndex, spell ->
             val model = GridModel(boardIndex, spell.fastest, 0f)
             // 基于等级计算AI的底力与熟练度
-            val aiPower = room.roomConfig.aiBasePower * 1.6f + 2f
-            val aiExp = room.roomConfig.aiExperience * 1.6f + 2f
+            val aiPower = room.roomConfig.aiBasePower + 5f
+            val aiExp = room.roomConfig.aiExperience + 5f
             // 每张卡的底力与熟练度权重。二者和一定为1
             val spellPowerWeight = min(.95f, max(.05f, spell.powerWeight))
             val spellExpWeight = 1f - spellPowerWeight
             // 时间太长的卡认为时间波动忽略不计。只加上开游戏的时间
             val randFloat = Random.nextFloat()
-            if (spell.fastest > 39.9f) {
-                model.calculatedAI = spell.fastest + 2.5f
+            if (spell.fastest > 60.0f) {
+                model.calculatedAI = spell.fastest + 3.5f
             } else {
                 // 否则，基于熟练度给一个较小的随机时间惩罚，代表AI不够熟练引起的收卡慢问题（如不熟悉打法）。
-                model.calculatedAI = spell.fastest + 2.5f + randFloat * max(0f, min(6f - aiExp / 3f, 2f + spell.fastest * .1f))
+                model.calculatedAI = spell.fastest + 3.5f +
+                    randFloat * max(0f, min(8f - aiExp / 5f, 2f + spell.fastest * .15f))
             }
             // 计算基础收率
             var baseCapRate = spell.maxCapRate
             // 底力不足会严重影响收卡效率，所以给一个额外的惩罚。
             baseCapRate *= exp(-0.2f * max(spellPowerWeight * spell.difficulty - aiPower, 0f))
-            // 熟练度太低也会影响收卡效率。影响较小。达到16不再影响。
-            baseCapRate *= .75f + min(.25f, aiExp / 64f)
+            // 熟练度太低也会影响收卡效率。影响较小。达到16不再影响。同时所有卡收率上限降低10%以模拟真实情况。
+            baseCapRate *= .8f + min(.1f, aiExp / 160f)
             // 然后根据能力值计算出收率
-            // 表格中整体给的变化率有点高，降一下(*.85)
             val finalRate =
-                baseCapRate / (1f + exp(
-                    -.85f * spell.changeRate *
-                        (aiPower * spellPowerWeight + aiExp * spellExpWeight - spell.difficulty)
+                baseCapRate / (1f + exp(-1f * spell.changeRate *
+                    (aiPower * spellPowerWeight + aiExp * spellExpWeight - spell.difficulty)
                 ))
             // 给收率一个界限
             model.calculatedPI = min(.99f, max(finalRate, .01f))
             // 计算失败的耗时。若成功率低说明撞的很可能靠前一点，稍微缩短平均失败时间。重开游戏另加1秒。
-            model.penalty = 1f + spell.missTime * min(1f, .9f + finalRate * .2f)
+            model.penalty = 1f + spell.missTime *
+                min(min(model.calculatedAI / model.calculatedPI, .9f + finalRate * .2f), 1f)
 
             // 期望时间=A+F*(1-P)/P
             model.expectedTime = model.calculatedAI + model.penalty * (1f - model.calculatedPI) / model.calculatedPI
@@ -561,7 +561,6 @@ class AIAgent(private val room: Room) {
         val directTimeValue = (baselineTime - grid.expectedTime).toDouble()
 
         // 2. 战略时间价值
-        val riskFactor = calculateRiskFactor(boardState)
         val positionalTimeValue = getPositionalTimeValue(cellIndex, baselineTime)
 
         val defenseWeight = if (useOpponentModel) {
@@ -581,7 +580,7 @@ class AIAgent(private val room: Room) {
         // 3. 应用游戏阶段修正
         val gamePhaseModifier = calculateGamePhaseModifier(boardState)
 
-        val strategicTimeValue = (offensiveLeverage + defensiveLeverage) * riskFactor + positionalTimeValue
+        val strategicTimeValue = offensiveLeverage + defensiveLeverage + positionalTimeValue
 
         return directTimeValue + (strategicTimeValue * gamePhaseModifier)
     }
@@ -647,8 +646,8 @@ class AIAgent(private val room: Room) {
         // 防止个别极端格带来偏向性的引导
         if (timeLeverage > 1.5 * baselineTime) timeLeverage = 1.5 * baselineTime
 
-        // 折现系数：2连0.5， 3连0.75， 4连1.0。显然2连不能称为有效的陷阱，而4连就是了
-        timeLeverage = timeLeverage * myPiecesCount / 4.0
+        // 折现系数：2连0.33， 3连0.67， 4连1.0。显然2连不能称为有效的陷阱，而4连就是了
+        timeLeverage = timeLeverage * (myPiecesCount - 1) / 3
 
         // 5. 全局反向思维：检查这个陷阱是否顺应对手的发展。
         if (timeLeverage > 0 && useOpponentModel) {
@@ -759,9 +758,9 @@ class AIAgent(private val room: Room) {
 
         // AI最高接受多难的连线？
         var allowTimeBudget = when (style) {
-            1 -> 4.0
+            1 -> 3.0
             2 -> 1.0
-            else -> 2.0
+            else -> 1.5
         }
         // 劣势状态下，AI对连线的接受度稍微增加
         if (rhythmAdvantage < 0) {
@@ -822,7 +821,7 @@ class AIAgent(private val room: Room) {
             return when (style) {
                 1 -> -100.0 // 不堵了开摆
                 2 -> 20.0 // 先看看其它有没有好格子
-                else -> 10.0
+                else -> 8.0
             }
         }
 
@@ -926,13 +925,6 @@ class AIAgent(private val room: Room) {
         .map { it.expectedTime.toDouble() }
         .average().toFloat().takeIf { !it.isNaN() } ?: 20.0f
 
-    /** 根据比分差距计算风险因子。 */
-    private fun calculateRiskFactor(boardState: Array<PlayerState>): Double {
-        val aiScore = boardState.count { it == PlayerState.AI }
-        val humanScore = boardState.count { it == PlayerState.HUMAN }
-        return max(0.5, 1.0 - (aiScore - humanScore) * 0.1)
-    }
-
     /** 根据AI等级获取“困难格”的定义乘数。 */
     private fun getDifficultyMultiplier(): Float = when (strategyLevel) {
         1 -> 2.0f
@@ -943,8 +935,8 @@ class AIAgent(private val room: Room) {
     /** 获取一个格子的初始位置价值（以时间为单位）。 */
     private fun getPositionalTimeValue(index: Int, baselineTime: Float): Double {
         val multiplier = when (index) {
-            12 -> 0.3
-            6, 8, 16, 18, 0, 4, 20, 24 -> 0.18
+            12 -> 0.25
+            6, 8, 16, 18, 0, 4, 20, 24 -> 0.12
             else -> 0.0
         }
         return baselineTime * multiplier
@@ -984,8 +976,10 @@ class AIAgent(private val room: Room) {
     private fun calculateGamePhaseModifier(boardState: Array<PlayerState>): Double {
         val totalPieces = boardState.count { it != PlayerState.EMPTY }
         return when {
-            totalPieces <= 5 -> 0.4
-            else -> 1.0
+            totalPieces <= 11 -> totalPieces * .08
+            totalPieces == 12 -> 0.9
+            totalPieces <= 24 -> 1.75 - totalPieces * .07
+            else -> 0.0
         }
     }
     // </editor-fold>
