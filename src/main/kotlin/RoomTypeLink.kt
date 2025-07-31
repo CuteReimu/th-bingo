@@ -26,9 +26,9 @@ object RoomTypeLink : RoomType {
     }
 
     @Throws(HandlerException::class)
-    override fun randSpells(games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell> {
+    override fun randSpells(spellCardVersion: Int, games: Array<String>, ranks: Array<String>, difficulty: Int?): Array<Spell> {
         return SpellFactory.randSpellsLink(
-            games, ranks, when (difficulty) {
+            spellCardVersion, games, ranks, when (difficulty) {
                 1 -> Difficulty.E
                 2 -> Difficulty.N
                 3 -> Difficulty.L
@@ -85,9 +85,11 @@ object RoomTypeLink : RoomType {
         }
 
         val playerName = room.players[playerIndex]!!.name
+        /*
         if (room.host != null && playerName != Store.ROBOT_NAME) {
             SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, gameType = SpellLog.GameType.LINK)
         }
+         */
     }
 
     override fun handleFinishSpell(room: Room, isHost: Boolean, playerIndex: Int, spellIndex: Int, success: Boolean) {
@@ -110,10 +112,12 @@ object RoomTypeLink : RoomType {
             room.spellStatus!![spellIndex] = if (st == LEFT_GET) BOTH_GET else status
         }
 
+        /*
         val playerName = room.players[playerIndex]!!.name
         if (room.host != null && playerName != Store.ROBOT_NAME) {
             SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, gameType = SpellLog.GameType.LINK)
         }
+         */
     }
 
     override fun pushSpells(room: Room, spellIndex: Int, causer: String) {

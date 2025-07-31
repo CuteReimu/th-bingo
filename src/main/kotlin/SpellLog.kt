@@ -19,7 +19,7 @@ object SpellLog {
     private val timeLogs = HashMap<String, SpellTimeStamp>()
 
     init {
-        readFile()
+        // readFile()
     }
 
     fun logRandSpells(cards: Array<Spell>, roomType: RoomType) {
@@ -52,10 +52,10 @@ object SpellLog {
     }
 
     /** 一场比赛结束时存储，此时没收掉的卡就无视 */
-    fun saveFile() {
+    fun saveFile(fileName: Int) {
         try {
             timeLogs.clear()
-            val file = File("log.xlsx")
+            val file = File("log_$fileName.xlsx")
             if (!file.exists()) file.createNewFile()
             val os = ByteArrayOutputStream()
             XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ_WRITE)).use { wb ->

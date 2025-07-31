@@ -18,6 +18,7 @@
             <AppenderRef ref="RollingFileAppender"/>
             <AppenderRef ref="ConsoleAppender"/>
         </Root>
+        <Logger name="org.tfcc.bingo.AIAgent" level="OFF" additivity="false" />
     </Loggers>
     <Properties>
         <Property name="file.encoding">UTF-8</Property>

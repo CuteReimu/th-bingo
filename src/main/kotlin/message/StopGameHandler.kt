@@ -31,8 +31,11 @@ object StopGameHandler : RequestHandler {
         room.pauseEndMs = 0
         room.bpData = null
         room.linkData = null
+        room.normalData = null
+        room.aiAgent?.stop()
+        room.aiAgent = null
         room.push("push_stop_game", JsonObject(mapOf("winner" to JsonPrimitive(winner))))
-        SpellLog.saveFile()
+        // SpellLog.saveFile(room.roomConfig.spellCardVersion)
         return null
     }
 }

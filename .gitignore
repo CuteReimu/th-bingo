@@ -3,6 +3,10 @@ application.properties
 /cache/
 *.xlsx
 /.gradle/
+/.kotlin/
+/log/
+
+spellcard_version.txt
 
 # Compiled class file
 /build/

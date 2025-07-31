@@ -1,9 +1,9 @@
 package org.tfcc.bingo
 
-import org.tfcc.bingo.message.BpData
-import org.tfcc.bingo.message.HandlerException
-import org.tfcc.bingo.message.LinkData
-import org.tfcc.bingo.message.RoomConfig
+import RefreshSpellManager
+import org.tfcc.bingo.message.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class Room(
     val roomId: String,
@@ -13,6 +13,7 @@ class Room(
     val players = arrayOf<Player?>(null, null)
     var started = false
     var spells: Array<Spell>? = null
+    var spells2: Array<Spell>? = null
     var startMs: Long = 0
 
     /** 每个格子的状态 */
@@ -46,6 +47,7 @@ class Room(
     var lastWinner: Int = 0
     var bpData: BpData? = null
     var linkData: LinkData? = null
+    var normalData: NormalData? = null
 
     /** 纯客户端用，服务器只记录 */
     var phase: Int = 0
@@ -68,4 +70,9 @@ class Room(
 
     fun isHost(player: Player) = if (host != null) host === player
     else player in players
+
+    var refreshManager1: RefreshSpellManager? = null
+    var refreshManager2: RefreshSpellManager? = null
+
+    var aiAgent: AIAgent? = null
 }
