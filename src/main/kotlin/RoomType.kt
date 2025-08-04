@@ -30,6 +30,6 @@ sealed interface RoomType {
      * @param playerIndex 0:左侧玩家，1:右侧玩家，-1:不是玩家
      */
     fun getAllSpellStatus(room: Room, playerIndex: Int): List<Int> {
-        return room.spellStatus!!.map { it.value }
+        return room.spellStatus!!.toList()
     }
 }

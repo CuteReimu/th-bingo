@@ -1,6 +1,7 @@
 package org.tfcc.bingo
 
 import org.tfcc.bingo.message.BpData
+import org.tfcc.bingo.message.DualPageData
 import org.tfcc.bingo.message.HandlerException
 import org.tfcc.bingo.message.LinkData
 import org.tfcc.bingo.message.RoomConfig
@@ -16,7 +17,7 @@ class Room(
     var startMs: Long = 0
 
     /** 每个格子的状态 */
-    var spellStatus: Array<SpellStatus>? = null
+    var spellStatus: IntArray? = null
 
     /**
      * 双方选手客户端目前显示的符卡状态（业务逻辑不要乱改这个字段）
@@ -46,6 +47,7 @@ class Room(
     var lastWinner: Int = 0
     var bpData: BpData? = null
     var linkData: LinkData? = null
+    var dualPageData: DualPageData? = null
 
     /** 纯客户端用，服务器只记录 */
     var phase: Int = 0
@@ -63,6 +65,7 @@ class Room(
             1 -> RoomTypeNormal
             2 -> RoomTypeBP
             3 -> RoomTypeLink
+            4 -> RoomTypeDualPage
             else -> throw HandlerException("不支持的游戏类型")
         }
 

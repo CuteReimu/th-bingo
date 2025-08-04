@@ -3,7 +3,6 @@ package org.tfcc.bingo.message
 import io.netty.channel.ChannelHandlerContext
 import kotlinx.serialization.json.*
 import org.tfcc.bingo.*
-import org.tfcc.bingo.SpellStatus.*
 
 object CancelSelectSpellHandler : RequestHandler {
     @Throws(HandlerException::class)
@@ -15,6 +14,7 @@ object CancelSelectSpellHandler : RequestHandler {
         room.started || throw HandlerException("游戏还没开始")
         val playerIndex = room.players.indexOf(player)
         playerIndex >= 0 || throw HandlerException("没有权限")
+        val page = room.dualPageData?.playerCurrentPage[playerIndex] ?: 0
         room.type.handleSelectSpell(room, playerIndex, idx)
         room.type.pushSpells(room, idx, player.name)
         room.push("push_select_spell", JsonObject(mapOf("index" to JsonPrimitive(idx))))

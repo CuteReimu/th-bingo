@@ -1,7 +1,6 @@
 package org.tfcc.bingo
 
 import org.tfcc.bingo.message.HandlerException
-import java.util.*
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.Random
 import kotlin.random.asKotlinRandom
@@ -30,6 +29,39 @@ object SpellFactory {
      */
     @Throws(HandlerException::class)
     fun randSpells(games: Array<String>, ranks: Array<String>?, difficulty: Difficulty): Array<Spell> {
+        val lvCount = difficulty.value
+        val rand = ThreadLocalRandom.current().asKotlinRandom()
+        val idx = intArrayOf(0, 1, 3, 4)
+        val star123 = IntArray(lvCount[0]) { 1 } + IntArray(lvCount[1]) { 2 } + IntArray(lvCount[2]) { 3 }
+        val star45 = arrayOf(4, 4, 4, 4, 5)
+        idx.shuffle(rand)
+        star45.shuffle(rand)
+        star123.shuffle(rand)
+        var j = 0
+        val stars = IntArray(25) { i ->
+            when (i) {
+                // 每行、每列都只有一个大于等于lv4
+                idx[0] -> star45[0]
+                5 + idx[1] -> star45[1]
+                12 -> star45[2]
+                15 + idx[2] -> star45[3]
+                20 + idx[3] -> star45[4]
+                else -> star123[j++]
+            }
+        }
+        return SpellConfig.get(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
+    }
+
+    /**
+     * 随符卡，用于双面模式
+     */
+    @Throws(HandlerException::class)
+    fun randSpellsDualPage(
+        games: Array<String>,
+        ranks: Array<String>?,
+        difficulty: Difficulty,
+        firstPageStars: IntArray
+    ): Array<Spell> {
         val lvCount = difficulty.value
         val rand = ThreadLocalRandom.current().asKotlinRandom()
         val idx = intArrayOf(0, 1, 3, 4)

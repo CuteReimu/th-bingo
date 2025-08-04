@@ -8,7 +8,10 @@ import kotlinx.serialization.json.jsonPrimitive
 import org.tfcc.bingo.Player
 import org.tfcc.bingo.RequestHandler
 import org.tfcc.bingo.RoomTypeBP
-import org.tfcc.bingo.SpellStatus.*
+import org.tfcc.bingo.SpellStatus.BANNED
+import org.tfcc.bingo.SpellStatus.LEFT_SELECT
+import org.tfcc.bingo.SpellStatus.NONE
+import org.tfcc.bingo.SpellStatus.RIGHT_SELECT
 
 object BpGameBanPickHandler : RequestHandler {
     @Throws(HandlerException::class)

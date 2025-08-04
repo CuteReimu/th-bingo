@@ -19,4 +19,6 @@ class Spell(
     val final: Float,
     @SerialName("bonus_rate")
     val bonusRate: Float,
+    @SerialName("is_transition")
+    val isTransition: Boolean = false,
 )

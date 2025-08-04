@@ -4,7 +4,6 @@ import io.netty.channel.ChannelHandlerContext
 import kotlinx.serialization.json.JsonElement
 import org.apache.logging.log4j.kotlin.logger
 import org.tfcc.bingo.*
-import java.util.*
 
 object StartGameHandler : RequestHandler {
     @Throws(HandlerException::class)
@@ -40,8 +39,8 @@ object StartGameHandler : RequestHandler {
         SpellLog.logRandSpells(room.spells!!, room.type)
         room.started = true
         room.startMs = now
-        room.spellStatus = Array(room.spells!!.size) { SpellStatus.NONE }
-        room.spellStatusInPlayerClient = Array(room.players.size) { room.spellStatus!!.map { it.value }.toIntArray() }
+        room.spellStatus = IntArray(room.spells!!.size)
+        room.spellStatusInPlayerClient = Array(room.players.size) { IntArray(room.spells!!.size) }
         room.locked = true
         room.banPick = null
         room.type.onStart(room)

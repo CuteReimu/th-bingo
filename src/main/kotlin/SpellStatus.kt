@@ -1,46 +1,24 @@
 package org.tfcc.bingo
 
-import org.tfcc.bingo.message.HandlerException
-
-@Throws(HandlerException::class)
-fun Int.toSpellStatus(): SpellStatus {
-    return when (this) {
-        -1 -> SpellStatus.BANNED
-        0 -> SpellStatus.NONE
-        1 -> SpellStatus.LEFT_SELECT
-        2 -> SpellStatus.BOTH_SELECT
-        3 -> SpellStatus.RIGHT_SELECT
-        5 -> SpellStatus.LEFT_GET
-        6 -> SpellStatus.BOTH_GET
-        7 -> SpellStatus.RIGHT_GET
-        else -> throw HandlerException("status不合法")
-    }
+fun Int.isSelectStatus(): Boolean {
+    return this % 100 == 1 || this / 100 == 1
 }
 
-enum class SpellStatus(val value: Int) {
-    NONE(0),
-    BANNED(-1),
-    LEFT_SELECT(1),
-    BOTH_SELECT(2),
-    RIGHT_SELECT(3),
-    LEFT_GET(5),
-    BOTH_GET(6),
-    RIGHT_GET(7);
+fun Int.isGetStatus(): Boolean {
+    return this % 100 == 2 || this / 100 == 2
+}
 
-    fun isSelectStatus(): Boolean {
-        return this == LEFT_SELECT || this == RIGHT_SELECT || this == BOTH_SELECT
-    }
+fun Int.opposite(): Int {
+    return this % 100 * 100 + this / 100
+}
 
-    fun isGetStatus(): Boolean {
-        return this == LEFT_GET || this == RIGHT_GET || this == BOTH_GET
-    }
-
-    /** 左右颠倒，方便计算 */
-    fun opposite(): SpellStatus = when (this) {
-        LEFT_GET -> RIGHT_GET
-        RIGHT_GET -> LEFT_GET
-        LEFT_SELECT -> RIGHT_SELECT
-        RIGHT_SELECT -> LEFT_SELECT
-        else -> this
-    }
+object SpellStatus {
+    const val NONE = 0
+    const val BANNED = 303
+    const val LEFT_SELECT = 100
+    const val BOTH_SELECT = 101
+    const val RIGHT_SELECT = 1
+    const val LEFT_GET = 200
+    const val BOTH_GET = 202
+    const val RIGHT_GET = 2
 }

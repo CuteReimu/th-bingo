@@ -646,7 +646,6 @@ push_action名：`push_update_spell_status`
   "causer": "test01", // 造成这个状态变化的玩家
   "spell_failed_count_a": 1, // 左边玩家的失败次数，只有BP赛时才有此字段
   "spell_failed_count_b": 1, // 右边玩家的失败次数，只有BP赛时才有次字段
-  "page": 0 // 双面的情况下，需要告知观众他选的是哪一面，0-第一页，1-第二页
 }
 ```
 

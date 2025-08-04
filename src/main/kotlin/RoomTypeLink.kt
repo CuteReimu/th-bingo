@@ -2,7 +2,12 @@ package org.tfcc.bingo
 
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import org.tfcc.bingo.SpellStatus.*
+import org.tfcc.bingo.SpellStatus.BOTH_GET
+import org.tfcc.bingo.SpellStatus.BOTH_SELECT
+import org.tfcc.bingo.SpellStatus.LEFT_GET
+import org.tfcc.bingo.SpellStatus.LEFT_SELECT
+import org.tfcc.bingo.SpellStatus.RIGHT_GET
+import org.tfcc.bingo.SpellStatus.RIGHT_SELECT
 import org.tfcc.bingo.message.HandlerException
 import org.tfcc.bingo.message.LinkData
 import kotlin.math.abs
@@ -122,14 +127,14 @@ object RoomTypeLink : RoomType {
             "push_update_spell_status", JsonObject(
                 mapOf(
                     "index" to JsonPrimitive(spellIndex),
-                    "status" to JsonPrimitive(status.value),
+                    "status" to JsonPrimitive(status),
                     "causer" to JsonPrimitive(causer),
                 )
             )
         )
         with(room.spellStatusInPlayerClient!!) {
             indices.forEach {
-                this[it][spellIndex] = status.value
+                this[it][spellIndex] = status
             }
         }
     }

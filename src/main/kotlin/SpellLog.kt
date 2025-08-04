@@ -32,18 +32,12 @@ object SpellLog {
         }
     }
 
-    fun logSpellOperate(
-        status: SpellStatus,
-        spell: Spell,
-        name: String,
-        time: Long = System.currentTimeMillis(),
-        gameType: Int
-    ) {
+    fun logSpellOperate(spellStatus: Int, spell: Spell, name: String, time: Long = System.currentTimeMillis(), gameType: Int) {
         try {
-            if (status.isSelectStatus()) {
+            if (spellStatus.isSelectStatus()) {
                 logSpell(LogType.SELECT, spell, name, time, gameType = gameType)
             }
-            if (status.isGetStatus()) {
+            if (spellStatus.isGetStatus()) {
                 logSpell(LogType.GET, spell, name, gameType = gameType)
             }
         } catch (e: Exception) {
@@ -123,7 +117,7 @@ object SpellLog {
             createLogFile()
         }
         XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
-            (0..2).map {
+            (0..3).map {
                 logList.add(HashMap())
                 val sheet = wb.getSheetAt(it)
                 for (i in 1..sheet.lastRowNum) {
@@ -152,7 +146,7 @@ object SpellLog {
                     logWB.createSheet("bp")
                     logWB.createSheet("link")
                     XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
-                        for (j in 0..2) {
+                        for (j in 0..3) {
                             val sheet = wb.getSheetAt(0)
                             val logSheet = logWB.getSheetAt(j)
                             for (i in 1..sheet.lastRowNum) {
@@ -187,11 +181,13 @@ object SpellLog {
             const val NORMAL = 0
             const val BP = 1
             const val LINK = 2
+            const val DUAL_PAGE = 3
             fun getGameType(roomType: RoomType): Int {
                 return when (roomType) {
                     is RoomTypeNormal -> NORMAL
                     is RoomTypeBP -> BP
                     is RoomTypeLink -> LINK
+                    is RoomTypeDualPage -> DUAL_PAGE
                 }
             }
         }

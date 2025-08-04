@@ -8,15 +8,27 @@ import org.tfcc.bingo.SpellStatus.LEFT_SELECT
 import org.tfcc.bingo.SpellStatus.NONE
 import org.tfcc.bingo.SpellStatus.RIGHT_GET
 import org.tfcc.bingo.SpellStatus.RIGHT_SELECT
+import org.tfcc.bingo.message.DualPageData
 import org.tfcc.bingo.message.HandlerException
 
-object RoomTypeNormal : RoomType {
-    override val name = "标准赛"
+object RoomTypeDualPage : RoomType {
+    override val name = "翻面赛"
 
     override val canPause = true
 
     override fun onStart(room: Room) {
-        // Do nothing
+        val dualPageSpells = SpellFactory.randSpellsDualPage(
+            room.roomConfig.games,
+            room.roomConfig.ranks,
+            when (room.roomConfig.difficulty) {
+                1 -> Difficulty.E
+                2 -> Difficulty.N
+                3 -> Difficulty.L
+                else -> Difficulty.random()
+            },
+            room.spells!!.map { it.star }.toIntArray()
+        )
+        room.dualPageData = DualPageData(dualPageSpells)
     }
 
     override fun handleNextRound(room: Room) {
