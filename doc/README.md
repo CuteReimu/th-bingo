@@ -503,7 +503,7 @@ action名：`get_all_spells`
 
 **（准备阶段）选手主动换面**
 
-action名：`get_all_spells`
+action名：`switch_page`
 
 请求参数：
 
@@ -514,6 +514,20 @@ action名：`get_all_spells`
 ```
 
 返回参数：`null`
+
+---
+
+**（游戏阶段，收取转换格）通知自动换面**
+
+push_action名：`push_switch_page`
+
+参数：
+
+```jsonc
+{
+  "page": 0 // 0-第一页，1-第二页
+}
+```
 
 ---
 
