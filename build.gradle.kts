@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm") version "2.1.20"
     application
     kotlin("plugin.serialization") version "2.1.20"
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
 }
 
 group = "org.tfcc.bingo"
