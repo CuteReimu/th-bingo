@@ -108,7 +108,7 @@ action名：`create_room`
 {
   "room_config": { // 下文很多协议的结构都和这个一样
     "rid": "test01", // 房间名
-    "type": 1, // 1-标准赛，2-BP赛，3-link赛
+    "type": 1, // 1-标准赛，2-BP赛，3-link赛，4-翻面赛
     "game_time": 30, // 游戏总时间（不含倒计时），单位：分
     "countdown": 5, // 倒计时，单位：秒
     "games": ["6", "7", "8"], // 含有哪些作品
@@ -116,7 +116,9 @@ action名：`create_room`
     "need_win": 2, // 需要胜利的局数，例如2表示bo3
     "difficulty": 1, // 难度（影响不同星级的卡的分布），1对应E，2对应N，3对应L，其它对应随机
     "cd_time": 30, // 选卡cd，收卡后要多少秒才能选下一张卡
-    "reserved_type": 1 // 是否为团体赛
+    "reserved_type": 1, // 是否为团体赛
+    "transition_count": 0, // 转换格数量
+    "diff_level": 0 // 差异等级，0到5
   },
   "solo": true, // 是否为无房主模式
   "add_robot": true // 是否为单人练习模式
@@ -477,10 +479,12 @@ action名：`get_all_spells`
       "two": 1.0, // AI参数
       "three": 1.0, // AI参数
       "final": 1.0, // AI参数
-      "bonus_rate": 1.0 // AI参数
+      "bonus_rate": 1.0, // AI参数
+      "is_transition": false // 是否为转换格
     },
     //...有25个符卡
   ],
+  "spells2": [], // 某些模式有两页符卡，这是第二页符卡
   "spell_status": [1, 0, 1], // 25张符卡的收取状态
   "left_time": 1, // 倒计时剩余时间，单位：毫秒
   "status": 1, // 0-未开始，1-赛前倒计时中，2-开始，3-暂停中，4-结束
@@ -494,6 +498,22 @@ action名：`get_all_spells`
   "link_data": {} // BP赛相关数据，同push_link_data协议的参数，如果不是BP赛则为null
 }
 ```
+
+---
+
+**（准备阶段）选手主动换面**
+
+action名：`get_all_spells`
+
+请求参数：
+
+```jsonc
+{
+  "page": 0 // 0-第一页，1-第二页
+}
+```
+
+返回参数：`null`
 
 ---
 
@@ -609,7 +629,8 @@ push_action名：`push_update_spell_status`
   "status": 1, // 状态
   "causer": "test01", // 造成这个状态变化的玩家
   "spell_failed_count_a": 1, // 左边玩家的失败次数，只有BP赛时才有此字段
-  "spell_failed_count_b": 1 // 右边玩家的失败次数，只有BP赛时才有次字段
+  "spell_failed_count_b": 1, // 右边玩家的失败次数，只有BP赛时才有次字段
+  "page": 0 // 双面的情况下，需要告知观众他选的是哪一面，0-第一页，1-第二页
 }
 ```
 
