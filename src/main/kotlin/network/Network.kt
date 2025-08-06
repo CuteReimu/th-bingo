@@ -4,7 +4,8 @@ import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelFuture
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelOption
-import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.MultiThreadIoEventLoopGroup
+import io.netty.channel.nio.NioIoHandler
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import org.apache.logging.log4j.kotlin.logger
 
@@ -14,8 +15,9 @@ object Network {
     }
 
     private fun initGameNetwork() {
-        val bossGroup = NioEventLoopGroup()
-        val workGroup = NioEventLoopGroup()
+        val nioFactory = NioIoHandler.newFactory()
+        val bossGroup = MultiThreadIoEventLoopGroup(nioFactory)
+        val workGroup = MultiThreadIoEventLoopGroup(nioFactory)
         try {
             val bootstrap = ServerBootstrap().group(bossGroup, workGroup)
                 .channel(NioServerSocketChannel::class.java)

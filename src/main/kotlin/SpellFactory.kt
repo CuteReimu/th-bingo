@@ -69,10 +69,7 @@ object SpellFactory {
         val idx = intArrayOf(0, 1, 3, 4)
         val star123 = IntArray(lvCount[0]) { 1 } + IntArray(lvCount[1]) { 2 } + IntArray(lvCount[2]) { 3 }
         val star45 = intArrayOf(4, 4, 4, 4, 5)
-        val l2h = star123 + star45
-        val h2l = star123 + star45
-        l2h.sort()
-        h2l.sortDescending()
+
         val starScore = intArrayOf(0, 1, 1, 2, 4, 5)
         fun calDiff(stars1: IntArray, stars2: IntArray): Int {
             var diff = 0
@@ -81,14 +78,14 @@ object SpellFactory {
             }
             return diff
         }
-        val maxDiff = calDiff(l2h, h2l)
-        idx.shuffle(rand)
-        star45.shuffle(rand)
-        star123.shuffle(rand)
-        var stars: IntArray? = null
-        for (i in 0 until 100) {
+
+        val sm = ArrayList<Pair<Int, IntArray>>()
+        repeat(1001) {
+            idx.shuffle(rand)
+            star45.shuffle(rand)
+            star123.shuffle(rand)
             var j = 0
-            stars = IntArray(25) { i ->
+            val s = IntArray(25) { i ->
                 when (i) {
                     // 每行、每列都只有一个大于等于lv4
                     idx[0] -> star45[0]
@@ -99,11 +96,18 @@ object SpellFactory {
                     else -> star123[j++]
                 }
             }
-            val diffLevel2 = calDiff(stars, firstPageStars).toDouble() / maxDiff
-            if (abs(diffLevel2 - diffLevel / 5.0) <= 0.1) break
-            stars = null
+            val diff = calDiff(s, firstPageStars)
+            sm.add(diff to s)
         }
-        stars != null || throw HandlerException("生成双面符卡失败")
+        sm.sortBy { it.first }
+        val stars = sm[when (diffLevel) {
+            0 -> 0
+            1 -> 20
+            2 -> 90
+            3 -> 440
+            4 -> 880
+            else -> sm.size - 1
+        }].second
         return SpellConfig.get(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 

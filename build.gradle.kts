@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.1.20"
+    kotlin("jvm") version "2.2.0"
     application
-    kotlin("plugin.serialization") version "2.1.20"
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    kotlin("plugin.serialization") version "2.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
 }
 
 group = "org.tfcc.bingo"
@@ -15,15 +15,15 @@ repositories {
 }
 
 dependencies {
-    implementation("io.netty:netty-all:4.1.119.Final")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-    implementation("org.apache.logging.log4j:log4j-api:2.24.3")
+    implementation("io.netty:netty-all:4.2.3.Final")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.apache.logging.log4j:log4j-api:2.25.1")
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.5.0")
-    implementation("org.apache.logging.log4j:log4j-core:2.24.3")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.1.20")
-    implementation("org.apache.poi:poi-ooxml:5.4.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.25.1")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.2.0")
+    implementation("org.apache.poi:poi-ooxml:5.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+    implementation("com.squareup.okhttp3:okhttp:5.1.0")
 }
 
 kotlin {
