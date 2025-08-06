@@ -99,7 +99,7 @@ object SpellFactory {
                 }
             }
             val diffLevel2 = calDiff(stars, firstPageStars) / maxDiff
-            if (abs(diffLevel2 - diffLevel) <= 0.1) break
+            if (abs(diffLevel2 - diffLevel / 5.0) <= 0.1) break
             stars = null
         }
         stars != null || throw HandlerException("生成双面符卡失败")
