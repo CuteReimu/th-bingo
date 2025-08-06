@@ -77,7 +77,7 @@ object SpellFactory {
         fun calDiff(stars1: IntArray, stars2: IntArray): Int {
             var diff = 0
             for (i in stars1.indices) {
-                diff += abs(starScore(stars1[i]) - starScore(stars2[i]))
+                diff += abs(starScore[stars1[i]] - starScore[stars2[i]])
             }
             return diff
         }
@@ -99,7 +99,7 @@ object SpellFactory {
                     else -> star123[j++]
                 }
             }
-            val diffLevel2 = calDiff(stars, firstPageStars) / maxDiff
+            val diffLevel2 = calDiff(stars, firstPageStars).toDouble() / maxDiff
             if (abs(diffLevel2 - diffLevel / 5.0) <= 0.1) break
             stars = null
         }
