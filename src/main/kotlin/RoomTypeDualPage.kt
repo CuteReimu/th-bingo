@@ -2,12 +2,8 @@ package org.tfcc.bingo
 
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import org.tfcc.bingo.SpellStatus.BOTH_SELECT
 import org.tfcc.bingo.SpellStatus.LEFT_GET
 import org.tfcc.bingo.SpellStatus.LEFT_SELECT
-import org.tfcc.bingo.SpellStatus.NONE
-import org.tfcc.bingo.SpellStatus.RIGHT_GET
-import org.tfcc.bingo.SpellStatus.RIGHT_SELECT
 import org.tfcc.bingo.message.DualPageData
 import org.tfcc.bingo.message.HandlerException
 
@@ -67,7 +63,7 @@ object RoomTypeDualPage : RoomType {
         )
             throw HandlerException("游戏时间到")
         if (now < room.startMs + countdown) {
-            if (st == RIGHT_SELECT) throw HandlerException("倒计时阶段不能抢卡")
+            if (st % 10 == 1) throw HandlerException("倒计时阶段不能抢卡")
         }
         // 选卡CD
         val cdTime = room.roomConfig.cdTime ?: 0
@@ -79,12 +75,14 @@ object RoomTypeDualPage : RoomType {
                 throw HandlerException("还有${remainSelectTime / 1000 + 1}秒才能选卡")
         }
 
-        room.spellStatus!![spellIndex] = when (st) {
-            LEFT_GET -> throw HandlerException("你已打完")
-            RIGHT_GET -> throw HandlerException("对方已打完")
-            NONE -> LEFT_SELECT
-            LEFT_SELECT -> throw HandlerException("重复选卡")
-            BOTH_SELECT, RIGHT_SELECT -> BOTH_SELECT
+        val page = room.dualPageData!!.playerCurrentPage[playerIndex]
+
+        room.spellStatus!![spellIndex] = when {
+            st / 100 % 10 == 2 -> throw HandlerException("你已打完")
+            st % 10 == 2 -> throw HandlerException("对方已打完")
+            st / 100 % 10 == 0 -> 100 + page * 1000
+            st / 100 % 10 == 1 -> throw HandlerException("重复选卡")
+            st % 10 == 1 -> st + 100 + page * 1000
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
 
@@ -98,7 +96,8 @@ object RoomTypeDualPage : RoomType {
         val playerName = room.players[playerIndex]!!.name
         var status = LEFT_SELECT
         if (playerIndex == 1) status = status.opposite()
-        SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
+        val spells = if (page == 0) room.spells!! else room.dualPageData!!.spells2
+        SpellLog.logSpellOperate(status, spells[spellIndex], playerName, now, SpellLog.GameType.NORMAL)
     }
 
     override fun handleFinishSpell(room: Room, isHost: Boolean, playerIndex: Int, spellIndex: Int, success: Boolean) {
@@ -139,7 +138,8 @@ object RoomTypeDualPage : RoomType {
         val playerName = room.players[playerIndex]!!.name
         var status = LEFT_GET
         if (playerIndex == 1) status = status.opposite()
-        SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
+        val spells = if (page == 0) room.spells!! else room.dualPageData!!.spells2
+        SpellLog.logSpellOperate(status, spells[spellIndex], playerName, now, SpellLog.GameType.NORMAL)
         if ((if (page == 0) room.spells!! else room.dualPageData!!.spells2)[spellIndex].isTransition) {
             room.dualPageData!!.playerCurrentPage[playerIndex] = 1 - page
             room.push("push_switch_page", JsonObject(mapOf(
@@ -157,21 +157,17 @@ object RoomTypeDualPage : RoomType {
         if (st.isSelectStatus()) {
             if ((room.roomConfig.reservedType ?: 0) == 0) {
                 // 个人赛对方收了五张卡之后，不再可以看到对方的选卡
-                if (playerIndex == 0 && room.spellStatus!!.count { it == RIGHT_GET } >= 5) {
-                    if (status == RIGHT_SELECT) st = NONE
-                    else if (status == BOTH_SELECT) st = LEFT_SELECT
-                } else if (playerIndex == 1 && room.spellStatus!!.count { it == LEFT_GET } >= 5) {
-                    if (status == LEFT_SELECT) st = NONE
-                    else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                if (playerIndex == 0 && room.spellStatus!!.count { it % 10 == 2 } >= 5) {
+                    if (status % 10 == 1) st = st / 100 * 100
+                } else if (playerIndex == 1 && room.spellStatus!!.count { it / 100 % 10 == 2 } >= 5) {
+                    if (status / 100 % 10 == 1) st = st % 100
                 }
-            } else if (room.spellStatus!!.count { it == LEFT_GET || it == RIGHT_GET } >= 5) {
+            } else if (room.spellStatus!!.count { it % 10 == 2 || it / 100 % 10 == 2 } >= 5) {
                 // 团体赛双方合计收了五张卡之后，不再可以看到对方的选卡
                 if (playerIndex == 0) {
-                    if (status == RIGHT_SELECT) st = NONE
-                    else if (status == BOTH_SELECT) st = LEFT_SELECT
+                    if (status % 10 == 1) st = st / 100 * 100
                 } else if (playerIndex == 1) {
-                    if (status == LEFT_SELECT) st = NONE
-                    else if (status == BOTH_SELECT) st = RIGHT_SELECT
+                    if (status / 100 % 10 == 1) st = st % 100
                 }
             }
         }
@@ -217,8 +213,8 @@ object RoomTypeDualPage : RoomType {
     private fun Room.scoreDraw(): Boolean {
         var left = 0
         spellStatus!!.forEach {
-            if (it == LEFT_GET) left++
-            else if (it == RIGHT_GET) left--
+            if (it / 100 % 10 == 2) left++
+            else if (it % 10 == 2) left--
         }
         return left == 0
     }
