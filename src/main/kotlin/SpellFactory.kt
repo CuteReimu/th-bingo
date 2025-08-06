@@ -73,10 +73,11 @@ object SpellFactory {
         val h2l = star123 + star45
         l2h.sort()
         h2l.sortDescending()
+        val starScore = intArrayOf(0, 1, 1, 2, 4, 5)
         fun calDiff(stars1: IntArray, stars2: IntArray): Int {
             var diff = 0
             for (i in stars1.indices) {
-                diff += abs(stars1[i] - stars2[i])
+                diff += abs(starScore(stars1[i]) - starScore(stars2[i]))
             }
             return diff
         }
