@@ -8,9 +8,9 @@ class Spell(
     val index: Int,
     val game: String,
     val name: String,
-    var rank: String,
-    var star: Int,
-    var desc: String,
+    val rank: String,
+    val star: Int,
+    val desc: String,
     val id: Int,
     val fastest: Float,
     val one: Float,
@@ -20,5 +20,5 @@ class Spell(
     @SerialName("bonus_rate")
     val bonusRate: Float,
     @SerialName("is_transition")
-    val isTransition: Boolean = false,
+    var isTransition: Boolean = false,
 )

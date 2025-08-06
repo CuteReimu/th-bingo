@@ -14,7 +14,6 @@ object SelectSpellHandler : RequestHandler {
         room.started || throw HandlerException("游戏还没开始")
         val playerIndex = room.players.indexOf(player)
         playerIndex >= 0 || throw HandlerException("没有权限")
-        val page = room.dualPageData?.playerCurrentPage[playerIndex] ?: 0
         room.type.handleSelectSpell(room, playerIndex, idx)
         room.type.pushSpells(room, idx, player.name)
         return null

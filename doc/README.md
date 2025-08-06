@@ -519,7 +519,7 @@ action名：`switch_page`
 
 ---
 
-**（游戏阶段，收取转换格）通知自动换面**
+**（主动换面，或者被动：游戏阶段，收取转换格）通知换面，推送给所有人**
 
 push_action名：`push_switch_page`
 
@@ -527,6 +527,7 @@ push_action名：`push_switch_page`
 
 ```jsonc
 {
+  "player_index": 0, // 0-左边玩家，1-右边玩家
   "page": 0 // 0-第一页，1-第二页
 }
 ```

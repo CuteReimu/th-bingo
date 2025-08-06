@@ -49,6 +49,7 @@ object GetAllSpellsHandler : RequestHandler {
             leftCdTime = leftCdTime,
             bpData = room.bpData,
             linkData = room.linkData,
+            dualPageData = room.dualPageData
         ).encode()
     }
 }
@@ -74,4 +75,7 @@ class AllSpellsResponse(
     /** link赛的相关数据 */
     @SerialName("link_data")
     val linkData: LinkData?,
+    /** 翻面赛的相关数据 */
+    @SerialName("dual_page_data")
+    val dualPageData: DualPageData?,
 )

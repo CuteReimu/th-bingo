@@ -39,7 +39,7 @@ class RoomConfig(
     @Throws(HandlerException::class)
     fun validate() {
         rid.isNotEmpty() || throw HandlerException("房间名不能为空")
-        type in 1..3 || throw HandlerException("不支持的游戏类型")
+        type in 1..4 || throw HandlerException("不支持的游戏类型")
         gameTime in 1..1440 || throw HandlerException("游戏时间的数值不正确")
         countdown in 0..86400 || throw HandlerException("倒计时的数值不正确")
         games.size < 100 || throw HandlerException("选择的作品数太多")
@@ -104,7 +104,7 @@ class RoomConfigNullable(
     @Throws(HandlerException::class)
     fun validate() {
         rid.isNotEmpty() || throw HandlerException("房间名不能为空")
-        type == null || type in 1..3 || throw HandlerException("不支持的游戏类型")
+        type == null || type in 1..4 || throw HandlerException("不支持的游戏类型")
         gameTime == null || gameTime in 1..1440 || throw HandlerException("游戏时间的数值不正确")
         countdown == null || countdown in 0..86400 || throw HandlerException("倒计时的数值不正确")
         games == null || games.size < 100 || throw HandlerException("选择的作品数太多")

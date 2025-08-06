@@ -73,6 +73,7 @@ private val handlers = mapOf(
     "bp_game_ban_pick" to BpGameBanPickHandler,
     "bp_game_next_round" to BpGameNextRoundHandler,
     "link_time" to LinkTimeHandler,
+    "switch_page" to SwitchPageHandler,
 )
 
 inline fun <reified T> JsonElement.decode(): T = Dispatcher.json.decodeFromJsonElement(this)

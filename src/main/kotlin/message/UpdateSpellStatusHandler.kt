@@ -23,7 +23,26 @@ object UpdateSpellStatusHandler : RequestHandler {
                 throw HandlerException("link赛符卡还未选完，暂不能操作")
             }
         }
+        val oldStatus = room.spellStatus!![idx]
         room.spellStatus!![idx] = spellStatus
+        if (room.dualPageData != null) {
+            fun checkSwitchPlayer(playerIndex: Int) {
+                val page = room.dualPageData!!.playerCurrentPage[playerIndex]
+                if ((if (page == 0) room.spells!! else room.dualPageData!!.spells2)[idx].isTransition) {
+                    room.dualPageData!!.playerCurrentPage[playerIndex] = 1 - page
+                }
+                room.push("push_switch_page", JsonObject(mapOf(
+                    "player_index" to JsonPrimitive(playerIndex),
+                    "page" to JsonPrimitive(1 - page),
+                )))
+            }
+            if ((oldStatus / 100 % 10 == 2) != (spellStatus / 100 % 10 != 2)) {
+                checkSwitchPlayer(0)
+            }
+            if (oldStatus % 10 == 2 || oldStatus / 100 % 10 == 2) {
+                checkSwitchPlayer(1)
+            }
+        }
         room.type.pushSpells(room, idx, player.name)
         return null
     }

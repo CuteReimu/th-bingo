@@ -26,9 +26,17 @@ object RoomTypeDualPage : RoomType {
                 3 -> Difficulty.L
                 else -> Difficulty.random()
             },
+            room.roomConfig.diffLevel ?: 0,
             room.spells!!.map { it.star }.toIntArray()
         )
         room.dualPageData = DualPageData(dualPageSpells)
+        val transitionCount = room.roomConfig.transitionCount ?: 5
+        room.spells!!.indices.shuffled().take(transitionCount).forEach {
+            room.spells!![it].isTransition = true
+        }
+        room.dualPageData!!.spells2.indices.shuffled().take(transitionCount).forEach {
+            room.dualPageData!!.spells2[it].isTransition = true
+        }
     }
 
     override fun handleNextRound(room: Room) {
@@ -110,12 +118,13 @@ object RoomTypeDualPage : RoomType {
             throw HandlerException("倒计时还没结束")
         }
 
-        room.spellStatus!![spellIndex] = when (st) {
-            LEFT_GET -> throw HandlerException("你已打完")
-            RIGHT_GET -> throw HandlerException("对方已打完")
-            NONE, RIGHT_SELECT -> throw HandlerException("你还未选卡")
-            BOTH_SELECT, LEFT_SELECT -> LEFT_GET
-            else -> throw HandlerException("状态错误：$st")
+        val page = room.dualPageData!!.playerCurrentPage[playerIndex]
+
+        room.spellStatus!![spellIndex] = when {
+            st / 100 % 10 == 2 -> throw HandlerException("你已打完")
+            st % 10 == 2 -> throw HandlerException("对方已打完")
+            st / 100 % 10 != 1 -> throw HandlerException("你还未选卡")
+            else -> 200 + page * 1000
         }.run { if (playerIndex == 1) opposite() else this }
 
         room.lastGetTime[playerIndex] = now // 更新上次收卡时间
@@ -131,6 +140,13 @@ object RoomTypeDualPage : RoomType {
         var status = LEFT_GET
         if (playerIndex == 1) status = status.opposite()
         SpellLog.logSpellOperate(status, room.spells!![spellIndex], playerName, now, SpellLog.GameType.NORMAL)
+        if ((if (page == 0) room.spells!! else room.dualPageData!!.spells2)[spellIndex].isTransition) {
+            room.dualPageData!!.playerCurrentPage[playerIndex] = 1 - page
+            room.push("push_switch_page", JsonObject(mapOf(
+                "player_index" to JsonPrimitive(playerIndex),
+                "page" to JsonPrimitive(1 - page),
+            )))
+        }
     }
 
     /**

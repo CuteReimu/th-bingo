@@ -30,7 +30,7 @@ class BanPick(private val whoFirst: Int) {
         private set
     private val pick = arrayOf(arrayListOf<String>(), arrayListOf())
     private val ban = arrayOf(arrayListOf<String>(), arrayListOf())
-    private var openEx = arrayOf(0, 0)
+    private var openEx = intArrayOf(0, 0)
 
     /**
      * @param playerIndex 左边玩家0，右边玩家1，不是玩家-1
@@ -81,7 +81,7 @@ class BanPick(private val whoFirst: Int) {
         }
         if (phase <= 4) {
             pick[playerIndex].add(selection)
-            if (selection == "EX") openEx = arrayOf(1, 1)
+            if (selection == "EX") openEx = intArrayOf(1, 1)
         } else {
             if (selection.isNotEmpty() && (selection in pick[0] || selection in pick[1]))
                 throw HandlerException("已经保了的作品，不能ban")
