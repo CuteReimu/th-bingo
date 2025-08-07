@@ -64,8 +64,11 @@ object SpellFactory {
         diffLevel: Int,
         firstPageStars: IntArray
     ): Array<Spell> {
-        val lvCount = difficulty.value
         val rand = ThreadLocalRandom.current().asKotlinRandom()
+        if (diffLevel !in 1..5)
+            return SpellConfig.get(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), firstPageStars, rand)
+
+        val lvCount = difficulty.value
         val idx = intArrayOf(0, 1, 3, 4)
         val star123 = IntArray(lvCount[0]) { 1 } + IntArray(lvCount[1]) { 2 } + IntArray(lvCount[2]) { 3 }
         val star45 = intArrayOf(4, 4, 4, 4, 5)
@@ -79,35 +82,36 @@ object SpellFactory {
             return diff
         }
 
-        val sm = ArrayList<Pair<Int, IntArray>>()
-        repeat(1001) {
-            idx.shuffle(rand)
-            star45.shuffle(rand)
-            star123.shuffle(rand)
-            var j = 0
-            val s = IntArray(25) { i ->
-                when (i) {
-                    // 每行、每列都只有一个大于等于lv4
-                    idx[0] -> star45[0]
-                    5 + idx[1] -> star45[1]
-                    12 -> star45[2]
-                    15 + idx[2] -> star45[3]
-                    20 + idx[3] -> star45[4]
-                    else -> star123[j++]
-                }
-            }
-            val diff = calDiff(s, firstPageStars)
-            sm.add(diff to s)
+        val minDiff = when (difficulty) {
+            Difficulty.E -> 4 + diffLevel * 6
+            Difficulty.L -> diffLevel * 6
+            else -> 2 + diffLevel * 6
         }
-        sm.sortBy { it.first }
-        val stars = sm[when (diffLevel) {
-            0 -> 0
-            1 -> 20
-            2 -> 90
-            3 -> 440
-            4 -> 880
-            else -> sm.size - 1
-        }].second
+        val maxDiff = minDiff + 6
+        val diffRange = (if (diffLevel == 1) minDiff else 0) until (if (diffLevel == 5) 1000 else maxDiff)
+
+        val stars = run {
+            repeat(10000) {
+                idx.shuffle(rand)
+                star45.shuffle(rand)
+                star123.shuffle(rand)
+                var j = 0
+                val s = IntArray(25) { i ->
+                    when (i) {
+                        // 每行、每列都只有一个大于等于lv4
+                        idx[0] -> star45[0]
+                        5 + idx[1] -> star45[1]
+                        12 -> star45[2]
+                        15 + idx[2] -> star45[3]
+                        20 + idx[3] -> star45[4]
+                        else -> star123[j++]
+                    }
+                }
+                val diff = calDiff(s, firstPageStars)
+                if (diff in diffRange) return@run s
+            }
+            throw HandlerException("生成双面符卡失败")
+        }
         return SpellConfig.get(SpellConfig.NORMAL_GAME, games, ranks, ranksToExPos(ranks, rand), stars, rand)
     }
 

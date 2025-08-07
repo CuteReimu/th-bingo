@@ -145,6 +145,7 @@ object SpellLog {
                     logWB.createSheet("normal")
                     logWB.createSheet("bp")
                     logWB.createSheet("link")
+                    logWB.createSheet("dual_page")
                     XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
                         for (j in 0..3) {
                             val sheet = wb.getSheetAt(0)
