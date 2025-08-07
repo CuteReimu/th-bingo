@@ -119,6 +119,7 @@ object SpellLog {
         XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
             (0..3).map {
                 logList.add(HashMap())
+                it < wb.numberOfSheets || return@map
                 val sheet = wb.getSheetAt(it)
                 for (i in 1..sheet.lastRowNum) {
                     val row = sheet.getRow(i)
