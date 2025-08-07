@@ -94,7 +94,7 @@ push_action名：`push_kick`
 
 参数：`null`
 
-</details> 
+</details>
 
 <details><summary>房间配置</summary>
 
@@ -323,6 +323,7 @@ action名：`get_phase`
 请求参数：`null`
 
 返回参数：
+
 ```json
 {
   "phase": 1
@@ -486,6 +487,7 @@ action名：`get_all_spells`
   ],
   "dual_page_data": {
     "spells2": [], // 双面模式有两页符卡，这是第二页符卡
+    "player_current_page":[] // 玩家所在的页面
   },
   "spell_status": [1, 0, 1], // 25张符卡的收取状态
   "left_time": 1, // 倒计时剩余时间，单位：毫秒
@@ -808,12 +810,13 @@ push_action名：`push_ban_pick`
 
 对于每个玩家，左边一位表示他操作了哪一面（用于翻面赛），右边一位表示现在的符卡状态，见下列枚举：
 
-| 枚举值 |  含义  |
-|:---:|:----:|
-|  0  |  无   |
-|  1  |  选了  |
-|  2  |  收了  |
-|  3  | ban了 |
+
+| 枚举值 | 含义 |
+| :----: | :---: |
+|   0   |  无  |
+|   1   | 选了 |
+|   2   | 收了 |
+|   3   | ban了 |
 
 例如，`0111`表示左边玩家在第一页选了符卡，右边玩家在第二页选了符卡。
 
