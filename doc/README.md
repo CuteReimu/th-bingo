@@ -487,7 +487,7 @@ action名：`get_all_spells`
   ],
   "dual_page_data": {
     "spells2": [], // 双面模式有两页符卡，这是第二页符卡
-    "player_current_page":[] // 玩家所在的页面
+    "player_current_page": [0, 0] // 玩家所在的页面
   },
   "spell_status": [1, 0, 1], // 25张符卡的收取状态
   "left_time": 1, // 倒计时剩余时间，单位：毫秒
