@@ -16,7 +16,7 @@ object SwitchPageHandler : RequestHandler {
         val room = player.room ?: throw HandlerException("找不到房间")
         room.started || throw HandlerException("游戏未开始")
         val now = System.currentTimeMillis()
-        now < room.startMs + room.roomConfig.countdown * 1000 || throw HandlerException("游戏已开始，不能切换页面")
+        now < room.startMs + room.roomConfig.countdown * 1000L || throw HandlerException("游戏已开始，不能切换页面")
         val playerIndex = room.players.indexOf(player)
         playerIndex >= 0 || throw HandlerException("你不是选手")
         val m = data!!.jsonObject

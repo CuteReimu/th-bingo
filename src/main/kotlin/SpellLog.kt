@@ -117,7 +117,7 @@ object SpellLog {
             createLogFile()
         }
         XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
-            (0..3).map {
+            (0..2).map {
                 logList.add(HashMap())
                 it < wb.numberOfSheets || return@map
                 val sheet = wb.getSheetAt(it)
@@ -146,9 +146,8 @@ object SpellLog {
                     logWB.createSheet("normal")
                     logWB.createSheet("bp")
                     logWB.createSheet("link")
-                    logWB.createSheet("dual_page")
                     XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
-                        for (j in 0..3) {
+                        for (j in 0..2) {
                             val sheet = wb.getSheetAt(0)
                             val logSheet = logWB.getSheetAt(j)
                             for (i in 1..sheet.lastRowNum) {
@@ -183,13 +182,12 @@ object SpellLog {
             const val NORMAL = 0
             const val BP = 1
             const val LINK = 2
-            const val DUAL_PAGE = 3
             fun getGameType(roomType: RoomType): Int {
                 return when (roomType) {
                     is RoomTypeNormal -> NORMAL
                     is RoomTypeBP -> BP
                     is RoomTypeLink -> LINK
-                    is RoomTypeDualPage -> DUAL_PAGE
+                    is RoomTypeDualPage -> NORMAL
                 }
             }
         }
