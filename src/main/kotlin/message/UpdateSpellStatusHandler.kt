@@ -25,23 +25,33 @@ object UpdateSpellStatusHandler : RequestHandler {
         }
         val oldStatus = room.spellStatus!![idx]
         room.spellStatus!![idx] = spellStatus
-        if (room.dualPageData != null) {
-            fun checkSwitchPlayer(playerIndex: Int, seeOppositePage: Boolean) {
-                val currentPage = room.dualPageData!!.playerCurrentPage[playerIndex]
-                val seePage = if (seeOppositePage) 1 - currentPage else currentPage
-                if ((if (seePage == 0) room.spells!! else room.dualPageData!!.spells2)[idx].isTransition) {
-                    room.dualPageData!!.playerCurrentPage[playerIndex] = 1 - currentPage
-                    room.push("push_switch_page", JsonObject(mapOf(
-                        "player_index" to JsonPrimitive(playerIndex),
-                        "page" to JsonPrimitive(1 - currentPage),
-                    )))
+        val d = room.dualPageData
+        if (d != null) {
+            for (playerIndex in d.playerCurrentPage.indices) {
+                val playerOldStatus = if (playerIndex == 0) oldStatus / 100 else oldStatus % 100
+                val playerNewStatus = if (playerIndex == 0) spellStatus / 100 else spellStatus % 100
+                if (playerOldStatus % 10 == 2 && playerNewStatus % 10 != 2) { // 收 -> 未收
+                    val page = playerOldStatus / 10
+                    val spells = if (page == 0) room.spells!! else d.spells2
+                    if (spells[idx].isTransition) {
+                        d.playerCurrentPage[playerIndex] = 1 - d.playerCurrentPage[playerIndex]
+                        room.push("push_switch_page", JsonObject(mapOf(
+                            "player_index" to JsonPrimitive(playerIndex),
+                            "page" to JsonPrimitive(d.playerCurrentPage[playerIndex]),
+                        )))
+                    }
                 }
-            }
-            if ((oldStatus / 100 % 10 == 2) != (spellStatus / 100 % 10 == 2)) {
-                checkSwitchPlayer(0, oldStatus / 100 % 10 == 2)
-            }
-            if ((oldStatus % 10 == 2) != (spellStatus % 10 == 2)) {
-                checkSwitchPlayer(1, oldStatus % 10 == 2)
+                if (playerOldStatus % 10 != 2 && playerNewStatus % 10 == 2) { // 未收 -> 收
+                    val page = playerNewStatus / 10
+                    val spells = if (page == 0) room.spells!! else d.spells2
+                    if (spells[idx].isTransition) {
+                        d.playerCurrentPage[playerIndex] = 1 - d.playerCurrentPage[playerIndex]
+                        room.push("push_switch_page", JsonObject(mapOf(
+                            "player_index" to JsonPrimitive(playerIndex),
+                            "page" to JsonPrimitive(d.playerCurrentPage[playerIndex]),
+                        )))
+                    }
+                }
             }
         }
         room.type.pushSpells(room, idx, player.name)

@@ -139,7 +139,7 @@ object RoomTypeDualPage : RoomType {
         if (playerIndex == 1) status = status.opposite()
         val spells = if (page == 0) room.spells!! else room.dualPageData!!.spells2
         SpellLog.logSpellOperate(status, spells[spellIndex], playerName, now, SpellLog.GameType.NORMAL)
-        if ((if (page == 0) room.spells!! else room.dualPageData!!.spells2)[spellIndex].isTransition) {
+        if (spells[spellIndex].isTransition) {
             room.dualPageData!!.playerCurrentPage[playerIndex] = 1 - page
             room.push("push_switch_page", JsonObject(mapOf(
                 "player_index" to JsonPrimitive(playerIndex),
