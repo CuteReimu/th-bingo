@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Spell(
+data class Spell(
     val index: Int,
     val game: String,
     val name: String,
@@ -20,5 +20,5 @@ class Spell(
     @SerialName("bonus_rate")
     val bonusRate: Float,
     @SerialName("is_transition")
-    var isTransition: Boolean = false,
+    val isTransition: Boolean = false,
 )

@@ -28,10 +28,10 @@ object RoomTypeDualPage : RoomType {
         room.dualPageData = DualPageData(dualPageSpells)
         val transitionCount = room.roomConfig.transitionCount ?: 5
         room.spells!!.indices.shuffled().take(transitionCount).forEach {
-            room.spells!![it].isTransition = true
+            room.spells!![it] = room.spells!![it].copy(isTransition = true)
         }
         room.dualPageData!!.spells2.indices.shuffled().take(transitionCount).forEach {
-            room.dualPageData!!.spells2[it].isTransition = true
+            room.dualPageData!!.spells2[it] = room.dualPageData!!.spells2[it].copy(isTransition = true)
         }
     }
 
@@ -160,14 +160,14 @@ object RoomTypeDualPage : RoomType {
                 if (playerIndex == 0 && room.spellStatus!!.count { it % 10 == 2 } >= 5) {
                     if (status % 10 == 1) st = st / 100 * 100
                 } else if (playerIndex == 1 && room.spellStatus!!.count { it / 100 % 10 == 2 } >= 5) {
-                    if (status / 100 % 10 == 1) st = st % 100
+                    if (status / 100 % 10 == 1) st %= 100
                 }
             } else if (room.spellStatus!!.count { it % 10 == 2 || it / 100 % 10 == 2 } >= 5) {
                 // 团体赛双方合计收了五张卡之后，不再可以看到对方的选卡
                 if (playerIndex == 0) {
                     if (status % 10 == 1) st = st / 100 * 100
                 } else if (playerIndex == 1) {
-                    if (status / 100 % 10 == 1) st = st % 100
+                    if (status / 100 % 10 == 1) st %= 100
                 }
             }
         }
