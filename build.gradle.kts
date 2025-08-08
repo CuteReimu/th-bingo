@@ -1,7 +1,9 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("jvm") version "2.2.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     application
     kotlin("plugin.serialization") version "2.2.0"
     id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
@@ -36,6 +38,12 @@ application {
     mainClass.set("org.tfcc.bingo.MainKt")
 }
 
+tasks.withType<ShadowJar> {
+    manifest {
+        attributes(mapOf("Main-Class" to "org.tfcc.bingo.MainKt"))
+    }
+}
+
 tasks.withType<Jar> {
     // Otherwise you'll get a "No main manifest attribute" error
     manifest {
@@ -45,7 +53,7 @@ tasks.withType<Jar> {
     // To avoid the duplicate handling strategy error
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-    // To add all of the dependencies otherwise a "NoClassDefFoundError" error
+    // To add all the dependencies otherwise a "NoClassDefFoundError" error
     from(sourceSets.main.get().output)
 
     dependsOn(configurations.runtimeClasspath)
