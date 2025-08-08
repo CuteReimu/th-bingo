@@ -33,7 +33,7 @@ object UpdateSpellStatusHandler : RequestHandler {
                     room.dualPageData!!.playerCurrentPage[playerIndex] = 1 - currentPage
                     room.push("push_switch_page", JsonObject(mapOf(
                         "player_index" to JsonPrimitive(playerIndex),
-                        "page" to JsonPrimitive(currentPage),
+                        "page" to JsonPrimitive(1 - currentPage),
                     )))
                 }
             }
