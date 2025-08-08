@@ -37,10 +37,10 @@ object UpdateSpellStatusHandler : RequestHandler {
                     )))
                 }
             }
-            if ((oldStatus / 100 % 10 == 2) != (spellStatus / 100 % 10 != 2)) {
+            if ((oldStatus / 100 % 10 == 2) != (spellStatus / 100 % 10 == 2)) {
                 checkSwitchPlayer(0, oldStatus / 100 % 10 == 2)
             }
-            if ((oldStatus % 10 == 2) != (spellStatus % 10 != 2)) {
+            if ((oldStatus % 10 == 2) != (spellStatus % 10 == 2)) {
                 checkSwitchPlayer(1, oldStatus % 10 == 2)
             }
         }
