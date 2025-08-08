@@ -31,6 +31,7 @@ object StopGameHandler : RequestHandler {
         room.pauseEndMs = 0
         room.bpData = null
         room.linkData = null
+        room.dualPageData = null
         room.push("push_stop_game", JsonObject(mapOf("winner" to JsonPrimitive(winner))))
         SpellLog.saveFile()
         return null
