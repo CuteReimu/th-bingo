@@ -80,9 +80,8 @@ object RoomTypeDualPage : RoomType {
         room.spellStatus!![spellIndex] = when {
             st / 100 % 10 == 2 -> throw HandlerException("你已打完")
             st % 10 == 2 -> throw HandlerException("对方已打完")
-            st / 100 % 10 == 0 -> 100 + page * 1000
+            st / 100 % 10 == 0 -> st + 100 + page * 1000
             st / 100 % 10 == 1 -> throw HandlerException("重复选卡")
-            st % 10 == 1 -> st + 100 + page * 1000
             else -> throw HandlerException("状态错误：$st")
         }.run { if (playerIndex == 1) opposite() else this }
 
