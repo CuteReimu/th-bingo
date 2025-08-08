@@ -127,6 +127,15 @@ object RoomTypeDualPage : RoomType {
 
         room.lastGetTime[playerIndex] = now // 更新上次收卡时间
 
+        val spells = if (page == 0) room.spells!! else room.dualPageData!!.spells2
+        if (spells[spellIndex].isTransition) {
+            room.dualPageData!!.playerCurrentPage[playerIndex] = 1 - page
+            room.push("push_switch_page", JsonObject(mapOf(
+                "player_index" to JsonPrimitive(playerIndex),
+                "page" to JsonPrimitive(1 - page),
+            )))
+        }
+
         // 无导播模式不记录
         room.host != null || return
         // 等操作结束后再记录
@@ -137,15 +146,7 @@ object RoomTypeDualPage : RoomType {
         val playerName = room.players[playerIndex]!!.name
         var status = LEFT_GET
         if (playerIndex == 1) status = status.opposite()
-        val spells = if (page == 0) room.spells!! else room.dualPageData!!.spells2
         SpellLog.logSpellOperate(status, spells[spellIndex], playerName, now, SpellLog.GameType.NORMAL)
-        if (spells[spellIndex].isTransition) {
-            room.dualPageData!!.playerCurrentPage[playerIndex] = 1 - page
-            room.push("push_switch_page", JsonObject(mapOf(
-                "player_index" to JsonPrimitive(playerIndex),
-                "page" to JsonPrimitive(1 - page),
-            )))
-        }
     }
 
     /**
