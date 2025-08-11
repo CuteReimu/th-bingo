@@ -1,11 +1,11 @@
 package org.tfcc.bingo
 
 fun Int.isSelectStatus(): Boolean {
-    return this % 100 == 1 || this / 100 == 1
+    return this % 10 == 1 || this / 100 % 10 == 1
 }
 
 fun Int.isGetStatus(): Boolean {
-    return this % 100 == 2 || this / 100 == 2
+    return this % 10 == 2 || this / 100 % 10 == 2
 }
 
 fun Int.opposite(): Int {
