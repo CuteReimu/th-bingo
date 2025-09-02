@@ -4,6 +4,7 @@ import org.apache.logging.log4j.kotlin.logger
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.openxml4j.opc.PackageAccess
 import org.apache.poi.ss.usermodel.CellType.STRING
+import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFCell
 import org.apache.poi.xssf.usermodel.XSSFRow
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
@@ -119,6 +120,7 @@ object SpellConfig {
         val spellsByIndex = HashMap<Int, Spell>()
         for (file in files) {
             XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
+                wb.missingCellPolicy = Row.MissingCellPolicy.CREATE_NULL_AS_BLANK
                 val sheet = wb.getSheetAt(0)
                 for (i in 1..sheet.lastRowNum) {
                     val row = sheet.getRow(i)
@@ -148,7 +150,7 @@ object SpellConfig {
     }
 
     private fun buildNormalSpell(row: XSSFRow): Spell? {
-        if (row.lastCellNum < 15) return null
+        if (row.lastCellNum < 9) return null
         return Spell(
             index = row.getCell(0).numericCellValue.toInt(),
             game = row.getCell(1).numericCellValue.toInt().toString(),
@@ -157,17 +159,17 @@ object SpellConfig {
             star = row.getCell(6).numericCellValue.toInt(),
             desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
             id = row.getCell(8)?.numericCellValue?.toInt() ?: 0,
-            fastest = row.getCell(9).getFloatValue(),
-            one = row.getCell(10).getFloatValue(),
-            two = row.getCell(11).getFloatValue(),
-            three = row.getCell(12).getFloatValue(),
-            final = row.getCell(13).getFloatValue(),
-            bonusRate = row.getCell(14).getFloatValue(),
+            fastest = row.getCell(9)?.getFloatValue() ?: 0f,
+            one = row.getCell(10)?.getFloatValue() ?: 0f,
+            two = row.getCell(11)?.getFloatValue() ?: 0f,
+            three = row.getCell(12)?.getFloatValue() ?: 0f,
+            final = row.getCell(13)?.getFloatValue() ?: 0f,
+            bonusRate = row.getCell(14)?.getFloatValue() ?: 0f,
         )
     }
 
     private fun buildBPSpell(row: XSSFRow): Spell? {
-        if (row.lastCellNum < 15) return null
+        if (row.lastCellNum < 9) return null
         return Spell(
             index = row.getCell(0).numericCellValue.toInt(),
             game = row.getCell(1).numericCellValue.toInt().toString(),
@@ -176,12 +178,12 @@ object SpellConfig {
             star = row.getCell(7).numericCellValue.toInt(),
             desc = row.getCell(4)?.stringCellValue?.trim() ?: "",
             id = row.getCell(8).numericCellValue.toInt(),
-            fastest = row.getCell(9).getFloatValue(),
-            one = row.getCell(10).getFloatValue(),
-            two = row.getCell(11).getFloatValue(),
-            three = row.getCell(12).getFloatValue(),
-            final = row.getCell(13).getFloatValue(),
-            bonusRate = row.getCell(14).getFloatValue(),
+            fastest = row.getCell(9)?.getFloatValue() ?: 0f,
+            one = row.getCell(10)?.getFloatValue() ?: 0f,
+            two = row.getCell(11)?.getFloatValue() ?: 0f,
+            three = row.getCell(12)?.getFloatValue() ?: 0f,
+            final = row.getCell(13)?.getFloatValue() ?: 0f,
+            bonusRate = row.getCell(14)?.getFloatValue() ?: 0f,
         )
     }
 
