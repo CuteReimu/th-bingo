@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.netty:netty-all:4.2.3.Final")
+    implementation("io.netty:netty-all:4.2.5.Final")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("org.apache.logging.log4j:log4j-api:2.25.1")
     implementation("org.apache.logging.log4j:log4j-api-kotlin:1.5.0")
