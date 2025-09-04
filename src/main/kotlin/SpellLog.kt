@@ -3,6 +3,7 @@ package org.tfcc.bingo
 import org.apache.logging.log4j.kotlin.logger
 import org.apache.poi.openxml4j.opc.OPCPackage
 import org.apache.poi.openxml4j.opc.PackageAccess
+import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.tfcc.bingo.message.HandlerException
 import java.io.ByteArrayOutputStream
@@ -147,6 +148,7 @@ object SpellLog {
                     logWB.createSheet("bp")
                     logWB.createSheet("link")
                     XSSFWorkbook(OPCPackage.open(file, PackageAccess.READ)).use { wb ->
+                        wb.missingCellPolicy = Row.MissingCellPolicy.CREATE_NULL_AS_BLANK
                         for (j in 0..2) {
                             val sheet = wb.getSheetAt(0)
                             val logSheet = logWB.getSheetAt(j)
