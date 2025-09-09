@@ -47,7 +47,7 @@ class RoomConfig(
         needWin == null || needWin in 1..99 || throw HandlerException("需要胜场的数值不正确")
         cdTime == null || cdTime in 0..1440 || throw HandlerException("选卡cd的数值不正确")
         transitionCount == null || transitionCount in 0..25 || throw HandlerException("转换格数量的数值不正确")
-        diffLevel == null || diffLevel in 0..5 || throw HandlerException("差异等级的数值不正确")
+        diffLevel == null || diffLevel in -1..5 || throw HandlerException("差异等级的数值不正确")
     }
 
     operator fun plus(config: RoomConfigNullable): RoomConfig {
@@ -112,6 +112,6 @@ class RoomConfigNullable(
         needWin == null || needWin in 1..99 || throw HandlerException("需要胜场的数值不正确")
         cdTime == null || cdTime in 0..1440 || throw HandlerException("选卡cd的数值不正确")
         transitionCount == null || transitionCount in 0..25 || throw HandlerException("转换格数量的数值不正确")
-        diffLevel == null || diffLevel in 0..5 || throw HandlerException("差异等级的数值不正确")
+        diffLevel == null || diffLevel in -1..5 || throw HandlerException("差异等级的数值不正确")
     }
 }

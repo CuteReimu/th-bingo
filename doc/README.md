@@ -118,7 +118,7 @@ action名：`create_room`
     "cd_time": 30, // 选卡cd，收卡后要多少秒才能选下一张卡
     "reserved_type": 1, // 是否为团体赛
     "transition_count": 0, // 转换格数量
-    "diff_level": 0 // 差异等级，0到5
+    "diff_level": 0 // 差异等级，-1到5，-1表示随机差异
   },
   "solo": true, // 是否为无房主模式
   "add_robot": true // 是否为单人练习模式
