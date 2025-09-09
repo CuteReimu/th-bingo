@@ -13,18 +13,25 @@ object RoomTypeDualPage : RoomType {
     override val canPause = true
 
     override fun onStart(room: Room) {
-        val dualPageSpells = SpellFactory.randSpellsDualPage(
-            room.roomConfig.games,
-            room.roomConfig.ranks,
-            when (room.roomConfig.difficulty) {
-                1 -> Difficulty.E
-                2 -> Difficulty.N
-                3 -> Difficulty.L
-                else -> Difficulty.random()
-            },
-            room.roomConfig.diffLevel ?: 0,
-            room.spells!!.map { it.star }.toIntArray()
-        )
+        val diffLevel = room.roomConfig.diffLevel ?: 0
+        val difficulty = when (room.roomConfig.difficulty) {
+            1 -> Difficulty.E
+            2 -> Difficulty.N
+            3 -> Difficulty.L
+            else -> Difficulty.random()
+        }
+        val dualPageSpells =
+            if (diffLevel >= 0) {
+                SpellFactory.randSpellsDualPage(
+                    room.roomConfig.games,
+                    room.roomConfig.ranks,
+                    difficulty,
+                    diffLevel,
+                    room.spells!!.map { it.star }.toIntArray()
+                )
+            } else {
+                randSpells(room.roomConfig.games, room.roomConfig.ranks, room.roomConfig.difficulty)
+            }
         room.dualPageData = DualPageData(dualPageSpells)
         val transitionCount = room.roomConfig.transitionCount ?: 5
         room.spells!!.indices.shuffled().take(transitionCount).forEach {
